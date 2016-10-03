@@ -195,7 +195,7 @@ bot "sublime-text 설치"
 require_cask sublime-text
 
 bot "google-chrome 설치"
-require_cask google-chrome
+require_cask google-chrome-canary
 
 ########################
 bot "iTerm2 settings"
