@@ -10,12 +10,14 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
 # Powerlevel9k Settings
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(status dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(status virtualenv dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time)
 POWERLEVEL9K_STATUS_VERBOSE=false
+
+POWERLEVEL9K_VIRTUALENV_FOREGROUND='black'
+POWERLEVEL9K_VIRTUALENV_BACKGROUND='white'
 
 # User configuration
 alias zshconfig="vi ~/.zshrc"
 alias ohmyzsh="vi ~/.oh-my-zsh"
-
 
