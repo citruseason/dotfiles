@@ -4,6 +4,11 @@
 # 개인용 dotfiles 쓸사람은 써주세요~
 ###########################
 
+if [ -f "$HOME/.padot" ]; then
+  echo "Installed"
+  exit
+fi
+
 source ./utils_sh/echos.sh
 source ./utils_sh/brew_util.sh
 
@@ -38,11 +43,11 @@ bot "gitconfig 셋팅"
 
 while true; do
   read -r -p "git --global name: " name
-  if [[ ! $email ]];then
+  if [[ ! $name ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' 's/GITNAME/'$name'/' ./configs/.gitconfig;
-    exit;
+    sed -i '' "s/GITNAME/$name/" ./configs/.gitconfig;
+    break
   fi
 done
 
@@ -51,18 +56,18 @@ while true; do
   if [[ ! $email ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' 's/GITEMAIL/'$email'/' ./configs/.gitconfig;
-    exit;
+    sed -i '' "s/GITEMAIL/$email/" ./configs/.gitconfig;
+    break
   fi
 done
 
 while true; do
   read -r -p "Github username: " username
-  if [[ ! $email ]];then
+  if [[ ! $username ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' 's/GITHUBUSER/'$username'/' ./configs/.gitconfig;
-    exit;
+    sed -i '' "s/GITHUBUSER/$username/" ./configs/.gitconfig;
+    break
   fi
 done
 ok

@@ -18,33 +18,4 @@ POWERLEVEL9K_STATUS_VERBOSE=false
 alias zshconfig="vi ~/.zshrc"
 alias ohmyzsh="vi ~/.oh-my-zsh"
 
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-source /usr/local/opt/autoenv/activate.sh
+
