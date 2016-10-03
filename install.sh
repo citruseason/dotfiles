@@ -180,6 +180,9 @@ if [[ $resp =~ ^(y|yes|Y) ]];then
 
     require_brew autoenv
     echo 'source /usr/local/opt/autoenv/activate.sh' >> ./configs/.zshrc
+
+    require_brew gettext
+    brew link gettext --force
 fi
 
 bot "iterm2 설치"
