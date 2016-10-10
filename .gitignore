@@ -49,3 +49,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# custom
+configs-custom

@@ -39,14 +39,17 @@ if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
   fi
 fi
 
-bot "gitconfig 셋팅"
+bot "make custom files"
+rm -rf ./configs-custom
+cp -r ./configs ./configs-custom
 
+bot "gitconfig 셋팅"
 while true; do
   read -r -p "git --global name: " name
   if [[ ! $name ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' "s/GITNAME/$name/" ./configs/.gitconfig;
+    sed -i '' "s/GITNAME/$name/" ./configs-custom/.gitconfig;
     break
   fi
 done
@@ -56,7 +59,7 @@ while true; do
   if [[ ! $email ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' "s/GITEMAIL/$email/" ./configs/.gitconfig;
+    sed -i '' "s/GITEMAIL/$email/" ./configs-custom/.gitconfig;
     break
   fi
 done
@@ -66,7 +69,7 @@ while true; do
   if [[ ! $username ]];then
     error "필수로 입력해주세요."
   else
-    sed -i '' "s/GITHUBUSER/$username/" ./configs/.gitconfig;
+    sed -i '' "s/GITHUBUSER/$username/" ./configs-custom/.gitconfig;
     break
   fi
 done
@@ -120,8 +123,8 @@ ok
 
 require_brew vim --override-system-vi
 require_brew macvim
-echo "alias vi='mvim -v'" >> configs/.zshrc
-echo "alias vim='mvim -v'" >> configs/.zshrc
+echo "alias vi='mvim -v'" >> configs-custom/.zshrc
+echo "alias vim='mvim -v'" >> configs-custom/.zshrc
 require_brew zsh
 
 CURRENTSHELL=$(dscl . -read /Users/$USER UserShell | awk '{print $2}')
@@ -138,7 +141,7 @@ if [[ ! -d "./oh-my-zsh/custom/themes/powerlevel9k" ]]; then
 fi
 
 bot "프로젝트 Config 심볼릭링크 처리"
-pushd configs > /dev/null 2>&1
+pushd configs-custom > /dev/null 2>&1
 now=$(date +"%Y.%m.%d.%H.%M.%S")
 
 for file in .*; do
@@ -157,7 +160,7 @@ for file in .*; do
   # symlink might still exist
   unlink ~/$file > /dev/null 2>&1
   # create the link
-  ln -s ~/.dotfiles/configs/$file ~/$file
+  ln -s ~/.dotfiles/configs-custom/$file ~/$file
   echo -en ' Linked';ok
 done
 
