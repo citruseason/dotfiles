@@ -197,6 +197,10 @@ endfunction
 " map <F12> ggVGg? " apply rot13 for people snooping over shoulder, good fun
 let mapleader=','
 
+" normal mode 자동 영문모드
+inoremap <ESC> <ESC>:set iminsert=0<CR>
+set noimd
+
 noremap <leader>rc :rightbelow vnew $MYVIMRC<CR>
 map <C-f> :NERDTreeTabsFind<CR>
 map <leader>n :NERDTreeTabsToggle<CR>
@@ -230,6 +234,14 @@ au FileType c set omnifunc=ccomplete#Complete
 autocmd FileType python set sw=4
 autocmd FileType python set ts=4
 autocmd FileType python set sts=4
+au BufNewFile,BufRead *.html set filetype=htmldjango
+
+" Whitespace remove
+autocmd BufWritePre * :call <SID>StripWhite()
+fun! <SID>StripWhite()
+    %s/[ \t]\+$//ge
+    %s!^\( \+\)\t!\=StrRepeat("\t", 1 + strlen(submatch(1)) / 8)!ge
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Change paging overlap amount from 2 to 5 (+3)
@@ -258,7 +270,7 @@ vnoremap <silent> <leader>es :EsformatterVisual<CR>
 " NERDTree
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.DS_Store$','\.idea']
+let NERDTreeIgnore=['\.DS_Store$','\.idea','.pyc$']
 let NERDSpaceDelims=1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
