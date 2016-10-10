@@ -29,6 +29,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'Valloric/YouCompleteMe'
 " Navigation (IDE frame)
 Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -48,22 +49,9 @@ Plugin 'godlygeek/tabular'
 Plugin 'scrooloose/syntastic'
 Plugin 'millermedeiros/vim-esformatter'
 Plugin 'digitaltoad/vim-pug'
-" Plugin 'elzr/vim-json'
 " Plugin 'SirVer/ultisnips'
-"Plugin 'sheerun/vim-polyglot'
 " plugin from http://vim-scripts.org/vim/scripts.html
 Plugin 'SuperTab'
-" Git plugin not hosted on GitHub
-" Plugin 'git://git.wincent.com/command-t.git'
-" git repos on your local machine (i.e. when working on your own plugin)
-" Plugin 'file:///home/gmarik/path/to/plugin'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-" Install L9 and avoid a Naming conflict if you've already installed a
-" different version somewhere else.
-" Plugin 'ascenator/L9', {'name': 'newL9'}
-
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -181,18 +169,6 @@ set foldopen-=search " don't open folds when you search into them
 set foldopen-=undo " don't open folds when you undo stuff
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CTags
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"let Tlist_Ctags_Cmd = 'ctags' " Location of ctags
-"let Tlist_Sort_Type = "name" " order by
-"let Tlist_Use_Right_Window = 1 " split to the right side of the screen
-"let Tlist_Compact_Format = 1 " show small meny
-"let Tlist_Exist_OnlyWindow = 1 " if you are the last, kill yourself
-"let Tlist_File_Fold_Auto_Close = 0 " Do not close tags for other files
-"let Tlist_Enable_Fold_Column = 1 " Do show folding tree
-"let Tlist_WinWidth = 50 " 50 cols wide, so I can (almost always) read my functions
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Matchit
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let b:match_ignorecase = 1
@@ -219,8 +195,15 @@ endfunction
 " map <left> <ESC>:NERDTreeToggle<RETURN>  " moves left fa split
 " map <F2> <ESC>ggVG:call SuperRetab()<left>
 " map <F12> ggVGg? " apply rot13 for people snooping over shoulder, good fun
-map ,n <plug>NERDTreeTabsToggle<CR>
+let mapleader=','
 
+noremap <leader>rc :rightbelow vnew $MYVIMRC<CR>
+map <C-f> :NERDTreeTabsFind<CR>
+map <leader>n :NERDTreeTabsToggle<CR>
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Useful abbrevs
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -242,6 +225,11 @@ au FileType css set omnifunc=csscomplete#CompleteCSS
 au FileType xml set omnifunc=xmlcomplete#CompleteTags
 au FileType c set omnifunc=ccomplete#Complete
 " autocmd vimenter * NERDTree
+
+" Python Setting
+autocmd FileType python set sw=4
+autocmd FileType python set ts=4
+autocmd FileType python set sts=4
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Change paging overlap amount from 2 to 5 (+3)
@@ -270,8 +258,20 @@ vnoremap <silent> <leader>es :EsformatterVisual<CR>
 " NERDTree
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.DS_Store$']
+let NERDTreeIgnore=['\.DS_Store$','\.idea']
+let NERDSpaceDelims=1
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Youcomplete
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
+let g:ycm_use_ultisnips_completer = 1 " Default 1, just ensure
+let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
+let g:ycm_complete_in_comments = 1 " Completion in comments
+let g:ycm_complete_in_strings = 1 " Completion in string
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntastic
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

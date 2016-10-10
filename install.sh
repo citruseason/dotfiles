@@ -160,18 +160,33 @@ done
 
 popd > /dev/null 2>&1
 
+require_brew cmake
+
 bot "vim plugins 설치"
 running "진행중 [주의! 시간이 많이걸림.] "
 vim +PluginInstall +qall > /dev/null 2>&1
+ok
+
+bot "YCM 설치"
+cd ~/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 ok
 
 bot "fonts 설치"
 ./fonts/install.sh
 ok
 
+bot "Sequel Pro 설치 (SQL툴)"
+require_cask sequel-pro
+ok
+
+bot "Cyberduck 설치 (FTP툴)"
+require_cask cyberduck
+ok
+
 echo
 read -r -p "pyenv, virtualenv, autoenv 설치? [y|N] " resp
 if [[ $resp =~ ^(y|yes|Y) ]];then
+    echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ./configs/.zshrc
     require_brew pyenv
     echo 'eval "$(pyenv init -)"' >> ./configs/.zshrc
 
