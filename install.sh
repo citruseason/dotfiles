@@ -361,6 +361,12 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 bot "Dock & Dashboard"
 ###############################################################################
 
+runnign "Auto hide dock"
+defaults write com.apple.Dock autohide -int 1
+
+running "Move dock orientation left"
+defaults write com.apple.Dock orientation left
+
 running "Enable highlight hover effect for the grid view of a stack (Dock)"
 defaults write com.apple.dock mouse-over-hilite-stack -bool true;ok
 
