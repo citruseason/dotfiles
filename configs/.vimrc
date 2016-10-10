@@ -197,10 +197,6 @@ endfunction
 " map <F12> ggVGg? " apply rot13 for people snooping over shoulder, good fun
 let mapleader=','
 
-" normal mode 자동 영문모드
-inoremap <ESC> <ESC>:set iminsert=0<CR>
-set noimd
-
 noremap <leader>rc :rightbelow vnew $MYVIMRC<CR>
 map <C-f> :NERDTreeTabsFind<CR>
 map <leader>n :NERDTreeTabsToggle<CR>
