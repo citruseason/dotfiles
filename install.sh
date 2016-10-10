@@ -152,10 +152,8 @@ for file in .*; do
   running "~/$file"
   # if the file exists:
   if [[ -e ~/$file ]]; then
-      if [[ $file != ".DS_Store" ]]; then
-        mkdir -p ~/.dotfiles_backup/$now
-        mv ~/$file ~/.dotfiles_backup/$now/$file
-      fi
+    mkdir -p ~/.dotfiles_backup/$now
+    mv ~/$file ~/.dotfiles_backup/$now/$file
   fi
   # symlink might still exist
   unlink ~/$file > /dev/null 2>&1
