@@ -105,6 +105,7 @@ else
   fi
 fi
 
+
 #####
 # install brew cask (UI Packages)
 #####
@@ -118,7 +119,9 @@ brew tap caskroom/versions > /dev/null 2>&1
 ok
 
 require_brew vim --override-system-vi
-
+require_brew macvim
+echo "alias vi='mvim -v'" >> configs/.zshrc
+echo "alias vim='mvim -v'" >> configs/.zshrc
 require_brew zsh
 
 CURRENTSHELL=$(dscl . -read /Users/$USER UserShell | awk '{print $2}')
@@ -142,7 +145,7 @@ for file in .*; do
   if [[ $file == "." || $file == ".." ]]; then
     continue
   fi
-  
+
   running "~/$file"
   # if the file exists:
   if [[ -e ~/$file ]]; then
@@ -162,14 +165,17 @@ popd > /dev/null 2>&1
 
 require_brew cmake
 
-bot "vim plugins 설치"
-running "진행중 [주의! 시간이 많이걸림.] "
-vim +PluginInstall +qall > /dev/null 2>&1
-ok
-
-bot "YCM 설치"
-cd ~/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
-ok
+echo
+read -r -p "vim plugins 설치를 시작할까요? [y|N] " response
+if [[ $response =~ ^(y|yes|Y) ]];then
+    # Upgrade any already-installed formulae
+    running "진행중 [주의! 시간이 많이걸림.] "
+    vim +PluginInstall +qall > /dev/null 2>&1
+    ok
+    bot "YCM 설치"
+    cd ~/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
+    ok
+fi
 
 bot "fonts 설치"
 ./fonts/install.sh
@@ -186,15 +192,15 @@ ok
 echo
 read -r -p "pyenv, virtualenv, autoenv 설치? [y|N] " resp
 if [[ $resp =~ ^(y|yes|Y) ]];then
-    echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ./configs/.zshrc
+    echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ~/.zshrc
     require_brew pyenv
-    echo 'eval "$(pyenv init -)"' >> ./configs/.zshrc
+    echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 
     require_brew pyenv-virtualenv
-    echo 'eval "$(pyenv virtualenv-init -)"' >> ./configs/.zshrc
+    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
 
     require_brew autoenv
-    echo 'source /usr/local/opt/autoenv/activate.sh' >> ./configs/.zshrc
+    echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
 
     require_brew gettext
     brew link gettext --force
