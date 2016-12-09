@@ -205,11 +205,8 @@ fi
 bot "iterm2 설치"
 require_cask iterm2
 
-bot "sublime-text 설치"
-require_cask sublime-text
-
-bot "sublime-text 설치"
-require_cask sublime-text
+bot "Atom 설치"
+require_cask atom
 
 bot "google-chrome 설치"
 require_cask google-chrome-canary
