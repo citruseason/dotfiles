@@ -185,6 +185,13 @@ require_cask sequel-pro
 bot "Cyberduck 설치 (FTP툴)"
 require_cask cyberduck
 
+bot "Scroll reverser 설치 (마우스 반전)"
+require_cask scroll-reverser
+defaults write com.pilotmoon.scroll-reverser HasRunBefore -bool YES
+defaults write com.pilotmoon.scroll-reverser ReverseTablet -bool NO
+defaults write com.pilotmoon.scroll-reverser ReverseTrackpad -bool NO
+defaults write com.pilotmoon.scroll-reverser SUEnableAutomaticChecks -bool YES
+
 echo
 read -r -p "pyenv, virtualenv, autoenv 설치? [y|N] " resp
 if [[ $resp =~ ^(y|yes|Y) ]];then
@@ -205,11 +212,23 @@ fi
 bot "iterm2 설치"
 require_cask iterm2
 
-bot "Atom 설치"
-require_cask atom
+bot "VSCode 설치"
+require_cask visual-studio-code
 
-bot "google-chrome 설치"
+running "VScode Settings Import"
+cd ~/Library/Application\ Support/Code/User/
+rm -rf settings.json keybindings.json snippets
+cd ~/.dotfiles
+ln -s ~/.dotfiles/configs/code/settings.json ~/Library/Application\ Support/Code/User/settings.json
+ln -s ~/.dotfiles/configs/code/keybindings.json ~/Library/Application\ Support/Code/User/keybindings.json
+ln -s ~/.dotfiles/configs/code/snippets/ ~/Library/Application\ Support/Code/User/snippets
+ok
+
+bot "google-chrome-canary 설치"
 require_cask google-chrome-canary
+
+bot "firefox-developer-edition 설치"
+require_cask firefoxdeveloperedition
 
 ########################
 bot "iTerm2 settings"
@@ -219,7 +238,7 @@ running "Installing the Solarized Dark theme for iTerm (opening file)"
 open "./scheme/Solarized Dark.itermcolors";ok
 
 running "iTerm Settings Import"
-cd .dotfiles
+cd ~/.dotfiles
 defaults delete com.googlecode.iterm2.plist
 cp ./plist/com.googlecode.iterm2.plist ~/Library/Preferences
 defaults read com.googlecode.iterm2.plist
@@ -486,6 +505,7 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true;ok
 
 running "Font size 10px min"
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2MinimumFontSize -int 10
+ok
 
 ###############################################################################
 bot "Configuring Mail"
@@ -564,8 +584,19 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true;ok
 
 
 ###############################################################################
+bot "keyboard shortcut setting"
+###############################################################################
+running "Mission control => Spaces Left - Control, Left"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{ enabled = 1; value = { parameters = ( 65535, 123, 262144 ); type = standard; }; }"
+ok
+running "Mission control => Spaces Right - Control, Right"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{ enabled = 1; value = { parameters = ( 65535, 124, 262144 ); type = standard; }; }"
+ok
+
+
+###############################################################################
 # Kill affected applications                                                  #
-# ###############################################################################
+###############################################################################
 bot "OK. Note that some of these changes require a logout/restart to take effect. Killing affected applications (so they can reboot)...."
 for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
     "Dock" "Finder" "Mail" "Messages" "Safari" "SizeUp" "SystemUIServer" \
