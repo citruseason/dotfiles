@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
 
-###########################
-# 개인용 dotfiles 쓸사람은 써주세요~
-###########################
+source ./utils_sh/echos.sh
+source ./utils_sh/brew_util.sh
 
 if [ -f "$HOME/.padot" ]; then
   echo "Installed"
   exit
 fi
 
-source ./utils_sh/echos.sh
-source ./utils_sh/brew_util.sh
-
-print "Pavons-Dotfiles 설치를 시작합니다."
+print "Dotfiles 설치를 시작합니다."
 
 # Ask for the administrator password upfront
 if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
@@ -35,15 +31,15 @@ if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
           sudo sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
       fi
       sudo dscl . append /Groups/wheel GroupMembership $(whoami)
-      bot "지금부터 sudo 비밀번호는 자동으로 입력됩니다!"
   fi
 fi
 
-bot "make custom files"
+bot "Install start"
+running "설치 준비중"
 rm -rf ./configs-custom
 cp -r ./configs ./configs-custom
+ok
 
-bot "gitconfig 셋팅"
 while true; do
   read -r -p "git --global name: " name
   if [[ ! $name ]];then
@@ -73,13 +69,13 @@ while true; do
     break
   fi
 done
+running "gitconfig"
 ok
 
 #####
 # install homebrew (CLI Packages)
 #####
 
-running "homebrew 설치되어있는지 확인"
 brew_bin=$(which brew) 2>&1 > /dev/null
 if [[ $? != 0 ]]; then
   action "homebrew 설치를 시작합니다."
@@ -90,9 +86,8 @@ if [[ $? != 0 ]]; then
   fi
   ok
 else
-  ok
   # Make sure we’re using the latest Homebrew
-  running "homebrew 업데이트"
+  action "homebrew 업데이트"
   brew update
   ok
 
@@ -104,7 +99,7 @@ else
       brew upgrade
       ok
   else
-      ok "\nbrew 업그레이드를 취소합니다.";
+      print "\nbrew 업그레이드를 취소합니다.";
   fi
 fi
 
@@ -112,21 +107,19 @@ fi
 #####
 # install brew cask (UI Packages)
 #####
-running "brew-cask가 설치되어있는지 확인"
 output=$(brew tap | grep cask)
 if [[ $? != 0 ]]; then
-  running "brew-cask 설치"
   require_brew caskroom/cask/brew-cask
 fi
+running "brew cask update"
 brew tap caskroom/versions > /dev/null 2>&1
 ok
 
 require_brew vim --override-system-vi
 require_brew zsh
-
 CURRENTSHELL=$(dscl . -read /Users/$USER UserShell | awk '{print $2}')
 if [[ "$CURRENTSHELL" != "/usr/local/bin/zsh" ]]; then
-  bot "zsh (/usr/local/bin/zsh) 셋팅을 시작합니다. (비밀번호 필요)"
+  running "zsh(/usr/local/bin/zsh) setting"
   # sudo bash -c 'echo "/usr/local/bin/zsh" >> /etc/shells'
   # chsh -s /usr/local/bin/zsh
   sudo dscl . -change /Users/$USER UserShell $SHELL /usr/local/bin/zsh > /dev/null 2>&1
@@ -134,19 +127,18 @@ if [[ "$CURRENTSHELL" != "/usr/local/bin/zsh" ]]; then
 fi
 
 if [[ ! -d "./oh-my-zsh/custom/themes/powerlevel9k" ]]; then
+  running "oh-my-zsh theme install"
   git clone https://github.com/bhilburn/powerlevel9k.git oh-my-zsh/custom/themes/powerlevel9k
+  ok
 fi
 
-bot "프로젝트 Config 심볼릭링크 처리"
 pushd configs-custom > /dev/null 2>&1
 now=$(date +"%Y.%m.%d.%H.%M.%S")
-
 for file in .*; do
   if [[ $file == "." || $file == ".." ]]; then
     continue
   fi
-
-  running "~/$file"
+  running "Symbolic Link > ~/$file"
   # if the file exists:
   if [[ -e ~/$file ]]; then
     mkdir -p ~/.dotfiles_backup/$now
@@ -158,39 +150,31 @@ for file in .*; do
   ln -s ~/.dotfiles/configs-custom/$file ~/$file
   echo -en ' Linked';ok
 done
-
 popd > /dev/null 2>&1
 
+require_brew ctags
 require_brew cmake
 
-echo
-read -r -p "vim plugins 설치를 시작할까요? [y|N] " response
-if [[ $response =~ ^(y|yes|Y) ]];then
-    # Upgrade any already-installed formulae
-    running "진행중 [주의! 시간이 많이걸림.] "
-    vim +PluginInstall +qall > /dev/null 2>&1
-    ok
-    bot "YCM 설치"
-    cd ~/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
-    ok
-fi
+running "vim plugin install "
+vim +PluginInstall +qall > /dev/null 2>&1
+ok
 
-bot "fonts 설치"
 cd ~/.dotfiles && chmod +x ./fonts/install.sh
 ./fonts/install.sh
 
-bot "Sequel Pro 설치 (SQL툴)"
 require_cask sequel-pro
 
-bot "Cyberduck 설치 (FTP툴)"
 require_cask cyberduck
 
-bot "Scroll reverser 설치 (마우스 반전)"
 require_cask scroll-reverser
-defaults write com.pilotmoon.scroll-reverser HasRunBefore -bool YES
-defaults write com.pilotmoon.scroll-reverser ReverseTablet -bool NO
-defaults write com.pilotmoon.scroll-reverser ReverseTrackpad -bool NO
-defaults write com.pilotmoon.scroll-reverser SUEnableAutomaticChecks -bool YES
+
+require_cask iterm2
+
+require_cask visual-studio-code
+
+require_cask google-chrome
+
+require_cask firefoxdeveloperedition
 
 echo
 read -r -p "pyenv, virtualenv, autoenv 설치? [y|N] " resp
@@ -209,31 +193,19 @@ if [[ $resp =~ ^(y|yes|Y) ]];then
     brew link gettext --force
 fi
 
-bot "iterm2 설치"
-require_cask iterm2
-
-bot "VSCode 설치"
-require_cask visual-studio-code
-
-running "VScode Settings Import"
-cd ~/Library/Application\ Support/Code/User/
-rm -rf settings.json keybindings.json snippets
-cd ~/.dotfiles
-ln -s ~/.dotfiles/configs/code/settings.json ~/Library/Application\ Support/Code/User/settings.json
-ln -s ~/.dotfiles/configs/code/keybindings.json ~/Library/Application\ Support/Code/User/keybindings.json
-ln -s ~/.dotfiles/configs/code/snippets/ ~/Library/Application\ Support/Code/User/snippets
+################################
+bot "Scroll-Reverser settings"
+################################
+running "Settings Import"
+defaults write com.pilotmoon.scroll-reverser HasRunBefore -bool YES
+defaults write com.pilotmoon.scroll-reverser ReverseTablet -bool NO
+defaults write com.pilotmoon.scroll-reverser ReverseTrackpad -bool NO
+defaults write com.pilotmoon.scroll-reverser SUEnableAutomaticChecks -bool YES
 ok
-
-bot "google-chrome-canary 설치"
-require_cask google-chrome-canary
-
-bot "firefox-developer-edition 설치"
-require_cask firefoxdeveloperedition
 
 ########################
 bot "iTerm2 settings"
 ########################
-
 running "Installing the Solarized Dark theme for iTerm (opening file)"
 open "./scheme/Solarized Dark.itermcolors";ok
 
