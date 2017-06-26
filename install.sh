@@ -145,6 +145,9 @@ for file in .*; do
 done
 popd > /dev/null 2>&1
 
+require_brew git
+git config --global diff.compactionHeuristic true
+
 require_brew ctags
 require_brew cmake
 
