@@ -146,8 +146,7 @@ done
 popd > /dev/null 2>&1
 
 require_brew git
-git config --global diff.compactionHeuristic true
-
+require_brew diff-so-fancy
 require_brew ctags
 require_brew cmake
 
