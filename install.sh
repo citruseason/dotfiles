@@ -162,6 +162,8 @@ cd ~/.dotfiles && chmod +x ./fonts/install.sh
 
 require_cask docker
 
+require_cask jandi
+
 require_cask slack
 
 require_cask macdown
