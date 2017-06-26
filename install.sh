@@ -176,22 +176,21 @@ require_cask google-chrome
 
 require_cask firefoxdeveloperedition
 
-echo
-read -r -p "pyenv, virtualenv, autoenv 설치? [y|N] " resp
-if [[ $resp =~ ^(y|yes|Y) ]];then
-    echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ~/.zshrc
-    require_brew pyenv
-    echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+################################
+bot "Python Development Environment setting"
+################################
+echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ~/.zshrc
+require_brew pyenv
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 
-    require_brew pyenv-virtualenv
-    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
+require_brew pyenv-virtualenv
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
 
-    require_brew autoenv
-    echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
+require_brew autoenv
+echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
 
-    require_brew gettext
-    brew link gettext --force
-fi
+require_brew gettext
+brew link gettext --force
 
 ################################
 bot "Scroll-Reverser settings"
