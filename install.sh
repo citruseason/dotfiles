@@ -3,11 +3,6 @@
 source ./utils_sh/echos.sh
 source ./utils_sh/brew_util.sh
 
-if [ -f "$HOME/.padot" ]; then
-  echo "Installed"
-  exit
-fi
-
 print "Dotfiles 설치를 시작합니다."
 
 # Ask for the administrator password upfront
