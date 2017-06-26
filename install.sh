@@ -98,8 +98,6 @@ else
       running "brew 페키지들을 업그레이드 하는중"
       brew upgrade
       ok
-  else
-      print "\nbrew 업그레이드를 취소합니다.";
   fi
 fi
 
@@ -162,7 +160,11 @@ ok
 cd ~/.dotfiles && chmod +x ./fonts/install.sh
 ./fonts/install.sh
 
-require_cask install macdown
+require_cask docker
+
+require_cask slack
+
+require_cask macdown
 
 require_cask sequel-pro
 
