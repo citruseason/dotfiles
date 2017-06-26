@@ -5,6 +5,8 @@ source ./utils_sh/brew_util.sh
 
 print "Dotfiles 설치를 시작합니다."
 
+git submodule update --init --recursive
+
 # Ask for the administrator password upfront
 if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
 
@@ -31,6 +33,7 @@ fi
 
 bot "Install start"
 running "설치 준비중"
+dotfiles_d=~/.dotfiles
 rm -rf ./configs-custom
 cp -r ./configs ./configs-custom
 ok
@@ -90,7 +93,7 @@ else
   read -r -p "brew 패키지에 대한 업그레이드를 시작할까요? [y|N] " response
   if [[ $response =~ ^(y|yes|Y) ]];then
       # Upgrade any already-installed formulae
-      running "brew 페키지들을 업그레이드 하는중"
+      running "brew 패키지들을 업그레이드 하는중"
       brew upgrade
       ok
   fi
@@ -210,9 +213,6 @@ ok
 ########################
 bot "iTerm2 settings"
 ########################
-running "Installing the Solarized Dark theme for iTerm (opening file)"
-open "./scheme/Solarized Dark.itermcolors";ok
-
 running "iTerm Settings Import"
 cd ~/.dotfiles
 defaults delete com.googlecode.iterm2.plist
