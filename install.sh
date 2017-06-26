@@ -162,6 +162,8 @@ ok
 cd ~/.dotfiles && chmod +x ./fonts/install.sh
 ./fonts/install.sh
 
+require_cask install macdown
+
 require_cask sequel-pro
 
 require_cask cyberduck
