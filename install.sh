@@ -182,6 +182,8 @@ require_cask google-chrome
 
 require_cask firefoxdeveloperedition
 
+require_cask appcleaner
+
 ################################
 bot "Python Development Environment setting"
 ################################

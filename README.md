@@ -21,6 +21,7 @@ Mac 자동 환경설정 스크립트
 * visual studio code
 * google chrome
 * firefox developer edition
+* app cleaner - 어플리케이션 삭제도와주는 프로그램
 
 ### Python Environment
 * pyenv - 파이썬 버전관리
