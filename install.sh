@@ -5,8 +5,6 @@ source ./utils_sh/brew_util.sh
 
 print "Dotfiles 설치를 시작합니다."
 
-git submodule update --init --recursive
-
 # Ask for the administrator password upfront
 if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
 
@@ -36,6 +34,7 @@ running "설치 준비중"
 dotfiles_d=~/.dotfiles
 rm -rf ./configs-custom
 cp -r ./configs ./configs-custom
+git submodule update --init --recursive
 ok
 
 while true; do
@@ -147,6 +146,9 @@ for file in .*; do
   echo -en ' Linked';ok
 done
 popd > /dev/null 2>&1
+
+mkdir -p ~/.vim/backup
+mkdir -p ~/.vim/temp
 
 require_brew git
 require_brew diff-so-fancy
@@ -567,7 +569,15 @@ ok
 running "Mission control => Spaces Right - Control, Right"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{ enabled = 1; value = { parameters = ( 65535, 124, 262144 ); type = standard; }; }"
 ok
-
+running "Spotlight => Show search field - Command, Shift, Space"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "{ enabled = 1; value = { parameters = ( 65535, 49, 1179648 ); type = standard; }; }"
+ok
+running "Select the previous input source => Command, Space"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "{ enabled = 1; value = { parameters = ( 32, 49, 1048576 ); type = standard; }; }"
+ok
+running "Select the next source in the Input Menu => Command, Option, Space"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{ enabled = 1; value = { parameters = ( 32, 49, 1572864 ); type = standard; }; }"
+ok
 
 ###############################################################################
 # Kill affected applications                                                  #
