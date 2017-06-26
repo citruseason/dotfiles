@@ -121,9 +121,9 @@ if [[ "$CURRENTSHELL" != "/usr/local/bin/zsh" ]]; then
   ok
 fi
 
-if [[ ! -d "./oh-my-zsh/custom/themes/powerlevel9k" ]]; then
+if [[ ! -d "./oh-my-zsh/custom/themes/honukai" ]]; then
   running "oh-my-zsh theme install"
-  git clone https://github.com/bhilburn/powerlevel9k.git oh-my-zsh/custom/themes/powerlevel9k
+  git clone https://github.com/oskarkrawczyk/honukai-iterm-zsh.git oh-my-zsh/custom/themes/honukai
   ok
 fi
 
@@ -219,8 +219,15 @@ running "iTerm Settings Import"
 cd ~/.dotfiles
 defaults delete com.googlecode.iterm2.plist
 cp ./plist/com.googlecode.iterm2.plist ~/Library/Preferences
-defaults read com.googlecode.iterm2.plist
 defaults read -app iTerm > /dev/null 2>&1;
+ok
+
+########################
+bot "Apple Terminal settings"
+########################
+running "Terminal.app settings Import"
+defaults delete com.apple.Terminal.plist
+cp ./plist/com.apple.Terminal.plist ~/Library/Preferences
 ok
 
 

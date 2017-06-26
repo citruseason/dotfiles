@@ -2,7 +2,7 @@
 export ZSH=$HOME/.dotfiles/oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="honukai/honukai"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 plugins=(git)
