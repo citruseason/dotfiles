@@ -123,7 +123,7 @@ fi
 
 if [[ ! -d "./oh-my-zsh/custom/themes/honukai" ]]; then
   running "oh-my-zsh theme install"
-  git clone https://github.com/oskarkrawczyk/honukai-iterm-zsh.git oh-my-zsh/custom/themes/honukai
+  cp ~/.dotfiles/themes/pavons.zsh-theme oh-my-zsh/custom/themes
   ok
 fi
 
@@ -201,6 +201,16 @@ echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
 
 require_brew gettext
 brew link gettext --force
+
+################################
+bot "Angular Development Environment setting"
+################################
+require_brew node
+node -v
+npm -v
+npm install -g yarn
+npm install -g @angular/cli
+ng set -g packageManager=yarn
 
 ################################
 bot "Scroll-Reverser settings"
