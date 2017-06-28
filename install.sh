@@ -162,8 +162,6 @@ ok
 cd ~/.dotfiles && chmod +x ./fonts/install.sh
 ./fonts/install.sh
 
-require_cask docker
-
 require_cask jandi
 
 require_cask slack
@@ -185,6 +183,15 @@ require_cask google-chrome
 require_cask firefoxdeveloperedition
 
 require_cask appcleaner
+
+################################
+bot "Docker Development Environment setting"
+################################
+require_cask docker
+require_brew docker-machine-driver-xhyve
+sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+docker-machine create --driver xhyve default
 
 ################################
 bot "Python Development Environment setting"
