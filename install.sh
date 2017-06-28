@@ -168,8 +168,6 @@ require_cask slack
 
 require_cask macdown
 
-require_cask sequel-pro
-
 require_cask cyberduck
 
 require_cask scroll-reverser
@@ -183,6 +181,13 @@ require_cask google-chrome
 require_cask firefoxdeveloperedition
 
 require_cask appcleaner
+
+
+################################
+bot "Database Development Environment setting"
+################################
+require_cask java
+require_cask dbeaver-community
 
 ################################
 bot "Docker Development Environment setting"
