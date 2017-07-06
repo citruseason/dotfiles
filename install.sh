@@ -186,8 +186,7 @@ require_cask appcleaner
 ################################
 bot "Database Development Environment setting"
 ################################
-require_cask java
-require_cask dbeaver-community
+require_cask valentina-studio
 
 ################################
 bot "Docker Development Environment setting"
