@@ -210,6 +210,12 @@ echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
 require_brew autoenv
 echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
 
+git clone https://github.com/momo-lab/pyenv-install-latest.git "$(pyenv root)"/plugins/pyenv-install-latest
+
+pyenv install 3.5.3
+
+pyenv global 3.5.3
+
 require_brew gettext
 brew link gettext --force
 
