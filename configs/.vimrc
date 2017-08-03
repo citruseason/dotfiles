@@ -1,16 +1,13 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Must Have
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has('gui_running')
-    set background=light
-else
-    set background=dark
-endif
-colorscheme solarized
+set background=dark
+colorscheme monokai
 " syntax on " syntax highlighting on
 syntax enable
 let g:solarized_termtrans = 1
 call togglebg#map("<F5>")
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vundle
@@ -26,6 +23,7 @@ call vundle#begin()
 " plugin on GitHub repo
 " let Vundle manage Vundle
 Plugin 'VundleVim/Vundle.vim'
+
 " Navigation (IDE frame)
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
@@ -38,12 +36,15 @@ Plugin 'justinmk/vim-sneak'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'tpope/vim-surround'
 Plugin 'dkprice/vim-easygrep'
+
 " visual undo list
 Plugin 'sjl/gundo.vim'
 " Plugin 'majutsushi/tagbar'
+
 " markdown preview: opens browser with live reload when vim opens .md
 Plugin 'suan/vim-instant-markdown'
 Plugin 'godlygeek/tabular'
+
 " language tools
 Plugin 'scrooloose/syntastic'
 Plugin 'millermedeiros/vim-esformatter'
@@ -51,20 +52,12 @@ Plugin 'digitaltoad/vim-pug'
 " Plugin 'SirVer/ultisnips'
 " plugin from http://vim-scripts.org/vim/scripts.html
 Plugin 'SuperTab'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -80,6 +73,7 @@ set viminfo+=! " make sure it can save viminfo
 set isk+=_,$,@,%,# " none of these should be word dividers, so make them not be
 set nosol " leave my cursor where it was
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files/Backups
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -91,6 +85,7 @@ set sessionoptions+=globals " What should be saved during sessions being saved
 set sessionoptions+=localoptions " What should be saved during sessions being saved
 set sessionoptions+=resize " What should be saved during sessions being saved
 set sessionoptions+=winpos " What should be saved during sessions being saved
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
@@ -113,6 +108,7 @@ set noerrorbells " don't make noise
 set list " we do what to show tabs, to ensure we get them out of my files
 set listchars=tab:>-,trail:- " show tabs and trailing whitespace
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -125,6 +121,7 @@ set novisualbell " don't blink
 " statusline example: ~\myfile[+] [FORMAT=format] [TYPE=type] [ASCII=000] [HEX=00] [POS=0000,0000][00%] [LEN=000]
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
 set laststatus=2 " always show the status line
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Indent Related
@@ -140,6 +137,7 @@ set copyindent " but above all -- follow the conventions laid before us
 set textwidth=120
 filetype plugin indent on " load filetype plugins and indent settings
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -154,6 +152,8 @@ set completeopt=menu,longest,preview " improve the way autocomplete works
 set cursorcolumn " show the current column
 set cursorline
 hi CursorLine term=underline ctermbg=008 guibg=#493a35
+
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
 "    Enable folding, but by default make it act like folding is
@@ -167,15 +167,12 @@ set foldlevel=100 " Don't autofold anything (but I can still fold manually)
 set foldopen-=search " don't open folds when you search into them
 set foldopen-=undo " don't open folds when you undo stuff
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Matchit
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let b:match_ignorecase = 1
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Perl
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" let perl_extended_vars=1 " highlight advanced perl vars inside strings
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Custom Functions
@@ -184,6 +181,7 @@ let b:match_ignorecase = 1
 function! SuperRetab(width) range
     silent! exe a:firstline . ',' . a:lastline . 's/\v%(^ *)@<= {'. a:width .'}/\t/g'
 endfunction
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Mappings
@@ -203,10 +201,13 @@ noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Useful abbrevs
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommands
@@ -238,6 +239,7 @@ fun! <SID>StripWhite()
     %s!^\( \+\)\t!\=StrRepeat("\t", 1 + strlen(submatch(1)) / 8)!ge
 endfun
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Change paging overlap amount from 2 to 5 (+3)
 " if you swapped C-y and C-e, and set them to 2, it would
@@ -249,9 +251,7 @@ nnoremap <C-b> <C-b>3<C-e> "  Make overlap 3 extra on control-b
 " Yank text to the OS X clipboard
 " Which register to use for yanked text.
 " unnamed - use the operating system clipboard.
-set clipboard=unnamed
-noremap <leader>y "*y
-noremap <leader>yy "*Y
+set clipboard=unnamed,unnamedplus
 
 " Preserve indentation while pasting text from the OS X clipboard
 noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
@@ -261,6 +261,7 @@ noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 nnoremap <silent> <leader>es :Esformatter<CR>
 vnoremap <silent> <leader>es :EsformatterVisual<CR>
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -268,17 +269,7 @@ let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.DS_Store$','\.idea','.pyc$']
 let NERDSpaceDelims=1
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Youcomplete
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:ycm_autoclose_preview_window_after_completion=1
-map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
-let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
-let g:ycm_use_ultisnips_completer = 1 " Default 1, just ensure
-let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
-let g:ycm_complete_in_comments = 1 " Completion in comments
-let g:ycm_complete_in_strings = 1 " Completion in string
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntastic
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -293,8 +284,11 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_enable_eslint_checker = 1
 let g:syntastic_javascript_checkers = ['eslint']
 "let g:syntastic_pug_checkers = ['jade']
+
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Other
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:sneak#streak = 1
 let g:airline_theme='bubblegum'
+

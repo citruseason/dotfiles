@@ -1,44 +1,24 @@
 #!/usr/bin/env bash
 
-source ./utils_sh/echos.sh
-source ./utils_sh/brew_util.sh
+source ./command/echos.sh
+source ./command/installer.sh
 
 print "Dotfiles 설치를 시작합니다."
 
-# Ask for the administrator password upfront
-if sudo grep -q "# %wheel\tALL=(ALL) NOPASSWD: ALL" "/etc/sudoers"; then
-
-  # Ask for the administrator password upfront
-  print "설치를 하기위해서 sudo 비밀번호가 필요합니다.\npassword:"
-  sudo -v
-
-  # Keep-alive: update existing sudo time stamp until the script has finished
-  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-
-  print "제공받은 비밀번호를 어디다 활용하지는지 궁금하시다면 아래 URL를 확인해주세요.\n이것을 보고 활용하고있습니다.\nhttp://wiki.summercode.com/sudo_without_a_password_in_mac_os_x \n"
-
-  read -r -p "앞으로 sudo 비밀번호 입력없이 상위권한에 접근하시길 원하십니까? [y|N] " response
-
-  if [[ $response =~ (yes|y|Y) ]];then
-      sed --version 2>&1 > /dev/null
-      sudo sed -i '' 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
-      if [[ $? == 0 ]];then
-          sudo sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
-      fi
-      sudo dscl . append /Groups/wheel GroupMembership $(whoami)
-  fi
+print "설치를 하기위해서 sudo 비밀번호가 필요합니다.\n"
+if ! sudo grep --silent 'Defaults !tty_tickets' /etc/sudoers; then
+  running "sudo tty_tickets 설정"
+  sudo bash -c 'echo "Defaults !tty_tickets" | (EDITOR="tee -a" visudo)'
+  ok
 fi
 
-bot "Install start"
-running "설치 준비중"
-dotfiles_d=~/.dotfiles
+DOTHOME="${1:-${PWD}}"
 rm -rf ./configs-custom
 cp -r ./configs ./configs-custom
 git submodule update --init --recursive
-ok
 
 while true; do
-  read -r -p "git --global name: " name
+  read -r -p "gitconfig --global name: " name
   if [[ ! $name ]];then
     error "필수로 입력해주세요."
   else
@@ -69,61 +49,54 @@ done
 running "gitconfig"
 ok
 
-#####
-# install homebrew (CLI Packages)
-#####
 
+###############################################################################
+bot "Homebrew (CLI Packages), Caskroom"
+###############################################################################
 brew_bin=$(which brew) 2>&1 > /dev/null
 if [[ $? != 0 ]]; then
-  action "homebrew 설치를 시작합니다."
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    if [[ $? != 0 ]]; then
-      error "unable to install homebrew, script $0 abort!"
-      exit 2
+  running "homebrew 설치"
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  if [[ $? != 0 ]]; then
+    error "unable to install homebrew, script $0 abort!"
+    exit 2
   fi
   ok
 else
-  # Make sure we’re using the latest Homebrew
-  action "homebrew 업데이트"
+  running "homebrew 업데이트"
+  print "\n"
   brew update
   ok
 
-  echo
-  read -r -p "brew 패키지에 대한 업그레이드를 시작할까요? [y|N] " response
-  if [[ $response =~ ^(y|yes|Y) ]];then
-      # Upgrade any already-installed formulae
-      running "brew 패키지들을 업그레이드 하는중"
-      brew upgrade
-      ok
-  fi
+  running "brew 패키지 업그레이드"
+  print "\n"
+  brew upgrade
+  ok
 fi
 
-
-#####
-# install brew cask (UI Packages)
-#####
 output=$(brew tap | grep cask)
 if [[ $? != 0 ]]; then
-  require_brew caskroom/cask/brew-cask
+  ibrew caskroom/cask/brew-cask
 fi
-running "brew cask update"
+running "Caskroom 업데이트"
 brew tap caskroom/versions > /dev/null 2>&1
 ok
 
-require_brew vim --override-system-vi
-require_brew zsh
+
+###############################################################################
+bot "Zsh"
+###############################################################################
+ibrew zsh
 CURRENTSHELL=$(dscl . -read /Users/$USER UserShell | awk '{print $2}')
 if [[ "$CURRENTSHELL" != "/usr/local/bin/zsh" ]]; then
   running "zsh(/usr/local/bin/zsh) setting"
-  # sudo bash -c 'echo "/usr/local/bin/zsh" >> /etc/shells'
-  # chsh -s /usr/local/bin/zsh
   sudo dscl . -change /Users/$USER UserShell $SHELL /usr/local/bin/zsh > /dev/null 2>&1
   ok
 fi
 
 if [[ ! -d "./oh-my-zsh/custom/themes/honukai" ]]; then
   running "oh-my-zsh theme install"
-  cp ~/.dotfiles/themes/pavons.zsh-theme oh-my-zsh/custom/themes
+  cp $DOTHOME/themes/pavons.zsh-theme oh-my-zsh/custom/themes
   ok
 fi
 
@@ -133,105 +106,119 @@ for file in .*; do
   if [[ $file == "." || $file == ".." ]]; then
     continue
   fi
+
   running "Symbolic Link > ~/$file"
   # if the file exists:
   if [[ -e ~/$file ]]; then
     mkdir -p ~/.dotfiles_backup/$now
     mv ~/$file ~/.dotfiles_backup/$now/$file
   fi
+
   # symlink might still exist
   unlink ~/$file > /dev/null 2>&1
+
   # create the link
-  ln -s ~/.dotfiles/configs-custom/$file ~/$file
+  ln -s $DOTHOME/configs-custom/$file ~/$file
   echo -en ' Linked';ok
 done
 popd > /dev/null 2>&1
 
-mkdir -p ~/.vim/backup
-mkdir -p ~/.vim/temp
 
-require_brew git
-require_brew diff-so-fancy
-require_brew ctags
-require_brew cmake
+###############################################################################
+bot "General"
+###############################################################################
+ibrew ctags
+ibrew cmake
 
-running "vim plugin install "
+
+###############################################################################
+bot "Git, Git-plugin"
+###############################################################################
+ibrew git
+ibrew diff-so-fancy
+
+
+###############################################################################
+bot "Vim"
+###############################################################################
+ibrew vim --override-system-vi
+running "vim plugin install"
 vim +PluginInstall +qall > /dev/null 2>&1
 ok
 
-cd ~/.dotfiles && chmod +x ./fonts/install.sh
+
+###############################################################################
+bot "Font"
+###############################################################################
+cd $DOTHOME && chmod +x ./fonts/install.sh
 ./fonts/install.sh
 
-require_cask jandi
-
-require_cask slack
-
-require_cask macdown
-
-require_cask cyberduck
-
-require_cask scroll-reverser
-
-require_cask iterm2
-
-require_cask visual-studio-code
-
-require_cask google-chrome
-
-require_cask firefoxdeveloperedition
-
-require_cask appcleaner
+###############################################################################
+bot "Desktop APP"
+###############################################################################
+icask jandi
+icask slack
+icask macdown
+icask cyberduck
+icask scroll-reverser
+icask iterm2
+icask google-chrome
+icask appcleaner
 
 
-################################
-bot "Database Development Environment setting"
-################################
-require_cask valentina-studio
+###############################################################################
+bot "Development Environment setting"
+###############################################################################
+icask visual-studio-code
+icask valentina-studio
 
-################################
+
+###############################################################################
 bot "Docker Development Environment setting"
-################################
-require_cask docker
-require_brew docker-machine-driver-xhyve
+###############################################################################
+icask docker
+ibrew docker-machine-driver-xhyve
 sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
 sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
 docker-machine create --driver xhyve default
 
-################################
+
+###############################################################################
 bot "Python Development Environment setting"
-################################
+###############################################################################
 echo 'export PYENV_VIRTUALENV_DISABLE_PROMPT=1' >> ~/.zshrc
-require_brew pyenv
+ibrew pyenv
 echo 'eval "$(pyenv init -)"' >> ~/.zshrc
-
-require_brew pyenv-virtualenv
+ibrew pyenv-virtualenv
 echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
-
-require_brew autoenv
+ibrew autoenv
 echo 'source /usr/local/opt/autoenv/activate.sh' >> ~/.zshrc
-
 git clone https://github.com/momo-lab/pyenv-install-latest.git "$(pyenv root)"/plugins/pyenv-install-latest
-
 pyenv install 3.5.3
-
 pyenv global 3.5.3
-
-require_brew gettext
+ibrew gettext
 brew link gettext --force
 
-################################
-bot "Angular Development Environment setting"
-################################
-require_brew node
-node -v
-npm -v
-npm install -g yarn
-npm install -g @angular/cli
-ng set -g packageManager=yarn
 
-################################
+###############################################################################
+bot "Angular Development Environment setting"
+###############################################################################
+ibrew node
+
+running "Angular install"
+npm install -g @angular/cli
+ok
+
+running "Set yarn default package manager"
+npm install -g yarn
+ng set -g packageManager=yarn
+ok
+
+
+cd $DOTHOME
+###############################################################################
 bot "Scroll-Reverser settings"
-################################
+###############################################################################
 running "Settings Import"
 defaults write com.pilotmoon.scroll-reverser HasRunBefore -bool YES
 defaults write com.pilotmoon.scroll-reverser ReverseTablet -bool NO
@@ -239,19 +226,18 @@ defaults write com.pilotmoon.scroll-reverser ReverseTrackpad -bool NO
 defaults write com.pilotmoon.scroll-reverser SUEnableAutomaticChecks -bool YES
 ok
 
-########################
+###############################################################################
 bot "iTerm2 settings"
-########################
-running "iTerm Settings Import"
-cd ~/.dotfiles
+###############################################################################
+running "Settings Import"
 defaults delete com.googlecode.iterm2.plist
 cp ./plist/com.googlecode.iterm2.plist ~/Library/Preferences
 defaults read -app iTerm > /dev/null 2>&1;
 ok
 
-########################
+###############################################################################
 bot "Apple Terminal settings"
-########################
+###############################################################################
 running "Terminal.app settings Import"
 defaults delete com.apple.Terminal.plist
 cp ./plist/com.apple.Terminal.plist ~/Library/Preferences
