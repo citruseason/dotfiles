@@ -599,6 +599,14 @@ running "Select the next source in the Input Menu => Command, Option, Space"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{ enabled = 1; value = { parameters = ( 32, 49, 1572864 ); type = standard; }; }"
 ok
 
+
+###############################################################################
+bot "Security setting"
+###############################################################################
+running "Downloaded application install allow - Everywhere"
+sudo spctl --master-disable
+ok
+
 ###############################################################################
 # Kill affected applications                                                  #
 ###############################################################################
