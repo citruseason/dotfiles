@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+BIN_NAME=$(basename "$0")
+COMMAND_NAME=$1
+
+ARROW="￫"
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+# Get dotfiles dir (so run this script from anywhere)
+export DOTHOME EXTRA_DIR
+DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+
+cmd_help () {
+    echo -e "$ARROW Usage: ${YELLOW}$BIN_NAME <command>${NC}"
+    echo
+    echo "Commands:"
+    echo "   help             This help message"
+    echo "   update           Update packages and pkg managers (OS, brew, mas)"
+    echo "   clean            Clean up caches (brew)"
+    echo "   brew             Run brew script"
+    echo "   zsh              Run zsh script"
+    echo "   macos            Run macOS defaults script"
+    echo "   dock             Run macOS dock script"
+}
+
+cmd_update () {
+    sudo softwareupdate -i -a
+    brew update
+    brew upgrade
+    mas upgrade
+    echo -e "${GREEN}$ARROW Success! Update command finished.${NC}"
+}
+
+cmd_clean () {
+    brew cleanup
+    brew cask cleanup
+    echo -e "${GREEN}$ARROW Success! Clean command finished.${NC}"
+}
+
+cmd_brew () {
+    . "$DOTHOME/packages/homebrew/install.sh"
+    echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
+}
+
+cmd_zsh () {
+    . "$DOTHOME/packages/zsh/install.sh"
+    . "$DOTHOME/settings/zsh/apply.sh"
+    echo -e "${GREEN}$ARROW Success! Zsh command finished.${NC}"
+}
+
+cmd_macos () {
+    . "$DOTHOME/settings/macos/apply.sh"
+    echo -e "${GREEN}$ARROW Success! macOS defaults and dock command finished.${NC}"
+}
+
+case $COMMAND_NAME in
+    "" | "-h" | "--help")
+        cmd_help
+        ;;
+    *)
+        shift
+        cmd_${COMMAND_NAME} $@
+        if [ $? = 127 ]; then
+            echo -e "${RED}$ARROW Error: '$COMMAND_NAME' is not a known command or has errors.${NC}" >&2
+            cmd_help
+            exit 1
+        fi
+        ;;
+esac
