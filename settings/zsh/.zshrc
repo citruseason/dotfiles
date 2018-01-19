@@ -1,3 +1,5 @@
+CUR_PATH=$(pwd)
+
 source $(brew --prefix)/share/antigen/antigen.zsh
 
 # Load the oh-my-zsh's library.
@@ -18,4 +20,5 @@ antigen bundle sindresorhus/pure
 # Tell Antigen that you're done.
 antigen apply
 
-source .aliases
+source $CUR_PATH/.aliases
+source $CUR_PATH/.ufunctions
