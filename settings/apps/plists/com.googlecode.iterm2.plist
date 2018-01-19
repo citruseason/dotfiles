@@ -707,11 +707,11 @@
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>329 170 606 469 0 0 1920 1178 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>2256 404 796 473 1920 -42 1680 1028 </string>
+	<string>427 561 796 473 0 0 1920 1058 </string>
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>155 594 592 584 0 0 1920 1178 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>2150 127 1062 588 1920 -42 1680 1028 </string>
+	<string>2150 127 1061 588 1920 -42 1680 1028 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>962 9 955 1049 0 0 1920 1058 </string>
 	<key>NeverWarnAboutShortLivedSessions_3A7D73E9-738C-458C-BE42-53C180C5DC9D</key>
@@ -905,16 +905,14 @@
 			<true/>
 			<key>Background Color</key>
 			<dict>
-				<key>Alpha Component</key>
-				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.10000000000000001</real>
+				<real>0.20392156862745098</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.10000000000000001</real>
+				<real>0.17254901960784313</real>
 				<key>Red Component</key>
-				<real>0.10000000000000001</real>
+				<real>0.15686274509803921</real>
 			</dict>
 			<key>Background Image Location</key>
 			<string></string>
@@ -1359,29 +1357,25 @@
 			<true/>
 			<key>Selected Text Color</key>
 			<dict>
-				<key>Alpha Component</key>
-				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.69999999999999996</real>
+				<real>0.20392156862745098</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.69999999999999996</real>
+				<real>0.17254901960784313</real>
 				<key>Red Component</key>
-				<real>0.69999999999999996</real>
+				<real>0.15686274509803921</real>
 			</dict>
 			<key>Selection Color</key>
 			<dict>
-				<key>Alpha Component</key>
-				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.29999999999999999</real>
+				<real>0.74901960784313726</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.29999999999999999</real>
+				<real>0.69803921568627447</real>
 				<key>Red Component</key>
-				<real>0.29999999999999999</real>
+				<real>0.6705882352941176</real>
 			</dict>
 			<key>Send Code When Idle</key>
 			<false/>
@@ -1570,7 +1564,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2018-01-17T21:10:37Z</date>
+	<date>2018-01-18T22:18:55Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>ShowBookmarkName</key>
