@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Vim setting
+alias vim="nvim"
+alias vi="vim"
+
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
 alias ...="cd ../.."
