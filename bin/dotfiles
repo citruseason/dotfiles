@@ -10,20 +10,31 @@ YELLOW='\033[0;33m'
 NC='\033[0m'
 
 # Get dotfiles dir (so run this script from anywhere)
-export DOTHOME EXTRA_DIR
-DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+DOTHOME=$DOTHOME # "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 cmd_help () {
     echo -e "$ARROW Usage: ${YELLOW}$BIN_NAME <command>${NC}"
     echo
     echo "Commands:"
     echo "   help             This help message"
+    echo "   install          Install this dotfiles"
+    echo "   remove           Remove this dotfiles (Not yet...)"
     echo "   update           Update packages and pkg managers (OS, brew, mas)"
     echo "   clean            Clean up caches (brew)"
     echo "   brew             Run brew script"
+    echo "   vim              Run vim script"
     echo "   zsh              Run zsh script"
+    echo "   git              Run git script"
     echo "   macos            Run macOS defaults script"
     echo "   dock             Run macOS dock script"
+}
+
+cmd_install () {
+    echo -e "${RED}Command is 'cd DOTHOME && ./install.sh'${NC}"
+}
+
+cmd_remove () {
+    echo -e "${RED}Not yet supported. ${NC}"
 }
 
 cmd_update () {
@@ -45,15 +56,31 @@ cmd_brew () {
     echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
 }
 
+cmd_vim () {
+    . "$DOTHOME/packages/vim/install.sh"
+    . "$DOTHOME/settings/vim/apply.sh"
+    echo -e "${GREEN}$ARROW Success! Vim command finished.${NC}"
+}
+
 cmd_zsh () {
     . "$DOTHOME/packages/zsh/install.sh"
     . "$DOTHOME/settings/zsh/apply.sh"
     echo -e "${GREEN}$ARROW Success! Zsh command finished.${NC}"
 }
 
+cmd_git () {
+    . "$DOTHOME/settings/git/apply.sh"
+    echo -e "${GREEN}$ARROW Success! Git command finished.${NC}"
+}
+
 cmd_macos () {
-    . "$DOTHOME/settings/macos/apply.sh"
-    echo -e "${GREEN}$ARROW Success! macOS defaults and dock command finished.${NC}"
+    . "$DOTHOME/settings/system/_macos.sh"
+    echo -e "${GREEN}$ARROW Success! macOS defaults finished.${NC}"
+}
+
+cmd_dock () {
+    . "$DOTHOME/settings/system/_dock.sh"
+    echo -e "${GREEN}$ARROW Success! Dock command finished.${NC}"
 }
 
 case $COMMAND_NAME in

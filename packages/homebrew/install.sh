@@ -26,3 +26,5 @@ brew update
 
 # Install Brewfile
 brew bundle --file=$DOTHOME/packages/homebrew/Brewfile
+
+echo "Done! Homebrew is installed."

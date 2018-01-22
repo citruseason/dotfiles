@@ -2,8 +2,7 @@
 
 export DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# permission
-chmod -R +wx ./bin
+
 
 # Install brew with packages & casks
 . "$DOTHOME/packages/homebrew/install.sh"
@@ -31,3 +30,14 @@ chmod -R +wx ./bin
 
 # Clear cache
 . "$DOTHOME/bin/dotfiles" clean
+
+
+# Install command
+chmod -R +wx ./bin
+sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" > /dev/null
+sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" > /dev/null
+unlink /usr/local/bin/dotfiles
+ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+
+echo "Done! Dotfiles is installed."
+echo "Please 'Reboot' your mac !!"

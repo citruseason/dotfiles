@@ -12,3 +12,6 @@ defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
 echo -e "\033]6;1;bg;red;brightness;26\a"
 echo -e "\033]6;1;bg;green;brightness;26\a"
 echo -e "\033]6;1;bg;blue;brightness;26\a"
+
+
+echo "Success! iTerm2 is set."

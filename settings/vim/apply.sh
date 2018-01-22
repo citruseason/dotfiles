@@ -12,3 +12,5 @@ if [[ -f ~/.SpaceVim.d/init.vim ]]; then
   sudo rm ~/.SpaceVim.d/init.vim
 fi
 sudo ln -s $DOTHOME/settings/vim/init.vim ~/.SpaceVim.d/init.vim
+
+echo "Done! Vim is set."

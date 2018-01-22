@@ -15,6 +15,7 @@ brew "diff-so-fancy" # lib git
 brew "mas"           # appstore app installer
 brew "wget"
 brew "tree"
+brew "dockutil"
 
 
 ######################################
@@ -58,7 +59,8 @@ cask "iterm2"
 # DevTools
 cask "visual-studio-code"  # Code editor
 cask "cyberduck"           # SFTP Client
-cask "valentina-studio"    # DB tool
+cask "tableplus"           # DB tool
+cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
 
 # Browser

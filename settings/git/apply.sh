@@ -2,7 +2,6 @@
 
 export DIR_SETTINGS_GIT=$DOTHOME/settings/git
 
-echo "Installing settings git"
 pushd $DIR_SETTINGS_GIT > /dev/null 2>&1
 for file in .*; do
   if [[ $file = "." || $file = ".." || $file = "" ]]; then
@@ -13,3 +12,5 @@ for file in .*; do
   ln -s "$DIR_SETTINGS_GIT/$file" ~
 done
 popd > /dev/null 2>&1
+
+echo "Done! Git is set."

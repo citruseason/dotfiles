@@ -361,3 +361,5 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{ en
 ###############################################################################
 # "Downloaded application install allow - Everywhere"
 sudo spctl --master-disable
+
+echo "Success! macOS is set."
