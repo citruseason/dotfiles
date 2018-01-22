@@ -4,7 +4,7 @@
 # "iTerm2 settings"
 ###############################################################################
 # Specify the preferences directory
-defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$DOTHOME/settings/apps/plists"
+defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$DIR_SETTINGS_APPS/plists"
 # Tell iTerm2 to use the custom preferences in the directory
 defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
 

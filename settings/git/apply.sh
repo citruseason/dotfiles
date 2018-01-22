@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
-pushd . > /dev/null 2>&1
+export DIR_SETTINGS_GIT=$DOTHOME/settings/git
+
+echo "Installing settings git"
+pushd $DIR_SETTINGS_GIT > /dev/null 2>&1
 for file in .*; do
+  if [[ $file = "." || $file = ".." || $file = "" ]]; then
+    continue
+  fi
+
   unlink ~/$file > /dev/null 2>&1
-  ls -s "$DOTHOME/settings/git/$file" ~
+  ln -s "$DIR_SETTINGS_GIT/$file" ~
 done
 popd > /dev/null 2>&1

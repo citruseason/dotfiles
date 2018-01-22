@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-export DOTHOME EXTRA_DIR
-DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # permission
 chmod -R +wx ./bin
@@ -9,9 +8,11 @@ chmod -R +wx ./bin
 # Install brew with packages & casks
 . "$DOTHOME/packages/homebrew/install.sh"
 
+# Install fonts
+. "$DOTHOME/fonts/install.sh"
+
 # Install SpaceVim
 . "$DOTHOME/packages/vim/install.sh"
-
 
 # Setup macos defaults and add apps to dock
 . "$DOTHOME/settings/macos/apply.sh"
@@ -24,6 +25,9 @@ chmod -R +wx ./bin
 
 # Setup zsh settings
 . "$DOTHOME/settings/zsh/apply.sh"
+
+# Setup apps settings
+. "$DOTHOME/settings/apps/apply.sh"
 
 # Clear cache
 . "$DOTHOME/bin/dotfiles" clean

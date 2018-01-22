@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 
-pushd . > /dev/null 2>&1
+export DIR_SETTINGS_ZSH=$DOTHOME/settings/zsh
+
+echo "Installing settings zsh"
+pushd $DIR_SETTINGS_ZSH > /dev/null 2>&1
 for file in .*; do
+  if [[ $file = "." || $file = ".." || $file = "" ]]; then
+    continue
+  fi
+
   unlink ~/$file > /dev/null 2>&1
-  ls -s "$DOTHOME/settings/zsh/$file" ~
+  ln -s "$DIR_SETTINGS_ZSH/$file" ~
 done
 popd > /dev/null 2>&1
 
 # set default
-sudo chsh -s $(which zsh)
+sudo sh -c "echo $(which zsh) >> /etc/shells" > /dev/null
+chsh -s $(which zsh)

@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-pushd . > /dev/null 2>&1
-for file in _*.sh; do
-  . "$DOTHOME/settings/apps/$file"
+export DIR_SETTINGS_APPS=$DOTHOME/settings/apps
+
+echo "Installing settings apps"
+for file in $(ls $DIR_SETTINGS_APPS/_*.sh); do
+  if [[ $file = "." || $file = ".." || $file = "" || $file = " " ]]; then
+    continue
+  fi
+  . $file
 done
-popd > /dev/null 2>&1

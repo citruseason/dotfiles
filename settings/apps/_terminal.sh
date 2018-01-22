@@ -5,4 +5,5 @@
 ###############################################################################
 # "Terminal.app settings Import"
 defaults delete com.apple.Terminal.plist
-cp $DOTHOME/settings/apps/plists/com.apple.Terminal.plist ~/Library/Preferences/
+rm -rf ~/Library/Preferences/com.apple.Terminal.plist
+ln -sfv $DIR_SETTINGS_APPS/plists/com.apple.Terminal.plist ~/Library/Preferences/
