@@ -26,10 +26,17 @@ $ git config --global user.name "{{ Your name }}"
 $ git config --global user.email {{ Your email }}
 ```
 
+
 ## Todos
+
+- [ ] Uninstall script
+- [ ] Old Config backup script
 - [ ] Quick install with one line of code
+- [ ] Git-config input automation
 - [ ] Fix a issue that can not apply `AppleSymbolicHotKeys`
 - [ ] Document keymaps
+- [ ] Split personal installation files
+- [ ] Very Very Hard Study English  !!!!!!!!!!!
 
 
 [@pavons]: https://github.com/pavons
