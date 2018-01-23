@@ -16,6 +16,9 @@ dockutil --no-restart --add "/Applications/KakaoTalk.app"
 dockutil --no-restart --add "/Applications/Slack.app"
 dockutil --no-restart --add "/Applications/JANDI.app"
 
+# Mail Client
+dockutil --no-restart --add "/Applications/Mailspring.app"
+
 # Browser
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
