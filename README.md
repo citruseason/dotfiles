@@ -18,13 +18,17 @@ Install this dotfiles:
 $ ./install.sh
 ```
 
-### Git
-
 First-Time git setup:
 ``` sh
 $ git config --global user.name "{{ Your name }}"
 $ git config --global user.email {{ Your email }}
 ```
+
+First-Time vim setup:
+``` sh
+$ vim
+```
+Auto install. Please wait a few minute.
 
 
 ## Todos
