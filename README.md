@@ -15,7 +15,7 @@ $ git clone https://github.com/pavons/dotfiles.git ~/dotfiles
 
 Install this dotfiles:
 ``` sh
-$ ./install.sh
+$ cd ~/dotfiles && ./install.sh
 ```
 
 First-Time git setup:
