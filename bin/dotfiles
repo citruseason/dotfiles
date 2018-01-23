@@ -17,7 +17,6 @@ cmd_help () {
     echo
     echo "Commands:"
     echo "   help             This help message"
-    echo "   install          Install this dotfiles"
     echo "   remove           Remove this dotfiles (Not yet...)"
     echo "   update           Update packages and pkg managers (OS, brew, mas)"
     echo "   clean            Clean up caches (brew)"
@@ -27,10 +26,6 @@ cmd_help () {
     echo "   git              Run git script"
     echo "   macos            Run macOS defaults script"
     echo "   dock             Run macOS dock script"
-}
-
-cmd_install () {
-    echo -e "${RED}Command is 'cd DOTHOME && ./install.sh'${NC}"
 }
 
 cmd_remove () {
