@@ -132,11 +132,11 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # "Dock & Dashboard"
 ###############################################################################
 
-# "Auto hide dock"
-defaults write com.apple.Dock autohide -int 1
+# "Automatically hide and show the Dock"
+defaults write com.apple.dock autohide -bool true;
 
 # "Move dock orientation left"
-defaults write com.apple.Dock orientation left
+defaults write com.apple.dock orientation bottom
 
 # "Enable highlight hover effect for the grid view of a stack (Dock)"
 defaults write com.apple.dock mouse-over-hilite-stack -bool true;
@@ -180,9 +180,6 @@ defaults write com.apple.dock autohide-delay -float 0;
 
 # "Remove the animation when hiding/showing the Dock"
 defaults write com.apple.dock autohide-time-modifier -float 0;
-
-# "Automatically hide and show the Dock"
-defaults write com.apple.dock autohide -bool true;
 
 # "Make Dock icons of hidden applications translucent"
 defaults write com.apple.dock showhidden -bool true;
