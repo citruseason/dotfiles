@@ -34,3 +34,6 @@ let g:spacevim_terminal_cursor_shape = 1
 let g:spacevim_guifont = 'D2Coding'
 let g:spacevim_colorscheme = 'onedark'
 let g:spacevim_colorscheme_bg = 'dark'
+
+" Copy & Paste
+set clipboard=unnamedplus
