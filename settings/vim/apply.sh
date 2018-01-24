@@ -2,15 +2,15 @@
 
 echo "Installing settings vim"
 
-# SpaceVim.d 폴더가 없으면 생성
-if [[ ! -d ~/.SpaceVim.d ]]; then
-  mkdir ~/.SpaceVim.d
-fi
+mkdir -p $DOTCDIR/.SpaceVim.d && cp -r $DOTHOME/settings/vim/init.vim $DOTCDIR/.SpaceVim.d
 
-# init.vim이 있으면 삭제 후 링크
-if [[ -f ~/.SpaceVim.d/init.vim ]]; then
-  sudo rm ~/.SpaceVim.d/init.vim
-fi
-sudo ln -s $DOTHOME/settings/vim/init.vim ~/.SpaceVim.d/init.vim
+# if [[ ! -d $HOME/.SpaceVim.d ]]; then
+#   mkdir $HOME/.SpaceVim.d
+# fi
+
+# if [[ -f $HOME/.SpaceVim.d/init.vim ]]; then
+#   sudo rm $HOME/.SpaceVim.d/init.vim
+# fi
+# sudo ln -s $DOTHOME/settings/vim/init.vim $HOME/.SpaceVim.d/init.vim
 
 echo "Done! Vim is set."

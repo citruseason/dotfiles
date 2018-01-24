@@ -30,7 +30,7 @@ dockutil --no-restart --add "/Applications/Postman.app"
 
 # General
 dockutil --no-restart --add "/Applications" --display stack --sort name --before Trash
-dockutil --no-restart --add "~/Downloads" --display stack --sort dateadded --before Trash
+dockutil --no-restart --add "$HOME/Downloads" --display stack --sort dateadded --before Trash
 
 killall Dock
 

@@ -8,8 +8,10 @@ for file in .*; do
     continue
   fi
 
-  unlink ~/$file > /dev/null 2>&1
-  ln -s "$DIR_SETTINGS_GIT/$file" ~
+  # unlink $HOME/$file > /dev/null 2>&1
+  # ln -s "$DIR_SETTINGS_GIT/$file" $HOME
+
+  cp $DIR_SETTINGS_GIT/$file $DOTCDIR
 done
 popd > /dev/null 2>&1
 

@@ -9,8 +9,10 @@ for file in .*; do
     continue
   fi
 
-  unlink ~/$file > /dev/null 2>&1
-  ln -s "$DIR_SETTINGS_ZSH/$file" ~
+  # unlink $HOME/$file > /dev/null 2>&1
+  # ln -s "$DIR_SETTINGS_ZSH/$file" $HOME
+
+  cp $DIR_SETTINGS_ZSH/$file $DOTCDIR
 done
 popd > /dev/null 2>&1
 
