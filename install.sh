@@ -5,6 +5,14 @@ export DOTCDIR="$HOME/.dotfiles.d"
 export DOTCBAK="$HOME/.dotfiles.d.bak"
 
 
+echo "Hello, Welcome Dotfiles."
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `install.sh` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
 
 #############################################
 # Install packages
@@ -32,7 +40,7 @@ fi
 mkdir $DOTCDIR
 
 # Setup macos defaults and add apps to dock
-. "$DOTHOME/settings/macos/apply.sh"
+. "$DOTHOME/settings/system/apply.sh"
 
 # Setup git settings
 . "$DOTHOME/settings/git/apply.sh"
@@ -55,7 +63,7 @@ mkdir $DOTCDIR
 #############################################
 
 pushd $DOTCDIR > /dev/null 2>&1
-for name in *; do
+for name in .*; do
   if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" ]]; then
     continue
   fi
@@ -75,13 +83,13 @@ chmod -R +wx ./bin
 
 # Bash
 sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTHOME='$DOTCDIR' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTHOME='$DOTCBAK' >> /etc/profile" > /dev/null
+sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" > /dev/null
+sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" > /dev/null
 
 # Zsh
 sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTHOME='$DOTCDIR' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTHOME='$DOTCBAK' >> /etc/zprofile" > /dev/null
+sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" > /dev/null
+sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
 
 # Apply
 unlink /usr/local/bin/dotfiles
