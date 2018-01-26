@@ -59,6 +59,7 @@ cask "font-hack-nerd-font"
 cask "iterm2"
 
 # DevTools
+cask "plistedit-pro"
 cask "visual-studio-code"  # Code editor
 cask "cyberduck"           # SFTP Client
 cask "tableplus"           # DB tool
