@@ -2,7 +2,11 @@
 
 dockutil --no-restart --remove all
 
-dockutil --no-restart --add "/Applications/Utilities/Activity Monitor.app"
+# Browser
+dockutil --no-restart --add "/Applications/Google Chrome.app"
+
+# Mail Client
+dockutil --no-restart --add "/Applications/Mailspring.app"
 
 # Life Management
 dockutil --no-restart --add "/Applications/Calendar.app"
@@ -16,21 +20,19 @@ dockutil --no-restart --add "/Applications/KakaoTalk.app"
 dockutil --no-restart --add "/Applications/Slack.app"
 dockutil --no-restart --add "/Applications/JANDI.app"
 
-# Mail Client
-dockutil --no-restart --add "/Applications/Mailspring.app"
+# Collaboratively Tool
+dockutil --no-restart --add "/Applications/Trello.app"
 
-# Browser
-dockutil --no-restart --add "/Applications/Google Chrome.app"
-
-# Development
+# Development Environment
 dockutil --no-restart --add "/Applications/iTerm.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/TablePlus.app"
 dockutil --no-restart --add "/Applications/Postman.app"
 
-# General
+# Folders
 dockutil --no-restart --add "/Applications" --display stack --sort name --before Trash
 dockutil --no-restart --add "$HOME/Downloads" --display stack --sort dateadded --before Trash
+dockutil --no-restart --add "$HOME/Documents" --display stack --sort name --before Trash
 
 killall Dock
 
