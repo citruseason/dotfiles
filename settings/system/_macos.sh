@@ -656,19 +656,84 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 ###############################################################################
 
 # "Mission control => Spaces Left - Control, Left"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{ enabled = 1; value = { parameters = ( 65535, 123, 262144 ); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 " 
+  <dict>
+    <key>enabled</key><true/>
+    <key>value</key><dict>
+      <key>type</key><string>standard</string>
+      <key>parameters</key>
+      <array>
+        <integer>65535</integer>
+        <integer>123</integer>
+        <integer>262144</integer>
+      </array>
+    </dict>
+  </dict>
+"
 
 # "Mission control => Spaces Right - Control, Right"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{ enabled = 1; value = { parameters = ( 65535, 124, 262144 ); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "
+  <dict>
+    <key>enabled</key><true/>
+    <key>value</key><dict>
+      <key>type</key><string>standard</string>
+      <key>parameters</key>
+      <array>
+        <integer>65535</integer>
+        <integer>124</integer>
+        <integer>262144</integer>
+      </array>
+    </dict>
+  </dict>
+"
 
 # "Spotlight => Show search field - Command, Shift, Space"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "{ enabled = 1; value = { parameters = ( 65535, 49, 1179648 ); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "
+  <dict>
+    <key>enabled</key><true/>
+    <key>value</key><dict>
+      <key>type</key><string>standard</string>
+      <key>parameters</key>
+      <array>
+        <integer>65535</integer>
+        <integer>49</integer>
+        <integer>1179648</integer>
+      </array>
+    </dict>
+  </dict>
+"
 
 # "Select the previous input source => Command, Space"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "{ enabled = 1; value = { parameters = ( 32, 49, 1048576 ); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "
+  <dict>
+    <key>enabled</key><true/>
+    <key>value</key><dict>
+      <key>type</key><string>standard</string>
+      <key>parameters</key>
+      <array>
+        <integer>32</integer>
+        <integer>49</integer>
+        <integer>1048576</integer>
+      </array>
+    </dict>
+  </dict>
+"
 
 # "Select the next source in the Input Menu => Command, Option, Space"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{ enabled = 1; value = { parameters = ( 32, 49, 1572864 ); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "
+  <dict>
+    <key>enabled</key><true/>
+    <key>value</key><dict>
+      <key>type</key><string>standard</string>
+      <key>parameters</key>
+      <array>
+        <integer>32</integer>
+        <integer>49</integer>
+        <integer>1572864</integer>
+      </array>
+    </dict>
+  </dict>
+"
 
 
 ###############################################################################
