@@ -31,35 +31,16 @@
   editor = vim
 
 [alias]
-  # most commonly used
-  co = checkout
-  d = diff --color-words
-  cam = commit -a -m
-  upm = !git fetch upstream && git merge upstream/master
-
-  # least used
-  cl = log --stat -C -2
   c = commit
+  s = status
+  d = diff --color-words
+  co = checkout
+  upm = !git fetch upstream && git merge upstream/master
+  sync = !git pull && git push
   dh = diff HEAD
   dc = diff --staged
-  lp = log -p
-  lod = log --oneline --decorate
-  lg = log --graph
-  lf = log --pretty=fuller
-  lpo = log --pretty=oneline --abbrev-commit --graph --decorate --all
   l1 = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
   l2 = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  sync = !git pull && git push
-  es = !git pull --rebase && git push
-  rv = remote -v
-  pur = pull --rebase
-  whatis = show -s --pretty='tformat:%h (%s, %ad)' --date=short
-  orphank = !gitk --all `git reflog | cut -c1-7`&
-  orphanl = !git log --pretty=oneline --abbrev-commit --graph --decorate `git reflog | cut -c1-7`
-  st = status
-  cob = checkout -b
-  sno = show --name-only
-  logsimple = log --graph --abbrev-commit --pretty=oneline --all --decorate
 
 [apply]
   whitespace = nowarn
@@ -75,9 +56,6 @@
   tool = vimdiff
   compactionHeuristic = true
 
-[init]
-  templatedir = ~/.dotfiles/.git_template
-
 [mergetool]
   prompt = false
   keepBackup = false
@@ -89,7 +67,6 @@
   conflictstyle = diff3
 
 [credential]
-    # cache creds (git help credential-cache)
   helper = cache
 
 [filter "tabspace"]
