@@ -40,8 +40,7 @@ brew "neovim"
 ######################################
 # Install VM
 ######################################
-brew "docker"
-brew "docker-compose"
+cask "docker"
 cask "virtualbox"
 cask "vagrant"
 
@@ -79,11 +78,12 @@ mas "Trello", id: 1278508951
 # Utils
 cask "scroll-reverser" # Mouse scroll reverser
 cask "appcleaner"      # Mac apps uninstaller
-cask "betterzip"       # Unarchive
+mas "Bandizip", id: 1265704574
 
 ######################################
 # Install Private apps
 ######################################
+cask "google-backup-and-sync"
 cask "microsoft-office"
 cask "jandi"
 cask "iina"
