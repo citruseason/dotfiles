@@ -5,6 +5,9 @@ dockutil --no-restart --remove all
 # Browser
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
+# Mail Client
+dockutil --no-restart --add "/Applications/Spark.app"
+
 # Life Management
 dockutil --no-restart --add "/Applications/Calendar.app"
 dockutil --no-restart --add "/Applications/Notes.app"
@@ -21,6 +24,7 @@ dockutil --no-restart --add "/Applications/Trello.app"
 
 # Development Environment
 dockutil --no-restart --add "/Applications/iTerm.app"
+dockutil --no-restart --add "/Applications/Xcode.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/TablePlus.app"
 dockutil --no-restart --add "/Applications/Postman.app"

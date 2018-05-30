@@ -66,6 +66,12 @@ brew "gettext", link: true # Translation file
 # Browser
 cask "google-chrome"
 
+# Mail Client
+mas "Spark" 1176895641
+
+# Development Environment
+mas "Xcode" 497799835
+
 # DevOps
 cask "slack"
 mas "Trello", id: 1278508951
