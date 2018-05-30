@@ -5,9 +5,6 @@ dockutil --no-restart --remove all
 # Browser
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
-# Mail Client
-dockutil --no-restart --add "/Applications/Mailspring.app"
-
 # Life Management
 dockutil --no-restart --add "/Applications/Calendar.app"
 dockutil --no-restart --add "/Applications/Notes.app"
@@ -18,7 +15,6 @@ dockutil --no-restart --add "/Applications/KakaoTalk.app"
 
 # Team Messanger
 dockutil --no-restart --add "/Applications/Slack.app"
-dockutil --no-restart --add "/Applications/JANDI.app"
 
 # Collaboratively Tool
 dockutil --no-restart --add "/Applications/Trello.app"
