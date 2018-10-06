@@ -40,7 +40,7 @@ cmd_update () {
 
 cmd_clean () {
     brew cleanup
-    brew cask cleanup
+    # brew cask cleanup
     echo -e "${GREEN}$ARROW Success! Clean command finished.${NC}"
 }
 
