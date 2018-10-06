@@ -98,3 +98,5 @@ ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 
 echo "Done! Dotfiles is installed."
 echo "Please 'Reboot' your mac !!"
+
+echo "앱스토어에서 Spark, Xcode, Trello, 반디집, Memory Clean, Magnet, 카톡을 설치해주세요."
