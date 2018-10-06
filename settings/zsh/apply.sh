@@ -18,6 +18,6 @@ popd > /dev/null 2>&1
 
 # set default
 sudo sh -c "echo $(which zsh) >> /etc/shells" > /dev/null
-sudo chsh -s $(which zsh)
+chsh -s $(which zsh)
 
 echo "Done! Zsh is set."
