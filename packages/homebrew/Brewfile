@@ -67,21 +67,21 @@ brew "gettext", link: true # Translation file
 cask "google-chrome"
 
 # Mail Client
-mas "Spark" 1176895641
+# mas "Spark", id: 1176895641
 
 # Development Environment
-mas "Xcode" 497799835
+# mas "Xcode", id: 497799835
 
 # DevOps
 cask "slack"
-mas "Trello", id: 1278508951
+# mas "Trello", id: 1278508951
 
 # Utils
 cask "scroll-reverser"              # Mouse scroll reverser
 cask "appcleaner"                   # macOS apps uninstaller
-mas "Bandizip", id: 1265704574      # macOS unzip app
-mas "Memory Clean", id: 451444120   # macOS system memory cleaner
-mas "Magnet", id: 441258766         # macOS window spliter
+# mas "Bandizip", id: 1265704574      # macOS unzip app
+# mas "Memory Clean", id: 451444120   # macOS system memory cleaner
+# mas "Magnet", id: 441258766         # macOS window spliter
 
 ######################################
 # Install Private apps
@@ -89,5 +89,4 @@ mas "Magnet", id: 441258766         # macOS window spliter
 cask "microsoft-office"
 cask "iina" # Media player
 
-mas "KakaoTalk", id: 869223134
-mas "Melon", id: 1236050766
+# mas "KakaoTalk", id: 869223134
