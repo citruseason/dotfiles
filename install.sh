@@ -8,7 +8,7 @@ export DOTCBAK="$HOME/.dotfiles.d.bak"
 set -e
 
 # Include Adam Eivy's library helpers.
-source $DOTHOME/lib/print.sh
+source $DOTHOME/libs/print.sh
 
 #############################################
 # Introduction
