@@ -4,6 +4,7 @@ export DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export DOTCDIR="$HOME/.dotfiles.d"
 export DOTCBAK="$HOME/.dotfiles.d.bak"
 
+set -e
 
 echo "Hello, Welcome Dotfiles."
 
@@ -23,9 +24,6 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 # Install fonts
 . "$DOTHOME/fonts/install.sh"
-
-# Install SpaceVim
-. "$DOTHOME/packages/vim/install.sh"
 
 
 #############################################
@@ -95,8 +93,5 @@ sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
 unlink /usr/local/bin/dotfiles
 ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 
-
 echo "Done! Dotfiles is installed."
 echo "Please 'Reboot' your mac !!"
-
-echo "앱스토어에서 Spark, Xcode, Trello, 반디집, Memory Clean, Magnet, 카톡을 설치해주세요."

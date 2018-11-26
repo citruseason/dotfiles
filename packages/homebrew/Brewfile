@@ -11,9 +11,10 @@ tap "caskroom/fonts"
 # Install Binaries
 ######################################
 brew "git"
+brew "git-lfs"
 brew "diff-so-fancy" # lib git
 brew "mas"           # appstore app installer
-brew "wget"
+brew "wget", args: ["with-iri"]
 brew "tree"
 brew "dockutil"
 
@@ -34,7 +35,7 @@ brew "antigen"
 ######################################
 # Install Neovim
 ######################################
-brew "neovim"
+brew "neovim", args: ["with-override-system-vi"]
 
 
 ######################################
@@ -50,6 +51,42 @@ cask "font-hack-nerd-font"
 
 
 ######################################
+# Install server tools
+######################################
+brew "ssh-copy-id"
+
+
+
+######################################
+# Install some CTF tools
+######################################
+brew "aircrack-ng"
+brew "bfg"
+brew "binutils"
+brew "binwalk"
+brew "cifer"
+brew "dex2jar"
+brew "dns2tcp"
+brew "fcrackzip"
+brew "foremost"
+brew "hashpump"
+brew "hydra"
+brew "john"
+brew "knock"
+brew "netpbm"
+brew "nmap"
+brew "pngcheck"
+brew "socat"
+brew "sqlmap"
+brew "tcpflow"
+brew "tcpreplay"
+brew "tcptrace"
+brew "ucspi-tcp" # `tcpserver` etc.
+brew "xpdf"
+brew "xz"
+
+
+######################################
 # Install Requirement apps
 ######################################
 # Termial
@@ -62,26 +99,26 @@ cask "cyberduck"           # SFTP Client
 cask "tableplus"           # DB tool
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
+brew "imagemagick", args: ['with-webp']
 
 # Browser
 cask "google-chrome"
 
 # Mail Client
-# mas "Spark", id: 1176895641
+mas "Spark", id: 1176895641
 
 # Development Environment
-# mas "Xcode", id: 497799835
+mas "Xcode", id: 497799835
 
 # DevOps
 cask "slack"
-# mas "Trello", id: 1278508951
 
 # Utils
 cask "scroll-reverser"              # Mouse scroll reverser
 cask "appcleaner"                   # macOS apps uninstaller
-# mas "Bandizip", id: 1265704574      # macOS unzip app
-# mas "Memory Clean", id: 451444120   # macOS system memory cleaner
-# mas "Magnet", id: 441258766         # macOS window spliter
+mas "Bandizip", id: 1265704574      # macOS unzip app
+mas "Memory Clean", id: 451444120   # macOS system memory cleaner
+mas "Magnet", id: 441258766         # macOS window spliter
 
 ######################################
 # Install Private apps
@@ -89,4 +126,4 @@ cask "appcleaner"                   # macOS apps uninstaller
 cask "microsoft-office"
 cask "iina" # Media player
 
-# mas "KakaoTalk", id: 869223134
+mas "KakaoTalk", id: 869223134
