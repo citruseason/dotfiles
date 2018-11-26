@@ -3,6 +3,7 @@
 dockutil --no-restart --remove all
 
 # Browser
+dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
 # Mail Client
@@ -20,7 +21,7 @@ dockutil --no-restart --add "/Applications/KakaoTalk.app"
 dockutil --no-restart --add "/Applications/Slack.app"
 
 # Collaboratively Tool
-dockutil --no-restart --add "/Applications/Trello.app"
+dockutil --no-restart --add "/Applications/Notion.app"
 
 # Development Environment
 dockutil --no-restart --add "/Applications/iTerm.app"
@@ -35,5 +36,3 @@ dockutil --no-restart --add "$HOME/Downloads" --display stack --sort dateadded -
 dockutil --no-restart --add "$HOME/Documents" --display stack --sort name --before Trash
 
 killall Dock
-
-echo "Success! Dock is set."

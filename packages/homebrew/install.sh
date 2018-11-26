@@ -17,7 +17,6 @@ fi
 
 # Check for Homebrew Cask
 if [[ ! $(brew tap | grep cask) ]]; then
-  echo "  Installing Homebrew for you."
   brew install caskroom/cask/brew-cask
 fi
 
@@ -26,5 +25,3 @@ brew update
 
 # Install Brewfile
 brew bundle --file=$DOTHOME/packages/homebrew/Brewfile
-
-echo "Done! Homebrew is installed."

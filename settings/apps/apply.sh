@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
-export DIR_SETTINGS_APPS=$DOTHOME/settings/apps
-
+DIR_SETTINGS_APPS=$DOTHOME/settings/apps
 for file in $(ls $DIR_SETTINGS_APPS/_*.sh); do
   if [[ $file = "." || $file = ".." || $file = "" || $file = " " ]]; then
     continue
   fi
-  . $file
+  sh $file
 done
-
-echo "Done! Default apps is set."

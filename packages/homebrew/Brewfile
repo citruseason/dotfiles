@@ -100,6 +100,7 @@ cask "tableplus"           # DB tool
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
 brew "imagemagick", args: ['with-webp']
+cask "notion"
 
 # Browser
 cask "google-chrome"

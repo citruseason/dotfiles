@@ -19,7 +19,6 @@ cmd_help () {
     echo "   update           Update packages and pkg managers (OS, brew, mas)"
     echo "   clean            Clean up caches (brew)"
     echo "   brew             Run brew script"
-    echo "   vim              Run vim script"
     echo "   zsh              Run zsh script"
     echo "   git              Run git script"
     echo "   macos            Run macOS defaults script"
@@ -47,12 +46,6 @@ cmd_clean () {
 cmd_brew () {
     . "$DOTHOME/packages/homebrew/install.sh"
     echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
-}
-
-cmd_vim () {
-    . "$DOTHOME/packages/vim/install.sh"
-    . "$DOTHOME/settings/vim/apply.sh"
-    echo -e "${GREEN}$ARROW Success! Vim command finished.${NC}"
 }
 
 cmd_zsh () {

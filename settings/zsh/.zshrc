@@ -19,4 +19,3 @@ antigen bundle sindresorhus/pure
 antigen apply
 
 source ~/.aliases
-source ~/.ufunctions
