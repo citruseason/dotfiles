@@ -2,6 +2,9 @@
 
 dockutil --no-restart --remove all
 
+# Music
+dockutil --no-restart --add "/Applications/YT Music.app"
+
 # Browser
 dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
