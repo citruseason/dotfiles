@@ -126,5 +126,6 @@ mas "Magnet", id: 441258766         # macOS window spliter
 ######################################
 cask "microsoft-office"
 cask "iina" # Media player
+cask "yt-music"
 
 mas "KakaoTalk", id: 869223134
