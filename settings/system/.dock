@@ -8,6 +8,7 @@ dockutil --no-restart --add "/Applications/YT Music.app"
 # Browser
 dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
+dockutil --no-restart --add "/Applications/Google Chrome Canary.app"
 
 # Mail Client
 dockutil --no-restart --add "/Applications/Spark.app"

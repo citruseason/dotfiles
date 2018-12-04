@@ -104,6 +104,7 @@ cask "notion"
 
 # Browser
 cask "google-chrome"
+cask "google-chrome-canary"
 
 # Mail Client
 mas "Spark", id: 1176895641
