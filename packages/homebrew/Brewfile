@@ -96,7 +96,7 @@ cask "iterm2"
 cask "plistedit-pro"
 cask "visual-studio-code"  # Code editor
 cask "cyberduck"           # SFTP Client
-cask "tableplus"           # DB tool
+cask "teamsql"           # DB tool
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
 brew "imagemagick", args: ['with-webp']

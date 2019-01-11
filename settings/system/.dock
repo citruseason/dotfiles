@@ -31,7 +31,7 @@ dockutil --no-restart --add "/Applications/Notion.app"
 dockutil --no-restart --add "/Applications/iTerm.app"
 dockutil --no-restart --add "/Applications/Xcode.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
-dockutil --no-restart --add "/Applications/TablePlus.app"
+dockutil --no-restart --add "/Applications/TeamSQL.app"
 dockutil --no-restart --add "/Applications/Postman.app"
 
 # Folders
