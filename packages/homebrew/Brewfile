@@ -14,7 +14,7 @@ brew "git"
 brew "git-lfs"
 brew "diff-so-fancy" # lib git
 brew "mas"           # appstore app installer
-brew "wget", args: ["with-iri"]
+brew "wget" 
 brew "tree"
 brew "dockutil"
 
@@ -35,7 +35,7 @@ brew "antigen"
 ######################################
 # Install Neovim
 ######################################
-brew "neovim", args: ["with-override-system-vi"]
+brew "neovim"
 
 
 ######################################
@@ -61,7 +61,7 @@ brew "ssh-copy-id"
 # Install some CTF tools
 ######################################
 brew "aircrack-ng"
-brew "bfg"
+# brew "bfg"
 brew "binutils"
 brew "binwalk"
 brew "cifer"
@@ -99,7 +99,7 @@ cask "cyberduck"           # SFTP Client
 cask "teamsql"           # DB tool
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
-brew "imagemagick", args: ['with-webp']
+brew "imagemagick"
 cask "notion"
 
 # Browser

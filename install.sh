@@ -74,13 +74,12 @@ ok
 
 action "linking"
 pushd $DOTCDIR > /dev/null 2>&1
-for name in .*; do
+for name in $(ls); do
   if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" ]]; then
     continue
   fi
-
-  unlink $HOME/$name > /dev/null 2>&1
-  ln -s $DOTCDIR/$name $HOME
+  unlink $HOME/$name
+  ln -s $DOTCDIR/$name $HOME/$name
 done
 popd > /dev/null 2>&1
 ok
@@ -108,7 +107,9 @@ sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
 ok
 
 action "apply"
-unlink /usr/local/bin/dotfiles
+if [ -f /usr/local/bin/dotfiles ]; then
+  unlink /usr/local/bin/dotfiles > /dev/null
+fi
 ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 ok
 
