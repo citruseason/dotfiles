@@ -8,7 +8,6 @@ dockutil --no-restart --add "/Applications/YT Music.app"
 # Browser
 dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
-dockutil --no-restart --add "/Applications/Google Chrome Canary.app"
 
 # Mail Client
 dockutil --no-restart --add "/Applications/Spark.app"
@@ -18,18 +17,13 @@ dockutil --no-restart --add "/Applications/Calendar.app"
 dockutil --no-restart --add "/Applications/Notes.app"
 
 # Personal Messanger
-dockutil --no-restart --add "/Applications/Messages.app"
 dockutil --no-restart --add "/Applications/KakaoTalk.app"
 
 # Team Messanger
 dockutil --no-restart --add "/Applications/Slack.app"
 
-# Collaboratively Tool
-dockutil --no-restart --add "/Applications/Notion.app"
-
 # Development Environment
 dockutil --no-restart --add "/Applications/iTerm.app"
-dockutil --no-restart --add "/Applications/Xcode.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/TeamSQL.app"
 dockutil --no-restart --add "/Applications/Postman.app"
