@@ -116,6 +116,7 @@ cask "slack"
 
 # Utils
 cask "scroll-reverser"              # Mouse scroll reverser
+cask "cursorsense"                  # Mouse moving window
 cask "appcleaner"                   # macOS apps uninstaller
 mas "Bandizip", id: 1265704574      # macOS unzip app
 mas "Memory Clean", id: 451444120   # macOS system memory cleaner
