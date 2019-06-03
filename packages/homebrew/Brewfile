@@ -105,9 +105,6 @@ brew "imagemagick"
 cask "google-chrome"
 cask "google-chrome-canary"
 
-# Mail Client
-mas "Spark", id: 1176895641
-
 # Development Environment
 mas "Xcode", id: 497799835
 
@@ -126,8 +123,8 @@ mas "Magnet", id: 441258766         # macOS window spliter
 # Install Private apps
 ######################################
 cask "iina" # Media player
-cask "yt-music"
 
+mas "벅스 플레이어", id: 1211096598
 mas "KakaoTalk", id: 869223134
 mas "Microsoft Remote Desktop", id: 1295203466
 mas "Microsoft Excel", id: 462058435

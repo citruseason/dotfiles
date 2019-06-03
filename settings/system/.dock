@@ -3,14 +3,14 @@
 dockutil --no-restart --remove all
 
 # Music
-dockutil --no-restart --add "/Applications/YT Music.app"
+dockutil --no-restart --add "/Applications/벅스 플레이어.app"
 
 # Browser
 dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
 # Mail Client
-dockutil --no-restart --add "/Applications/Spark.app"
+dockutil --no-restart --add "/Applications/Mail.app"
 
 # Life Management
 dockutil --no-restart --add "/Applications/Calendar.app"
@@ -27,6 +27,11 @@ dockutil --no-restart --add "/Applications/iTerm.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/TeamSQL.app"
 dockutil --no-restart --add "/Applications/Postman.app"
+
+# Document Applications
+dockutil --no-restart --add "/Applications/Microsoft PowerPoint.app"
+dockutil --no-restart --add "/Applications/Microsoft Excel.app"
+dockutil --no-restart --add "/Applications/Microsoft Word.app"
 
 # Folders
 dockutil --no-restart --add "/Applications" --display stack --sort name --before Trash
