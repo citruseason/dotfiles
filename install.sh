@@ -74,7 +74,7 @@ ok
 
 action "linking"
 pushd $DOTCDIR > /dev/null 2>&1
-for name in $(ls); do
+for name in $(ls -a); do
   if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" ]]; then
     continue
   fi

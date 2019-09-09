@@ -93,20 +93,17 @@ brew "tcptrace"
 cask "iterm2"
 
 # DevTools
-cask "plistedit-pro"
 cask "visual-studio-code"  # Code editor
 cask "cyberduck"           # SFTP Client
-cask "teamsql"             # DB tool
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
 brew "imagemagick"
 
 # Browser
 cask "google-chrome"
-cask "google-chrome-canary"
 
 # Development Environment
-mas "Xcode", id: 497799835
+# mas "Xcode", id: 497799835
 
 # DevOps
 cask "slack"
@@ -124,10 +121,5 @@ mas "Magnet", id: 441258766         # macOS window spliter
 ######################################
 cask "iina" # Media player
 
-mas "벅스 플레이어", id: 1211096598
 mas "KakaoTalk", id: 869223134
-mas "Microsoft Remote Desktop", id: 1295203466
-mas "Microsoft Excel", id: 462058435
-mas "Microsoft Word", id: 462054704
-mas "Microsoft PowerPoint", id: 462062816
 
