@@ -113,5 +113,16 @@ fi
 ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 ok
 
+
+#############################################
+# Install Version Managers
+#############################################
+bot "Install vms"
+
+running "nvm(node version manager) 0.34.0 install"
+sh "$DOTHOME/vms/nvm/install.sh"
+ok
+
+
 echo "\n\nDone! Dotfiles is installed."
 echo "Please 'Reboot' your mac !!"
