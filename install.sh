@@ -78,7 +78,11 @@ for name in $(ls -a); do
   if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" ]]; then
     continue
   fi
-  unlink $HOME/$name
+
+  if [ -f "$HOME/$name" ]; then
+    unlink $HOME/$name
+  fi
+
   ln -s $DOTCDIR/$name $HOME/$name
 done
 popd > /dev/null 2>&1
