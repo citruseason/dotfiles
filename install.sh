@@ -123,8 +123,8 @@ ok
 #############################################
 bot "Install vms"
 
-running "nvm(node version manager) 0.34.0 install"
-sh "$DOTHOME/vms/nvm/install.sh"
+running "n (node version manager) install"
+sh "$DOTHOME/vms/n/install.sh"
 ok
 
 
