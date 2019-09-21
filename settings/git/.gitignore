@@ -100,9 +100,6 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -217,9 +214,6 @@ venv.bak/
 /test/tmp/
 /test/version_tmp/
 /tmp/
-
-# Used by dotenv library to load environment variables.
-# .env
 
 ## Specific to RubyMotion:
 .dat*
