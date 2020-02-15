@@ -2,9 +2,8 @@
 # Install Taps
 ######################################
 tap 'homebrew/bundle'
-tap "caskroom/cask"
-tap "caskroom/versions"
-tap "caskroom/fonts"
+tap "homebrew/cask-versions"
+tap "homebrew/cask-fonts"
 
 
 ######################################
