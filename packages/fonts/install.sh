@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
+source $DOTHOME/libs/os.sh
+
 # Set source and target directories
 CURDIR=$( cd "$( dirname "$0" )" && pwd )
 
-find_command="find \"$CURDIR\" \( -name '*.[o,t]t[c,f]' -or -name '*.pcf.gz' \) -type f -print0"
+find_command="find \"$CURDIR\" \( -name '*.[o,t]t[c,f]' -or -name '*.pcf.gz' \) -type f -print0"\
 
-if [[ `uname` == 'Darwin' ]]; then
-  # macOS
+if [[ "$DOT_OS_NAME" == "osx" ]]; then
+	# macOS
   font_dir="$HOME/Library/Fonts"
-else
+elif [[ "$DOT_OS_NAME" == "linux" ]]; then
   # Linux
   font_dir="$HOME/.local/share/fonts"
   mkdir -p $font_dir

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export DOTCDIR="$HOME/.dotfiles.d"
@@ -24,12 +24,13 @@ awesome_header
 #############################################
 bot "Install packages"
 
-running "xcode command line tools install"
-sh "$DOTHOME/packages/xcode-command-line-tools/install.sh"
+action "zsh install"
+apt-get install zsh
 ok
 
-running "homebrew packages install"
-sh "$DOTHOME/packages/homebrew/install.sh"
+action "antigen install"
+mkdir -p /usr/local/share/antigen/
+curl -L git.io/antigen > /usr/local/share/antigen/antigen.zsh
 ok
 
 action "fonts install"
@@ -50,20 +51,12 @@ fi
 mkdir $DOTCDIR
 ok
 
-action "set macos defaults and add apps to dock"
-sh "$DOTHOME/settings/system/apply.sh"
-ok
-
 action "set git settings"
 sh "$DOTHOME/settings/git/apply.sh"
 ok
 
 action "set zsh settings"
 sh "$DOTHOME/settings/zsh/apply.sh"
-ok
-
-action "set apps settings"
-sh "$DOTHOME/settings/apps/apply.sh"
 ok
 
 action "clear cache"
@@ -73,6 +66,7 @@ ok
 #############################################
 # Link
 #############################################
+bot "Link settings"
 
 action "linking"
 pushd $DOTCDIR > /dev/null 2>&1
@@ -125,10 +119,9 @@ ok
 #############################################
 bot "Install vms"
 
-running "n (node version manager) install"
-sh "$DOTHOME/vms/n/install.sh"
+running "nvm (node version manager) install"
+zsh "$DOTHOME/vms/nvm/install.sh"
 ok
 
 
 echo "\n\nDone! Dotfiles is installed."
-echo "Please 'Reboot' your mac !!"

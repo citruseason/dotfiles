@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export DIR_SETTINGS_GIT=$DOTHOME/settings/git
 

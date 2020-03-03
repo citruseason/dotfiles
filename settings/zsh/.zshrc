@@ -1,4 +1,12 @@
-source $(brew --prefix)/share/antigen/antigen.zsh
+function command_exists() {
+  hash "$1" &> /dev/null
+}
+
+if command_exists brew; then
+    source $(brew --prefix)/share/antigen/antigen.zsh
+else
+    source /usr/local/share/antigen/antigen.zsh
+fi
 
 # Load the oh-my-zsh's library.
 antigen use oh-my-zsh
