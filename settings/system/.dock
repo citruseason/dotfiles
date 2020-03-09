@@ -7,11 +7,11 @@ dockutil --no-restart --add "/Applications/Safari.app"
 dockutil --no-restart --add "/Applications/Google Chrome.app"
 
 # Mail Client
-dockutil --no-restart --add "/Applications/Mail.app"
+dockutil --no-restart --add "/System/Applications/Mail.app"
 
 # Life Management
-dockutil --no-restart --add "/Applications/Calendar.app"
-dockutil --no-restart --add "/Applications/Notes.app"
+dockutil --no-restart --add "/System/Applications/Calendar.app"
+dockutil --no-restart --add "/System/Applications/Notes.app"
 
 # Personal Messanger
 dockutil --no-restart --add "/Applications/KakaoTalk.app"
