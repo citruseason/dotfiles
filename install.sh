@@ -47,7 +47,7 @@ if [[ -d "$DOTCDIR" ]]; then
     rm -rf $DOTCBAK
     mv $DOTCDIR $DOTCBAK
 fi
-mkdir $DOTCDIR
+    mkdir $DOTCDIR
 ok
 
 action "set macos defaults and add apps to dock"
@@ -77,7 +77,7 @@ ok
 action "linking"
 pushd $DOTCDIR > /dev/null 2>&1
 for name in $(ls -a); do
-  if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" ]]; then
+  if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" || $name = "karabiner" ]]; then
     continue
   fi
 

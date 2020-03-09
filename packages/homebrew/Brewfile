@@ -88,6 +88,9 @@ brew "tcptrace"
 ######################################
 # Install Requirement apps
 ######################################
+# Keyboard
+cask "karabiner-elements"
+
 # Termial
 cask "iterm2"
 
