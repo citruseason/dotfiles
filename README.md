@@ -40,7 +40,6 @@ Auto install. Please wait a few minute.
 - [ ] Fix a issue that can not apply `AppleSymbolicHotKeys`
 - [ ] Document keymaps
 - [ ] Split personal installation files
-- [ ] Very Very Hard Study English  !!!!!!!!!!!
 
 
 [@relopen]: https://github.com/relopen
