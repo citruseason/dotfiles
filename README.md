@@ -1,6 +1,6 @@
 # dotfiles
 
-[@pavons]' dotfiles.
+[@relopen]' dotfiles.
 
 ## Requirements
 
@@ -43,6 +43,6 @@ Auto install. Please wait a few minute.
 - [ ] Very Very Hard Study English  !!!!!!!!!!!
 
 
-[@pavons]: https://github.com/pavons
+[@relopen]: https://github.com/relopen
 
 [Git]: http://git-scm.com
