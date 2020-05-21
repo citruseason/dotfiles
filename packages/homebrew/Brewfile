@@ -11,11 +11,13 @@ tap "homebrew/cask-fonts"
 ######################################
 brew "git"
 brew "git-lfs"
+brew "git-flow-avh"
 brew "diff-so-fancy" # lib git
 brew "mas"           # appstore app installer
 brew "wget" 
 brew "tree"
 brew "dockutil"
+brew "gnu-getopt"
 
 
 ######################################
