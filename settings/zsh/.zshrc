@@ -21,7 +21,7 @@ antigen bundle zsh-users/zsh-syntax-highlighting
 
 # Load the pure theme.
 antigen bundle mafredri/zsh-async
-antigen bundle sindresorhus/pure
+antigen bundle denysdovhan/spaceship-prompt 
 
 # Tell Antigen that you're done.
 antigen apply
