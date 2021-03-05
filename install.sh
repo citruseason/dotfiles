@@ -112,12 +112,12 @@ sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" > /dev/null
 sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
 ok
 
-action "apply"
-if [ -f /usr/local/bin/dotfiles ]; then
-  unlink /usr/local/bin/dotfiles > /dev/null
-fi
-ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
-ok
+#action "apply"
+#if [ -f /usr/local/bin/dotfiles ]; then
+#  unlink /usr/local/bin/dotfiles > /dev/null
+#fi
+#ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+#ok
 
 
 #############################################

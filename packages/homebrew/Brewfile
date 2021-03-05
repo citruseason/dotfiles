@@ -81,7 +81,7 @@ brew "nmap"
 # brew "sqlmap"
 # brew "tcpflow"
 # brew "tcpreplay"
-brew "tcptrace"
+# brew "tcptrace"
 # brew "ucspi-tcp" # `tcpserver` etc.
 # brew "xpdf"
 # brew "xz"
@@ -116,6 +116,7 @@ cask "slack"
 cask "scroll-reverser"              # Mouse scroll reverser
 cask "cursorsense"                  # Mouse moving window
 cask "appcleaner"                   # macOS apps uninstaller
+cask "authy"                        # 2way fac
 mas "Bandizip", id: 1265704574      # macOS unzip app
 mas "Memory Clean", id: 451444120   # macOS system memory cleaner
 mas "Magnet", id: 441258766         # macOS window spliter
