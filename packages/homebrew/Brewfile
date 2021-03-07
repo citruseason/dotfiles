@@ -106,25 +106,22 @@ brew "imagemagick"
 # Browser
 cask "google-chrome"
 
-# Development Environment
-# mas "Xcode", id: 497799835
-
-# DevOps
+# Talk
 cask "slack"
 
 # Utils
+cask "istat-menus"                  # Display sys info
 cask "scroll-reverser"              # Mouse scroll reverser
 cask "cursorsense"                  # Mouse moving window
 cask "appcleaner"                   # macOS apps uninstaller
-cask "authy"                        # 2way fac
-mas "Bandizip", id: 1265704574      # macOS unzip app
-mas "Memory Clean", id: 451444120   # macOS system memory cleaner
-mas "Magnet", id: 441258766         # macOS window spliter
 
 ######################################
 # Install Private apps
 ######################################
-cask "iina" # Media player
-
+cask "authy"                        # 2way fac
+cask "notion"                       # memo
+cask "iina"                         # Media player
+mas "Bandizip", id: 1265704574      # macOS unzip app
+mas "Magnet", id: 441258766         # macOS window spliter
 mas "KakaoTalk", id: 869223134
-
+mas "NAVER VIBE", id: 1542568299

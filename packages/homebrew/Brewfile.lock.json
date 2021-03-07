@@ -5,10 +5,10 @@
         "revision": "3fbca9f51db8e7255f4b2f48daba1e04a2d99ad6"
       },
       "homebrew/cask-versions": {
-        "revision": "5813453703e13af9c16cda5c206ba19095d6fef6"
+        "revision": "31c7ff905c5c7b15ad5f1db2c90d5490fff36dd7"
       },
       "homebrew/cask-fonts": {
-        "revision": "4231da8701b04ac276b7f8569d7476a64dad331f"
+        "revision": "5960b423cce7ad5395a2171640e0d72e9e1a3738"
       }
     },
     "brew": {
@@ -446,7 +446,7 @@
     },
     "cask": {
       "docker": {
-        "version": "3.2.0,61504",
+        "version": "3.2.1,61626",
         "options": {
           "full_name": "docker"
         }
@@ -482,7 +482,7 @@
         }
       },
       "google-chrome": {
-        "version": "89.0.4389.72,4389.72",
+        "version": "89.0.4389.82,4389.82",
         "options": {
           "full_name": "google-chrome"
         }
@@ -512,7 +512,7 @@
         }
       },
       "iina": {
-        "version": "1.2.0,129",
+        "version": "1.1.2,128",
         "options": {
           "full_name": "iina"
         }
@@ -528,6 +528,18 @@
         "options": {
           "full_name": "authy"
         }
+      },
+      "istat-menus": {
+        "version": "6.51",
+        "options": {
+          "full_name": "istat-menus"
+        }
+      },
+      "notion": {
+        "version": "2.0.13",
+        "options": {
+          "full_name": "notion"
+        }
       }
     },
     "mas": {
@@ -540,7 +552,11 @@
         "id": "441258766",
         "version": "2.5.0"
       },
-      "KakaoTalk": null
+      "KakaoTalk": null,
+      "NAVER VIBE": {
+        "id": "1542568299",
+        "version": "1.0.3"
+      }
     }
   },
   "system": {
@@ -556,9 +572,9 @@
       "big_sur": {
         "HOMEBREW_VERSION": "3.0.4",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "e9f0d93d74d75a8e530e9ab3a80c8f4fdf21683a",
+        "Homebrew/homebrew-core": "062f43ac86428c581af980175dba93db197db827",
         "CLT": "12.4.0.0.1.1610135815",
-        "Xcode": "12.0",
+        "Xcode": "12.4",
         "macOS": "11.2.2"
       }
     }

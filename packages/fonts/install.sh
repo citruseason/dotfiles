@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source $DOTHOME/libs/os.sh
-
 # Set source and target directories
 CURDIR=$( cd "$( dirname "$0" )" && pwd )
 
@@ -21,5 +19,5 @@ eval $find_command | xargs -0 -I % cp "%" "$font_dir/"
 
 # Reset font cache on Linux
 if command -v fc-cache @>/dev/null ; then
-    fc-cache -f $font_dir
+  fc-cache -f $font_dir
 fi

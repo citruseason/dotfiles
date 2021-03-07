@@ -16,6 +16,9 @@ dockutil --no-restart --add "/System/Applications/Notes.app"
 # Personal Messanger
 dockutil --no-restart --add "/Applications/KakaoTalk.app"
 
+# Memo Application
+dockutil --no-restart --add "/Applications/Notion.app"
+
 # Team Messanger
 dockutil --no-restart --add "/Applications/Slack.app"
 
@@ -24,9 +27,13 @@ dockutil --no-restart --add "/Applications/iTerm.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/Postman.app"
 
+# 2FA
+dockutil --no-restart --add "/Applications/Authy Desktop.app"
+
 # Folders
 dockutil --no-restart --add "/Applications" --display stack --sort name --before Trash
 dockutil --no-restart --add "$HOME/Downloads" --display stack --sort dateadded --before Trash
 dockutil --no-restart --add "$HOME/Documents" --display stack --sort name --before Trash
+dockutil --no-restart --add "$HOME/Pictures" --display stack --sort name --before Trash
 
 killall Dock
