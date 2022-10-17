@@ -25,7 +25,7 @@ awesome_header
 bot "Install packages"
 
 running "xcode command line tools install"
-sh $DOTHOME/packages/xcode-command-line-tools/install.sh
+sh "$DOTHOME/packages/xcode-command-line-tools/install.sh"
 ok
 
 running "homebrew packages install (common)"
@@ -37,7 +37,7 @@ sh $DOTHOME/packages/homebrew/install.sh private
 ok
 
 action "fonts install"
-sh $DOTHOME/packages/fonts/install.sh
+sh "$DOTHOME/packages/fonts/install.sh"
 ok
 
 
@@ -55,23 +55,23 @@ fi
 ok
 
 action "set macos defaults and add apps to dock"
-sh $DOTHOME/settings/system/apply.sh
+sh "$DOTHOME/settings/system/apply.sh"
 ok
 
 action "set git settings"
-sh $DOTHOME/settings/git/apply.sh
+sh "$DOTHOME/settings/git/apply.sh"
 ok
 
 action "set zsh settings"
-sh $DOTHOME/settings/zsh/apply.sh
+sh "$DOTHOME/settings/zsh/apply.sh"
 ok
 
 action "set apps settings"
-sh $DOTHOME/settings/apps/apply.sh
+sh "$DOTHOME/settings/apps/apply.sh"
 ok
 
 action "clear cache"
-sh $DOTHOME/bin/dotfiles" clean
+sh "$DOTHOME/bin/dotfiles" clean
 ok
 
 #############################################
@@ -130,7 +130,7 @@ ok
 bot "Install vms"
 
 running "nvm install"
-sh $DOTHOME/vms/nvm/install.sh
+sh "$DOTHOME/vms/nvm/install.sh"
 ok
 
 
