@@ -18,7 +18,7 @@ brew "wget"
 brew "tree"
 brew "dockutil"
 brew "gnu-getopt"
-
+brew "gnu-sed"
 
 ######################################
 # Install Bash 4
