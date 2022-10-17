@@ -28,11 +28,15 @@ fi
 # Check for Homebrew update
 brew update
 
+# =======================================
 # Install
+# =======================================
+
 COMMAND_NAME=$1
 
 cmd_help () {
     echo "Commands:"
+    echo "   common           Install common apps"
     echo "   private          Install private apps"
 }
 
