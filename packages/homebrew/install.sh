@@ -14,7 +14,7 @@ if [[ ! $(which brew) ]]; then
   echo "  Installing Homebrew for you."
 
   if [[ "$DOT_OS_NAME" == "osx" ]]; then
-	  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     if [[ $DOT_ON_ARM == 1 ]]; then
       sed -i -e '/^eval \$(\/opt\/homebrew\/bin\/brew shellenv)$/d' $HOME/.zprofile
       echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> $HOME/.zprofile
