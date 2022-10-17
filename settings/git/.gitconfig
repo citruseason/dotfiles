@@ -92,5 +92,5 @@
 [pager]
   diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
 [user]
-	name = YoungJung Kim
+	name = relomote
 	email = jigm1539@gmail.com
