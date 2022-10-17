@@ -19,6 +19,7 @@ if [[ ! $(which brew) ]]; then
       echo '# Set PATH, MANPATH, etc., for Homebrew.' >> $HOME/.zprofile
       echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> $HOME/.zprofile
       eval "$(/opt/homebrew/bin/brew shellenv)"
+      export PATH=/opt/homebrew/bin:$PATH
     fi
   elif [[ "$DOT_OS_NAME" == "linux" ]]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
