@@ -6,7 +6,8 @@
 # using Homebrew.
 
 UNAME_MACHINE="$(/usr/bin/uname -m)"
-BREWFILE_PATH=$DOTHOME/packages/homebrew/Brewfile
+BREWFILE_PATH=$DOTHOME/packages/homebrew/common/Brewfile
+BREWFILE_PRIVATE_PATH=$DOTHOME/packages/homebrew/private/Brewfile
 
 # Check for Homebrew
 if [[ ! $(which brew) ]]; then
@@ -27,5 +28,30 @@ fi
 # Check for Homebrew update
 brew update
 
-# Install Brewfile
-brew bundle --file=$BREWFILE_PATH
+# Install
+COMMAND_NAME=$1
+
+cmd_help () {
+    echo "Commands:"
+    echo "   private          Install private apps"
+}
+
+cmd_common () {
+  brew bundle --file=$BREWFILE_PATH
+}
+
+cmd_private () {
+  brew bundle --file=$BREWFILE_PRIVATE_PATH
+}
+
+case $COMMAND_NAME in
+  *)
+      shift
+      cmd_${COMMAND_NAME} $@
+      if [ $? = 127 ]; then
+          echo -e "Error: '$COMMAND_NAME' is not a known command or has errors." >&2
+          cmd_help
+          exit 1
+      fi
+      ;;
+esac

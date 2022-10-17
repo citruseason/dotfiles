@@ -22,7 +22,7 @@ EOF
 if ! command_exists nvm; then
   echo "  Installing nvm for you."
 
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
   configuration_nvm
   source ~/.zshrc
 fi

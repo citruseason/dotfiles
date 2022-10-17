@@ -90,15 +90,11 @@ brew "nmap"
 ######################################
 # Install Requirement apps
 ######################################
-# Keyboard
-cask "karabiner-elements"
-
 # Termial
 cask "iterm2"
 
 # DevTools
 cask "visual-studio-code"  # Code editor
-cask "cyberduck"           # SFTP Client
 cask "postman"             # API TEST Client
 brew "gettext", link: true # Translation file
 brew "imagemagick"
@@ -110,9 +106,7 @@ cask "google-chrome"
 cask "slack"
 
 # Utils
-cask "istat-menus"                  # Display sys info
 cask "scroll-reverser"              # Mouse scroll reverser
-cask "cursorsense"                  # Mouse moving window
 cask "appcleaner"                   # macOS apps uninstaller
 
 ######################################
@@ -121,7 +115,3 @@ cask "appcleaner"                   # macOS apps uninstaller
 cask "authy"                        # 2way fac
 cask "notion"                       # memo
 cask "iina"                         # Media player
-mas "Bandizip", id: 1265704574      # macOS unzip app
-mas "Magnet", id: 441258766         # macOS window spliter
-mas "KakaoTalk", id: 869223134
-mas "NAVER VIBE", id: 1542568299

@@ -28,8 +28,12 @@ running "xcode command line tools install"
 sh "$DOTHOME/packages/xcode-command-line-tools/install.sh"
 ok
 
-running "homebrew packages install"
-sh "$DOTHOME/packages/homebrew/install.sh"
+running "homebrew packages install (common)"
+sh "$DOTHOME/packages/homebrew/install.sh common"
+ok
+
+running "homebrew packages install (private)"
+sh "$DOTHOME/packages/homebrew/install.sh private"
 ok
 
 action "fonts install"
@@ -125,8 +129,8 @@ ok
 #############################################
 bot "Install vms"
 
-running "n (node version manager) install"
-sh "$DOTHOME/vms/n/install.sh"
+running "nvm install"
+sh "$DOTHOME/vms/nvm/install.sh"
 ok
 
 

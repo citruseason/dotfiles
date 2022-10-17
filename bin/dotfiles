@@ -19,6 +19,7 @@ cmd_help () {
     echo "   update           Update packages and pkg managers (OS, brew, mas)"
     echo "   clean            Clean up caches (brew)"
     echo "   brew             Run brew script"
+    echo "   brew-private     Run brew script (private apps)"
     echo "   zsh              Run zsh script"
     echo "   git              Run git script"
     echo "   macos            Run macOS defaults script"
@@ -44,7 +45,12 @@ cmd_clean () {
 }
 
 cmd_brew () {
-    . "$DOTHOME/packages/homebrew/install.sh"
+    . "$DOTHOME/packages/homebrew/install.sh common"
+    echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
+}
+
+cmd_brew-private () {
+    . "$DOTHOME/packages/homebrew/install.sh common"
     echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
 }
 
