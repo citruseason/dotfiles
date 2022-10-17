@@ -32,3 +32,5 @@ antigen bundle denysdovhan/spaceship-prompt
 antigen apply
 
 source ~/.aliases
+
+eval "$(ssh-agent -s)"
