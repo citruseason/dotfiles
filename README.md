@@ -15,7 +15,11 @@ $ git clone https://github.com/pavons/dotfiles.git ~/dotfiles
 
 Install this dotfiles:
 ``` sh
+# private
 $ cd ~/dotfiles && ./install.sh
+
+# work device
+$ cd ~/dotfiles && ./work.install.sh
 ```
 
 First-Time git setup:
@@ -30,18 +34,6 @@ $ vim
 ```
 Auto install. Please wait a few minute.
 
-
-## Todos
-
-- [ ] Uninstall script
-- [ ] Old Config backup script
-- [ ] Quick install with one line of code
-- [ ] Git-config input automation
-- [ ] Fix a issue that can not apply `AppleSymbolicHotKeys`
-- [ ] Document keymaps
-- [ ] Split personal installation files
-
-
-[@relopen]: https://github.com/relopen
+[@relomote]: https://github.com/relomote
 
 [Git]: http://git-scm.com
