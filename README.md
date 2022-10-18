@@ -1,6 +1,6 @@
 # dotfiles
 
-[@relopen]' dotfiles.
+[@relomote]' dotfiles.
 
 ## Requirements
 
