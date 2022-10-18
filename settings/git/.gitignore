@@ -21,9 +21,6 @@
 .AppleDouble
 .LSOverride
 
-# Icon must end with two \r
-Icon
-
 # Thumbnails
 ._*
 
@@ -99,7 +96,6 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
-
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
