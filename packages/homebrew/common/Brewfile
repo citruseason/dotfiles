@@ -16,7 +16,7 @@ brew "diff-so-fancy" # lib git
 brew "mas"           # appstore app installer
 brew "wget" 
 brew "tree"
-brew "dockutil"
+cask "hpedrorodrigues/tools/dockutil" # brew "dockutil" / 12.3 이상에서 에러나서 이 설치파일로 변경
 brew "gnu-getopt"
 brew "gnu-sed"
 

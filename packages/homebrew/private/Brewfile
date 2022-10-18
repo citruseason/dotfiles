@@ -1,15 +1,3 @@
-######################################
-# Install Taps
-######################################
-tap 'homebrew/bundle'
-tap "homebrew/cask-versions"
-tap "homebrew/cask-fonts"
-
-######################################
-# Install Binaries
-######################################
-brew "mas"           # appstore app installer
-
 mas "Bandizip", id: 1265704574      # macOS unzip app
 mas "Magnet", id: 441258766         # macOS window spliter
 mas "KakaoTalk", id: 869223134
