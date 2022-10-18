@@ -31,6 +31,7 @@ awesome_header
 
 clear_environment
 
+echo ""
 read -s -p "Enter Password for sudo: " sudopassword
 export sudoPW=$sudopassword
 export SUDO_ASKPASS=$DOTHOME/libs/sudo-askpass.sh
