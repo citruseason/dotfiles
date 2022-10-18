@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-export DOTHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export DOTHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export DOTCDIR="$HOME/.dotfiles.d"
 export DOTCBAK="$HOME/.dotfiles.d.bak"
 
@@ -12,12 +12,28 @@ source $DOTHOME/libs/os.sh
 # Include Adam Eivy's library helpers.
 source $DOTHOME/libs/print.sh
 
+source $DOTHOME/libs/permission.sh
+
+function clear_environment() {
+  unset sudoPW
+  unset SUDO_ASKPASS
+}
+
 #############################################
 # Introduction
 #############################################
 
 awesome_header
 
+#############################################
+# permission
+#############################################
+
+clear_environment
+
+read -s -p "Enter Password for sudo: " sudopassword
+export sudoPW=$sudopassword
+export SUDO_ASKPASS=$DOTHOME/libs/sudo-askpass.sh
 
 #############################################
 # Install packages
@@ -40,7 +56,6 @@ action "fonts install"
 sh "$DOTHOME/packages/fonts/install.sh"
 ok
 
-
 #############################################
 # Setup settings
 #############################################
@@ -48,10 +63,10 @@ bot "Setup settings"
 
 action "set data directory"
 if [[ -d "$DOTCDIR" ]]; then
-    rm -rf $DOTCBAK
-    mv $DOTCDIR $DOTCBAK
+  rm -rf $DOTCBAK
+  mv $DOTCDIR $DOTCBAK
 fi
-    mkdir $DOTCDIR
+mkdir $DOTCDIR
 ok
 
 action "set macos defaults and add apps to dock"
@@ -79,7 +94,7 @@ ok
 #############################################
 
 action "linking"
-pushd $DOTCDIR > /dev/null 2>&1
+pushd $DOTCDIR >/dev/null 2>&1
 for name in $(ls -a); do
   if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" || $name = "karabiner" ]]; then
     continue
@@ -91,9 +106,8 @@ for name in $(ls -a); do
 
   ln -s $DOTCDIR/$name $HOME/$name
 done
-popd > /dev/null 2>&1
+popd >/dev/null 2>&1
 ok
-
 
 #############################################
 # Global install dotfiles command
@@ -105,15 +119,15 @@ chmod -R +wx ./bin
 ok
 
 action "set path environment (bash)"
-sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" > /dev/null
+exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" >/dev/null
+exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" >/dev/null
+exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" >/dev/null
 ok
 
 action "set path environment (zsh)"
-sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
+exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" >/dev/null
+exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" >/dev/null
+exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" >/dev/null
 ok
 
 #action "apply"
@@ -122,7 +136,6 @@ ok
 #fi
 #ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 #ok
-
 
 #############################################
 # Install Version Managers
@@ -133,6 +146,9 @@ running "nvm install"
 sh "$DOTHOME/vms/nvm/install.sh"
 ok
 
+clear_environment
 
-echo "\n\nDone! Dotfiles is installed."
+echo ""
+echo ""
+echo "Done! Dotfiles is installed."
 echo "Please 'Reboot' your mac !!"

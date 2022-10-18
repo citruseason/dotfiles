@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # Homebrew
 #
@@ -27,7 +27,7 @@ fi
 nvm --version
 
 # LTS install
-nvm install --lts
+nvm install --lts &>/dev/null
 
 # Check for node installed
 node -v

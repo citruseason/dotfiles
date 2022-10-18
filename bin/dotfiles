@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 BIN_NAME=$(basename "$0")
 COMMAND_NAME=$1
@@ -9,8 +9,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-
-cmd_help () {
+cmd_help() {
     echo -e "$ARROW Usage: ${YELLOW}$BIN_NAME <command>${NC}"
     echo
     echo "Commands:"
@@ -26,11 +25,11 @@ cmd_help () {
     echo "   dock             Run macOS dock script"
 }
 
-cmd_remove () {
+cmd_remove() {
     echo -e "${RED}Not yet supported. ${NC}"
 }
 
-cmd_update () {
+cmd_update() {
     sudo softwareupdate -i -a
     brew update
     brew upgrade
@@ -38,54 +37,54 @@ cmd_update () {
     echo -e "${GREEN}$ARROW Success! Update command finished.${NC}"
 }
 
-cmd_clean () {
+cmd_clean() {
     brew cleanup
     # brew cask cleanup
     echo -e "${GREEN}$ARROW Success! Clean command finished.${NC}"
 }
 
-cmd_brew () {
+cmd_brew() {
     . "$DOTHOME/packages/homebrew/install.sh common"
     echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
 }
 
-cmd_brew_private () {
+cmd_brew_private() {
     . "$DOTHOME/packages/homebrew/install.sh common"
     echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
 }
 
-cmd_zsh () {
+cmd_zsh() {
     . "$DOTHOME/packages/zsh/install.sh"
     . "$DOTHOME/settings/zsh/apply.sh"
     echo -e "${GREEN}$ARROW Success! Zsh command finished.${NC}"
 }
 
-cmd_git () {
+cmd_git() {
     . "$DOTHOME/settings/git/apply.sh"
     echo -e "${GREEN}$ARROW Success! Git command finished.${NC}"
 }
 
-cmd_macos () {
+cmd_macos() {
     . "$DOTHOME/settings/system/_macos.sh"
     echo -e "${GREEN}$ARROW Success! macOS defaults finished.${NC}"
 }
 
-cmd_dock () {
+cmd_dock() {
     . "$DOTHOME/settings/system/_dock.sh"
     echo -e "${GREEN}$ARROW Success! Dock command finished.${NC}"
 }
 
 case $COMMAND_NAME in
-    "" | "-h" | "--help")
+"" | "-h" | "--help")
+    cmd_help
+    ;;
+*)
+    shift
+    cmd_${COMMAND_NAME} $@
+    if [ $? = 127 ]; then
+        echo -e "${RED}$ARROW Error: '$COMMAND_NAME' is not a known command or has errors.${NC}" >&2
         cmd_help
-        ;;
-    *)
-        shift
-        cmd_${COMMAND_NAME} $@
-        if [ $? = 127 ]; then
-            echo -e "${RED}$ARROW Error: '$COMMAND_NAME' is not a known command or has errors.${NC}" >&2
-            cmd_help
-            exit 1
-        fi
-        ;;
+        exit 1
+    fi
+    ;;
 esac

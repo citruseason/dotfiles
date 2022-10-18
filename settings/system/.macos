@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+source $DOTHOME/libs/permission.sh
 
 # ~/.macos — https://mths.be/macos
 
@@ -12,16 +14,15 @@ osascript -e 'tell application "System Preferences" to quit'
 # # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
 # while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
 
 # Set standby delay to 24 hours (default is 1 hour)
-sudo pmset -a standbydelay 86400
+exec_sudo pmset -a standbydelay 86400
 
 # Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
+exec_sudo nvram SystemAudioVolume=" "
 
 # Disable transparency in the menu bar and elsewhere on Yosemite
 # defaults write com.apple.universalaccess reduceTransparency -bool true
@@ -56,16 +57,16 @@ defaults write com.apple.helpviewer DevMode -bool true
 
 # Reveal IP address, hostname, OS version, etc. when clicking the clock
 # in the login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+exec_sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 # Restart automatically if the computer freezes
-# sudo systemsetup -setrestartfreeze on
+# exec_sudo systemsetup -setrestartfreeze on
 
 # Never go into computer sleep mode
-# sudo systemsetup -setcomputersleep Off > /dev/null
+# exec_sudo systemsetup -setcomputersleep Off > /dev/null
 
 # Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2>/dev/null
 
 # Disable automatic capitalization as it’s annoying when typing code
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
@@ -82,21 +83,19 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
-
 ###############################################################################
 # SSD-specific tweaks                                                         #
 ###############################################################################
 
 # Disable hibernation (speeds up entering sleep mode)
-sudo pmset -a hibernatemode 0
+exec_sudo pmset -a hibernatemode 0
 
 # Remove the sleep image file to save disk space
-# sudo rm /private/var/vm/sleepimage
+# exec_sudo rm /private/var/vm/sleepimage
 # Create a zero-byte file instead…
-# sudo touch /private/var/vm/sleepimage
+# exec_sudo touch /private/var/vm/sleepimage
 # …and make sure it can’t be rewritten
-# sudo chflags uchg /private/var/vm/sleepimage
-
+# exec_sudo chflags uchg /private/var/vm/sleepimage
 
 ###############################################################################
 # "Trackpad, mouse, keyboard, Bluetooth accessories, and input"
@@ -162,7 +161,6 @@ defaults write NSGlobalDomain InitialKeyRepeat -int 15
 # "Disable auto-correct"
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
-
 ###############################################################################
 # "Configuring the Screen"
 ###############################################################################
@@ -183,7 +181,6 @@ defaults write NSGlobalDomain AppleFontSmoothing -int 2
 # "Require password immediately after sleep or screen saver begins"
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
-
 
 ###############################################################################
 # "Finder Configs"
@@ -303,10 +300,9 @@ chflags nohidden ~/Library
 
 # "Expand the following File Info panes: “General”, “Open with”, and “Sharing & Permissions”"
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
-    General -bool true \
-    OpenWith -bool true \
-    Privileges -bool true
-
+  General -bool true \
+  OpenWith -bool true \
+  Privileges -bool true
 
 ###############################################################################
 # "Dock & Dashboard"
@@ -347,7 +343,7 @@ defaults write com.apple.dock expose-animation-duration -float 0.1
 defaults write com.apple.dock expose-group-by-app -bool false
 
 # "Disable recent app"
-defaults write com.apple.dock show-recents -bool false 
+defaults write com.apple.dock show-recents -bool false
 
 # "Disable Dashboard"
 defaults write com.apple.dashboard mcx-disabled -bool true
@@ -395,7 +391,6 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 # "#tom right screen corner → Start screen saver"
 defaults write com.apple.dock wvous-br-corner -int 0
 defaults write com.apple.dock wvous-br-modifier -int 0
-
 
 ###############################################################################
 # "Configuring Safari & WebKit"
@@ -491,7 +486,6 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 # "Font size 10px min"
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2MinimumFontSize -int 10
 
-
 ###############################################################################
 # "Configuring Mail"
 ###############################################################################
@@ -517,17 +511,16 @@ defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
 # "Disable automatic spell checking"
 defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnabled"
 
-
 ###############################################################################
 # Spotlight                                                                   #
 ###############################################################################
 
 # Hide Spotlight tray-icon (and subsequent helper)
-#sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+#exec_sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
 # Disable Spotlight indexing for any volume that gets mounted and has not yet
 # been indexed before.
 # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
-  # sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+# sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
 # Change indexing order and disable some search results
 # Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
 # 	MENU_DEFINITION
@@ -537,35 +530,34 @@ defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnab
 # 	MENU_WEBSEARCH             (send search queries to Apple)
 # 	MENU_OTHER
 defaults write com.apple.spotlight orderedItems -array \
-	'{"enabled" = 1;"name" = "APPLICATIONS";}' \
-	'{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-	'{"enabled" = 1;"name" = "DIRECTORIES";}' \
-	'{"enabled" = 1;"name" = "PDF";}' \
-	'{"enabled" = 1;"name" = "FONTS";}' \
-	'{"enabled" = 0;"name" = "DOCUMENTS";}' \
-	'{"enabled" = 0;"name" = "MESSAGES";}' \
-	'{"enabled" = 0;"name" = "CONTACT";}' \
-	'{"enabled" = 0;"name" = "EVENT_TODO";}' \
-	'{"enabled" = 0;"name" = "IMAGES";}' \
-	'{"enabled" = 0;"name" = "BOOKMARKS";}' \
-	'{"enabled" = 0;"name" = "MUSIC";}' \
-	'{"enabled" = 0;"name" = "MOVIES";}' \
-	'{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-	'{"enabled" = 0;"name" = "SPREADSHEETS";}' \
-	'{"enabled" = 0;"name" = "SOURCE";}' \
-	'{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
-	'{"enabled" = 0;"name" = "MENU_OTHER";}' \
-	'{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
-	'{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
-	'{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-	'{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
+  '{"enabled" = 1;"name" = "APPLICATIONS";}' \
+  '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+  '{"enabled" = 1;"name" = "DIRECTORIES";}' \
+  '{"enabled" = 1;"name" = "PDF";}' \
+  '{"enabled" = 1;"name" = "FONTS";}' \
+  '{"enabled" = 0;"name" = "DOCUMENTS";}' \
+  '{"enabled" = 0;"name" = "MESSAGES";}' \
+  '{"enabled" = 0;"name" = "CONTACT";}' \
+  '{"enabled" = 0;"name" = "EVENT_TODO";}' \
+  '{"enabled" = 0;"name" = "IMAGES";}' \
+  '{"enabled" = 0;"name" = "BOOKMARKS";}' \
+  '{"enabled" = 0;"name" = "MUSIC";}' \
+  '{"enabled" = 0;"name" = "MOVIES";}' \
+  '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+  '{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+  '{"enabled" = 0;"name" = "SOURCE";}' \
+  '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+  '{"enabled" = 0;"name" = "MENU_OTHER";}' \
+  '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
+  '{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
+  '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
+  '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
 # Load new settings before rebuilding the index
-killall mds > /dev/null 2>&1
+killall mds >/dev/null 2>&1
 # Make sure indexing is enabled for the main volume
-sudo mdutil -i on / > /dev/null
+exec_sudo mdutil -i on / >/dev/null
 # Rebuild the index from scratch
-sudo mdutil -E / > /dev/null
-
+exec_sudo mdutil -E / >/dev/null
 
 ###############################################################################
 # "Time Machine"
@@ -575,8 +567,7 @@ sudo mdutil -E / > /dev/null
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 # "Disable local Time Machine backups"
-# hash tmutil &> /dev/null && sudo tmutil disablelocal
-
+# hash tmutil &> /dev/null && exec_sudo tmutil disablelocal
 
 ###############################################################################
 # "Activity Monitor"
@@ -594,7 +585,6 @@ defaults write com.apple.ActivityMonitor ShowCategory -int 0
 # "Sort Activity Monitor results by CPU usage"
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
-
 
 ###############################################################################
 # "Address Book, Dashboard, iCal, TextEdit, and Disk Utility"
@@ -618,7 +608,6 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true
 
 # Auto-play videos when opened with QuickTime Player
 defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
-
 
 ###############################################################################
 # Mac App Store                                                               #
@@ -651,14 +640,12 @@ defaults write com.apple.commerce AutoUpdate -bool true
 # Allow the App Store to reboot machine on macOS updates
 defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
 
-
 ###############################################################################
 # Photos                                                                      #
 ###############################################################################
 
 # Prevent Photos from opening automatically when devices are plugged in
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
-
 
 ###############################################################################
 # Messages                                                                    #
@@ -672,7 +659,6 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 
 # Disable continuous spell checking
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
-
 
 ###############################################################################
 # "keyboard shortcut setting"
@@ -758,31 +744,29 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "
   </dict>
 "
 
-
 ###############################################################################
 # "Security setting"
 ###############################################################################
 
 # "Downloaded application install allow - Everywhere"
-sudo spctl --master-disable
-
+exec_sudo spctl --master-disable
 
 ###############################################################################
 # Kill affected applications                                                  #
 ###############################################################################
 
 for app in "Activity Monitor" \
-	"Address Book" \
-	"Calendar" \
-	"cfprefsd" \
-	"Contacts" \
-	"Dock" \
-	"Finder" \
-	"Mail" \
-	"Messages" \
-	"Photos" \
-	"Safari" \
-	"SystemUIServer" \
-	"iCal"; do
-	killall "${app}" &> /dev/null
+  "Address Book" \
+  "Calendar" \
+  "cfprefsd" \
+  "Contacts" \
+  "Dock" \
+  "Finder" \
+  "Mail" \
+  "Messages" \
+  "Photos" \
+  "Safari" \
+  "SystemUIServer" \
+  "iCal"; do
+  killall "${app}" &>/dev/null
 done

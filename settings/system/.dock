@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 dockutil --no-restart --remove all
 

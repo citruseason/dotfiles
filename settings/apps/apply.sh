@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export DIR_SETTINGS_APPS=$DOTHOME/settings/apps
 for file in $(ls $DIR_SETTINGS_APPS/_*.sh); do
