@@ -53,6 +53,10 @@ running "homebrew packages install (private)"
 sh $DOTHOME/packages/homebrew/install.sh private
 ok
 
+running "add homebrew path"
+export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
+ok
+
 action "fonts install"
 sh "$DOTHOME/packages/fonts/install.sh"
 ok
