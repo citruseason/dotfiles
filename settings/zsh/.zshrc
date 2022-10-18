@@ -33,4 +33,4 @@ antigen apply
 
 source ~/.aliases
 
-eval "$(ssh-agent -s)"
+eval "$(ssh-agent -s)" &>/dev/null
