@@ -1,5 +1,4 @@
 cask "karabiner-elements"
-cask "loopback"
 
 mas "Bandizip", id: 1265704574      # macOS unzip app
 mas "Magnet", id: 441258766         # macOS window spliter
