@@ -15,7 +15,7 @@ function configuration() {
   echo 'eval "$(pyenv init -)"' >> ~/.zshrc
   
   echo 'if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi' >> ~/.zshrc
-  echo 'source $(brew --prefix autoenv)/activate.sh' >> ~/.zshrc
+  echo 'source $(brew --prefix autoenv)/activate.sh &>/dev/null' >> ~/.zshrc
 }
 
 # Check for pyenv
