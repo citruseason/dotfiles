@@ -11,8 +11,8 @@ function command_exists() {
 
 function configuration() {
   echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH""' >> ~/.zshrc
-  echo 'eval "$(pyenv init -)""' >> ~/.zshrc
+  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+  echo 'eval "$(pyenv init -)"' >> ~/.zshrc
   
   echo 'if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi' >> ~/.zshrc
   echo 'source $(brew --prefix autoenv)/activate.sh' >> ~/.zshrc
