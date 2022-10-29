@@ -30,4 +30,4 @@ fi
 pyenv -v
 
 # install 3.7
-CC=`which gcc-11` arch -x86_64 pyenv install 3.7.14
+# CC=`which gcc-11` arch -x86_64 pyenv install 3.7.14
