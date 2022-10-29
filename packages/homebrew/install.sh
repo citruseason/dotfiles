@@ -29,6 +29,9 @@ fi
 # Check for Homebrew update
 brew update
 
+# remove brewfile.lock.json
+rm -rf ./**/Brewfile.lock.json
+
 # =======================================
 # Install
 # =======================================

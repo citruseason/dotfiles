@@ -151,6 +151,10 @@ running "nvm install"
 sh "$DOTHOME/vms/nvm/install.sh"
 ok
 
+running "pyenv install"
+sh "$DOTHOME/vms/pyenv/install.sh"
+ok
+
 clear_environment
 
 echo ""
