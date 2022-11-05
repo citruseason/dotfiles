@@ -114,6 +114,5 @@ cask "appcleaner"                   # macOS apps uninstaller
 ######################################
 # Install Private apps
 ######################################
-cask "authy"                        # 2way fac
 cask "notion"                       # memo
 cask "iina"                         # Media player
