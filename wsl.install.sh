@@ -12,12 +12,29 @@ source $DOTHOME/libs/os.sh
 # Include Adam Eivy's library helpers.
 source $DOTHOME/libs/print.sh
 
+source $DOTHOME/libs/permission.sh
+
+function clear_environment() {
+  unset sudoPW
+  unset SUDO_ASKPASS
+}
+
 #############################################
 # Introduction
 #############################################
 
 awesome_header
 
+#############################################
+# permission
+#############################################
+
+clear_environment
+
+echo ""
+read -s -p "Enter Password for sudo: " sudopassword
+export sudoPW=$sudopassword
+export SUDO_ASKPASS=$DOTHOME/libs/sudo-askpass.sh
 
 #############################################
 # Install packages
@@ -25,14 +42,15 @@ awesome_header
 bot "Install packages"
 
 action "zsh install"
-sudo apt-get install zsh
+exec_sudo apt-get install zsh
 ok
 
 action "antigen install"
-mkdir -p /usr/local/share/antigen/
+exec_sudo mkdir -p /usr/local/share/antigen/
 mkdir -p $HOME/tmp/antigen/
 curl -L git.io/antigen > $HOME/tmp/antigen.zsh
-sudo mv $HOME/tmp/antigen.zsh /usr/local/share/antigen/antigen.zsh
+exec_sudo mv $HOME/tmp/antigen.zsh /usr/local/share/antigen/antigen.zsh
+rm -rf mv $HOME/tmp
 ok
 
 
@@ -55,6 +73,10 @@ ok
 
 action "set zsh settings"
 bash "$DOTHOME/settings/zsh/apply.sh"
+ok
+
+action "set wsl settings"
+bash "$DOTHOME/settings/wsl/apply.sh"
 ok
 
 action "clear cache"
@@ -93,22 +115,23 @@ chmod -R +wx ./bin
 ok
 
 action "set path environment (bash)"
-sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" > /dev/null
-sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" > /dev/null
+exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" >/dev/null
+exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" >/dev/null
+exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" >/dev/null
 ok
 
 action "set path environment (zsh)"
-sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" > /dev/null
-sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" > /dev/null
+exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" >/dev/null
+exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" >/dev/null
+exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" >/dev/null
 ok
+
 
 action "apply"
 if [ -f /usr/local/bin/dotfiles ]; then
-  sudo unlink /usr/local/bin/dotfiles > /dev/null
+  exec_sudo unlink /usr/local/bin/dotfiles > /dev/null
 fi
-sudo ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+exec_sudo ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 ok
 
 
@@ -121,5 +144,6 @@ running "nvm (node version manager) install"
 zsh "$DOTHOME/vms/nvm/install.sh"
 ok
 
+clear_environment
 
 echo "\n\nDone! Dotfiles is installed."
