@@ -25,16 +25,14 @@ awesome_header
 bot "Install packages"
 
 action "zsh install"
-apt-get install zsh
+sudo apt-get install zsh
 ok
 
 action "antigen install"
 mkdir -p /usr/local/share/antigen/
-curl -L git.io/antigen > /usr/local/share/antigen/antigen.zsh
-ok
-
-action "fonts install"
-sh "$DOTHOME/packages/fonts/install.sh"
+mkdir -p $HOME/tmp/antigen/
+curl -L git.io/antigen > $HOME/tmp/antigen.zsh
+sudo mv $HOME/tmp/antigen.zsh /usr/local/share/antigen/antigen.zsh
 ok
 
 
@@ -52,15 +50,15 @@ mkdir $DOTCDIR
 ok
 
 action "set git settings"
-sh "$DOTHOME/settings/git/apply.sh"
+bash "$DOTHOME/settings/git/apply.sh"
 ok
 
 action "set zsh settings"
-sh "$DOTHOME/settings/zsh/apply.sh"
+bash "$DOTHOME/settings/zsh/apply.sh"
 ok
 
 action "clear cache"
-sh "$DOTHOME/bin/dotfiles" clean
+bash "$DOTHOME/bin/dotfiles" clean
 ok
 
 #############################################
@@ -108,9 +106,9 @@ ok
 
 action "apply"
 if [ -f /usr/local/bin/dotfiles ]; then
-  unlink /usr/local/bin/dotfiles > /dev/null
+  sudo unlink /usr/local/bin/dotfiles > /dev/null
 fi
-ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+sudo ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
 ok
 
 
