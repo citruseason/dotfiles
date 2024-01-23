@@ -42,7 +42,7 @@ export SUDO_ASKPASS=$DOTHOME/libs/sudo-askpass.sh
 bot "Install packages"
 
 action "zsh install"
-exec_sudo apt-get install zsh
+exec_sudo apt-get install -y zsh
 ok
 
 action "antigen install"
@@ -146,4 +146,6 @@ ok
 
 clear_environment
 
-echo "\n\nDone! Dotfiles is installed."
+echo ""
+echo ""
+echo "Done! Dotfiles is installed."
