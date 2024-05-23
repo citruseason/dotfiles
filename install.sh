@@ -135,24 +135,32 @@ exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" >/dev/null
 exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" >/dev/null
 ok
 
-#action "apply"
-#if [ -f /usr/local/bin/dotfiles ]; then
-#  unlink /usr/local/bin/dotfiles > /dev/null
-#fi
-#ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
-#ok
+action "apply"
+if [ -f /usr/local/bin/dotfiles ]; then
+ exec_sudo unlink /usr/local/bin/dotfiles > /dev/null
+fi
+exec_sudo ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+ok
 
 #############################################
 # Install Version Managers
 #############################################
 bot "Install vms"
 
-running "nvm install"
-sh "$DOTHOME/vms/nvm/install.sh"
+running "fnm install"
+sh "$DOTHOME/vms/fnm/install.sh"
+ok
+
+running "jenv install"
+sh "$DOTHOME/vms/jenv/install.sh"
 ok
 
 running "pyenv install"
 sh "$DOTHOME/vms/pyenv/install.sh"
+ok
+
+running "rbenv install"
+sh "$DOTHOME/vms/rbenv/install.sh"
 ok
 
 clear_environment
