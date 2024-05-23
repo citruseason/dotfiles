@@ -21,9 +21,6 @@ dockutil --no-restart --add "/Applications/iTerm.app"
 dockutil --no-restart --add "/Applications/Visual Studio Code.app"
 dockutil --no-restart --add "/Applications/Postman.app"
 
-# 2FA
-dockutil --no-restart --add "/Applications/Authy Desktop.app"
-
 # Folders
 dockutil --no-restart --add "/Applications" --display stack --sort name --before Trash
 dockutil --no-restart --add "$HOME/Downloads" --display stack --sort dateadded --before Trash
