@@ -9,7 +9,7 @@ function configuration() {
   
   echo '# rbenv setup' >> ~/.zshrc
   echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-  echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+  echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
   echo '' >> ~/.zshrc
 }
 
