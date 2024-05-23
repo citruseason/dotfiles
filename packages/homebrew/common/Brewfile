@@ -2,8 +2,6 @@
 # Install Taps
 ######################################
 tap 'homebrew/bundle'
-tap "homebrew/cask-versions"
-tap "homebrew/cask-fonts"
 
 
 ######################################
@@ -17,8 +15,8 @@ brew "mas"           # appstore app installer
 brew "wget" 
 brew "tree"
 brew "gcc"
-breq "gcc@11"
-cask "hpedrorodrigues/tools/dockutil" # brew "dockutil" / 12.3 이상에서 에러나서 이 설치파일로 변경
+brew "gcc@11"
+brew "dockutil"
 brew "gnu-getopt"
 brew "gnu-sed"
 
