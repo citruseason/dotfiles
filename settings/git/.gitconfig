@@ -91,6 +91,12 @@
 
 [pager]
   diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
-[user]
-  name = citruseason
-  email = citruseason@gmail.com
+
+[includeIf "gitdir:~/dotfiles/"]
+  path = ~/.gitconfig-personal
+
+[includeIf "gitdir:~/projects/personal/"]
+  path = ~/.gitconfig-personal
+
+[includeIf "gitdir:~/projects/company/"]
+  path = ~/.gitconfig-company

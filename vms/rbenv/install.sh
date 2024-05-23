@@ -5,9 +5,12 @@ function command_exists() {
 }
 
 function configuration() {
-  rbenv init
+  rbenv init &>/dev/null
+  
+  echo '# rbenv setup' >> ~/.zshrc
   echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
   echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+  echo '' >> ~/.zshrc
 }
 
 # Check for fnm
@@ -15,7 +18,8 @@ if ! command_exists rbenv; then
   echo "  Installing rbenv for you."
 
   brew install rbenv ruby-build
-  configuration
 fi
+
+configuration
 
 rbenv -h

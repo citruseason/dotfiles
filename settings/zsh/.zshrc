@@ -25,7 +25,7 @@ antigen bundle command-not-found
 antigen bundle zsh-users/zsh-syntax-highlighting
 
 # Load the pure theme.
-antigen bundle mafredri/zsh-async
+antigen bundle mafredri/zsh-async@main
 antigen bundle denysdovhan/spaceship-prompt
 
 # Tell Antigen that you're done.
@@ -34,3 +34,4 @@ antigen apply
 source ~/.aliases
 
 eval "$(ssh-agent -s)" &>/dev/null
+
