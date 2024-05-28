@@ -10,18 +10,14 @@ function command_exists() {
 }
 
 function configuration() {
-  export PYENV_ROOT="$HOME/.pyenv" &>/dev/null
-  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH" &>/dev/null
+  export PATH="$HOME/.pyenv/bin:$PATH" &>/dev/null
   eval "$(pyenv init -)" &>/dev/null
-  if which pyenv-virtualenv-init > /dev/null &>/dev/null; then eval "$(pyenv virtualenv-init -)" &>/dev/null; fi
-  source $(brew --prefix autoenv)/activate.sh &>/dev/null
+  eval "$(pyenv virtualenv-init -)" &>/dev/null
 
   echo '# pyenv setup' >> ~/.zshrc
-  echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
   echo 'eval "$(pyenv init -)"' >> ~/.zshrc
-  echo 'if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi' >> ~/.zshrc
-  echo 'source $(brew --prefix autoenv)/activate.sh &>/dev/null' >> ~/.zshrc
+  echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
   echo '' >> ~/.zshrc
 }
 
@@ -29,7 +25,7 @@ function configuration() {
 if ! command_exists pyenv; then
   echo "  Installing pyenv for you."
 
-  brew install pyenv pyenv-virtualenv autoenv
+  brew install pyenv pyenv-virtualenv
 fi
 
 configuration
