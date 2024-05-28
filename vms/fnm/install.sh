@@ -8,8 +8,8 @@ function configuration() {
   export PATH="$HOME/Library/Application Support/fnm:$PATH" &>/dev/null
   eval "$(fnm env --use-on-cd)" &>/dev/null
 
-  sed -i "s/eval \"\$(fnm env)\"//g" $HOME/.zshrc &>/dev/null
-  sed -i "s/eval \"\$(fnm env --use-on-cd)\"//g" $HOME/.zshrc &>/dev/null
+  sed -i '' "s#eval \"\$(fnm env)\"##g" $HOME/.zshrc &>/dev/null
+  sed -i '' "s#eval \"\$(fnm env --use-on-cd)\"##g" $HOME/.zshrc &>/dev/null
   
   echo '# fnm setup' >> ~/.zshrc
   echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
@@ -31,8 +31,7 @@ fnm --version
 # lts install
 fnm install --lts --corepack-enabled --resolve-engines &>/dev/null
 
-# add package manager
-npm install -g yarn pnpm &>/dev/null
+# node versions
+fnm ls
 
-# Check for node installed
-node -v
+echo "execute fnm use (version)"
