@@ -3,6 +3,7 @@
 export DOTHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export DOTCDIR="$HOME/.dotfiles.d"
 export DOTCBAK="$HOME/.dotfiles.d.bak"
+export DOT_EXCUTE_TIME=$(date +'%Y-%m-%dT%H:%M:%S')
 
 # error handle
 set -e
@@ -67,11 +68,21 @@ ok
 bot "Setup settings"
 
 action "set data directory"
+
+mkdir -p $DOTCBAK/$DOT_EXCUTE_TIME
 if [[ -d "$DOTCDIR" ]]; then
-  rm -rf $DOTCBAK
-  mv $DOTCDIR $DOTCBAK
+  mv $DOTCDIR $DOTCBAK/$DOT_EXCUTE_TIME
+else
+  cp $HOME/.bashrc $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.zshrc $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.aliases $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.gitconfig $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.gitconfig-company $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.gitconfig-personal $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
+  cp $HOME/.gitignore $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
 fi
-mkdir $DOTCDIR
+mkdir -p $DOTCDIR
+
 ok
 
 action "set macos defaults and add apps to dock"
@@ -124,22 +135,29 @@ chmod -R +wx ./bin
 ok
 
 action "set path environment (bash)"
-exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/profile" >/dev/null
-exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/profile" >/dev/null
-exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/profile" >/dev/null
+echo '' >> $HOME/.bashrc
+sed -i '' "s#export DOTHOME=$DOTHOME##g" $HOME/.bashrc &>/dev/null || :
+sed -i '' "s#export DOTCDIR=$DOTCDIR##g" $HOME/.bashrc &>/dev/null || :
+sed -i '' "s#export DOTCBAK=$DOTCBAK##g" $HOME/.bashrc &>/dev/null || :
+sed -i '' "s#export DOT_EXCUTE_TIME=$DOT_EXCUTE_TIME##g" $HOME/.bashrc &>/dev/null || :
+echo "export DOTHOME="$DOTHOME"" >> $HOME/.bashrc
+echo "export DOTCDIR="$DOTCDIR"" >> $HOME/.bashrc
+echo "export DOTCBAK="$DOTCBAK"" >> $HOME/.bashrc
+echo "export DOT_EXCUTE_TIME="$DOT_EXCUTE_TIME"" >> $HOME/.bashrc
+echo '' >> $HOME/.bashrc
 ok
 
 action "set path environment (zsh)"
-exec_sudo sh -c "echo export DOTHOME='$DOTHOME' >> /etc/zprofile" >/dev/null
-exec_sudo sh -c "echo export DOTCDIR='$DOTCDIR' >> /etc/zprofile" >/dev/null
-exec_sudo sh -c "echo export DOTCBAK='$DOTCBAK' >> /etc/zprofile" >/dev/null
+echo '' >> $HOME/.zshrc
+echo "export DOTHOME="$DOTHOME"" >> $HOME/.zshrc
+echo "export DOTCDIR="$DOTCDIR"" >> $HOME/.zshrc
+echo "export DOTCBAK="$DOTCBAK"" >> $HOME/.zshrc
+echo "export DOT_EXCUTE_TIME="$DOT_EXCUTE_TIME"" >> $HOME/.zshrc
+echo '' >> $HOME/.zshrc
 ok
 
 action "apply"
-if [ -f /usr/local/bin/dotfiles ]; then
- exec_sudo unlink /usr/local/bin/dotfiles > /dev/null
-fi
-exec_sudo ln -s $DOTHOME/bin/dotfiles /usr/local/bin/dotfiles
+echo 'export PATH="$DOTHOME/bin:$PATH"' >> $HOME/.zshrc
 ok
 
 #############################################
