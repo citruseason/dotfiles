@@ -1,0 +1,38 @@
+---
+homebrew_formulae:
+  # CLI Tools
+  - git
+  - git-lfs
+  - diff-so-fancy
+  - mas
+  - wget
+  - tree
+  - dockutil
+  - mise
+  - nmap
+  # Shell
+  - zsh
+  - starship
+  # Editor
+  - neovim
+
+homebrew_casks:
+  - ghostty
+  - docker
+  - google-chrome
+  - slack
+  - notion
+  - iina
+  - scroll-reverser
+  - appcleaner
+  - font-hack-nerd-font
+
+homebrew_private_casks:
+  - karabiner-elements
+  - 1password
+  - antigravity
+
+homebrew_mas_apps:
+  - { name: Bandizip, id: 1265704574 }
+  - { name: Magnet, id: 441258766 }
+  - { name: KakaoTalk, id: 869223134 }

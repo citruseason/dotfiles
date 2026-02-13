@@ -1,7 +1,0 @@
-cask "karabiner-elements"
-cask "1password"
-cask "antigravity"
-
-mas "Bandizip", id: 1265704574
-mas "Magnet", id: 441258766
-mas "KakaoTalk", id: 869223134

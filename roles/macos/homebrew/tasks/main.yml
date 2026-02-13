@@ -31,10 +31,15 @@
   community.general.homebrew:
     update_homebrew: true
 
-- name: Install common packages via Brewfile
-  ansible.builtin.command:
-    cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.common
-  changed_when: false
+- name: Install formulae
+  community.general.homebrew:
+    name: "{{ homebrew_formulae }}"
+    state: present
+
+- name: Install casks
+  community.general.homebrew_cask:
+    name: "{{ homebrew_casks }}"
+    state: present
 
 - name: Cache sudo credentials for cask installs
   ansible.builtin.command: sudo -v
@@ -42,8 +47,18 @@
   changed_when: false
   when: homebrew_install_private
 
-- name: Install private packages via Brewfile
-  ansible.builtin.command:
-    cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.private
+- name: Install private casks
+  community.general.homebrew_cask:
+    name: "{{ homebrew_private_casks }}"
+    state: present
+    sudo_password: "{{ ansible_become_password | default(omit) }}"
   when: homebrew_install_private
-  changed_when: false
+
+- name: Install Mac App Store apps
+  community.general.mas:
+    id: "{{ item.id }}"
+    state: present
+  loop: "{{ homebrew_mas_apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: homebrew_install_private
