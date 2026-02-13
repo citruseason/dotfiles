@@ -18,6 +18,15 @@
     - ansible_architecture == 'arm64'
   changed_when: false
 
+- name: Remove deprecated taps
+  ansible.builtin.command: brew untap {{ item }}
+  loop:
+    - homebrew/cask-versions
+    - homebrew/cask-fonts
+  register: untap_result
+  changed_when: untap_result.rc == 0
+  failed_when: false
+
 - name: Update Homebrew
   community.general.homebrew:
     update_homebrew: true

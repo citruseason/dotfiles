@@ -1,5 +1,6 @@
 [tools]
 node = "lts"
+bun = "lts"
 python = "lts"
 java = "lts"
 ruby = "lts"
