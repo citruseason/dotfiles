@@ -1,0 +1,11 @@
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+  children:
+    linux:
+      hosts:
+        localhost:
+    wsl:
+      hosts:
+        localhost:

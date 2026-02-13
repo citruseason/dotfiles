@@ -1,0 +1,11 @@
+---
+- name: Enable systemd in WSL
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/wsl.conf
+    marker: "# {mark} ANSIBLE MANAGED - WSL boot config"
+    block: |
+      [boot]
+      systemd=true
+    create: true
+    mode: "0644"

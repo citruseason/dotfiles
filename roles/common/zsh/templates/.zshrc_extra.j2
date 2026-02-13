@@ -1,0 +1,8 @@
+# Managed by Ansible -- do not edit manually
+
+# Dotfiles environment
+export DOTHOME="{{ dotfiles_dir }}"
+export PATH="$DOTHOME/bin:$PATH"
+
+# mise (runtime version manager)
+eval "$(mise activate zsh)"

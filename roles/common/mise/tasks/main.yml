@@ -1,0 +1,31 @@
+---
+- name: Check if mise is installed
+  ansible.builtin.command: which mise
+  register: mise_check
+  changed_when: false
+  failed_when: false
+
+- name: Install mise via Homebrew
+  community.general.homebrew:
+    name: mise
+    state: present
+  when:
+    - mise_check.rc != 0
+    - is_macos | default(false)
+
+- name: Install mise via curl (Linux)
+  ansible.builtin.shell: curl https://mise.run | sh
+  when:
+    - mise_check.rc != 0
+    - is_linux | default(false)
+
+- name: Copy global .mise.toml
+  ansible.builtin.copy:
+    src: .mise.toml
+    dest: "{{ ansible_env.HOME }}/.mise.toml"
+    mode: "0644"
+    backup: true
+
+- name: Install mise tools
+  ansible.builtin.shell: mise install
+  changed_when: false

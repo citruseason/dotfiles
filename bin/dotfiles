@@ -1,90 +1,330 @@
 #!/bin/bash
+set -euo pipefail
 
-BIN_NAME=$(basename "$0")
-COMMAND_NAME=$1
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-ARROW="￫"
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-NC='\033[0m'
+# ── Colors & Symbols ──────────────────────────────────
+BOLD=$'\033[1m'
+DIM=$'\033[2m'
+RED=$'\033[31m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+CYAN=$'\033[36m'
+NC=$'\033[0m'
+SYM_CHECK="${GREEN}◉${NC}"
+SYM_UNCHECK="${DIM}○${NC}"
+SYM_PTR="${CYAN}❯${NC}"
 
-cmd_help() {
-    echo -e "$ARROW Usage: ${YELLOW}$BIN_NAME <command>${NC}"
-    echo
-    echo "Commands:"
-    echo "   help             This help message"
-    echo "   remove           Remove this dotfiles (Not yet...)"
-    echo "   update           Update packages and pkg managers (OS, brew, mas)"
-    echo "   clean            Clean up caches (brew)"
-    echo "   brew             Run brew script"
-    echo "   brew_private     Run brew script (private apps)"
-    echo "   zsh              Run zsh script"
-    echo "   git              Run git script"
-    echo "   macos            Run macOS defaults script"
-    echo "   dock             Run macOS dock script"
+# ── State ─────────────────────────────────────────────
+OS=""
+INVENTORY=""
+CURSOR=0
+STTY_STATE=""
+ROLE_NAMES=()
+ROLE_TAGS=()
+ROLE_DESCS=()
+ROLE_SELECTED=()
+ROLE_CATEGORIES=()
+
+# ── Terminal ──────────────────────────────────────────
+setup_term() {
+    STTY_STATE=$(stty -g)
+    stty raw -echo
+    printf '\033[?25l'
+    printf '\033[?1049h'
 }
 
-cmd_remove() {
-    echo -e "${RED}Not yet supported. ${NC}"
+restore_term() {
+    printf '\033[?1049l'
+    printf '\033[?25h'
+    [[ -n "${STTY_STATE:-}" ]] && stty "$STTY_STATE" 2>/dev/null || true
 }
 
-cmd_update() {
-    sudo softwareupdate -i -a
-    brew update
-    brew upgrade
-    mas upgrade
-    echo -e "${GREEN}$ARROW Success! Update command finished.${NC}"
+read_key() {
+    local c
+    IFS= read -r -n1 c
+    case "$c" in
+        $'\x1b')
+            IFS= read -r -n2 -t 0.1 c || true
+            case "$c" in
+                '[A') printf 'up'   ;;
+                '[B') printf 'down' ;;
+            esac
+            ;;
+        ' ')   printf 'space' ;;
+        $'\r') printf 'enter' ;;
+        a|A)   printf 'toggle_all' ;;
+        q|Q)   printf 'quit' ;;
+        k)     printf 'up' ;;
+        j)     printf 'down' ;;
+    esac
 }
 
-cmd_clean() {
-    brew cleanup
-    # brew cask cleanup
-    echo -e "${GREEN}$ARROW Success! Clean command finished.${NC}"
+# ── Environment Detection ─────────────────────────────
+detect_env() {
+    case "$(uname -s)" in
+        Darwin) OS="macos" ;;
+        Linux)
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                OS="wsl"
+            else
+                OS="linux"
+            fi
+            ;;
+        *) OS="unknown" ;;
+    esac
 }
 
-cmd_brew() {
-    . "$DOTHOME/packages/homebrew/install.sh common"
-    echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
+# ── Build Roles ───────────────────────────────────────
+add_role() {
+    ROLE_NAMES+=("$1")
+    ROLE_TAGS+=("$2")
+    ROLE_DESCS+=("$3")
+    ROLE_SELECTED+=(1)
+    ROLE_CATEGORIES+=("$4")
 }
 
-cmd_brew_private() {
-    . "$DOTHOME/packages/homebrew/install.sh common"
-    echo -e "${GREEN}$ARROW Success! Brew command finished.${NC}"
-}
-
-cmd_zsh() {
-    . "$DOTHOME/packages/zsh/install.sh"
-    . "$DOTHOME/settings/zsh/apply.sh"
-    echo -e "${GREEN}$ARROW Success! Zsh command finished.${NC}"
-}
-
-cmd_git() {
-    . "$DOTHOME/settings/git/apply.sh"
-    echo -e "${GREEN}$ARROW Success! Git command finished.${NC}"
-}
-
-cmd_macos() {
-    . "$DOTHOME/settings/system/_macos.sh"
-    echo -e "${GREEN}$ARROW Success! macOS defaults finished.${NC}"
-}
-
-cmd_dock() {
-    . "$DOTHOME/settings/system/_dock.sh"
-    echo -e "${GREEN}$ARROW Success! Dock command finished.${NC}"
-}
-
-case $COMMAND_NAME in
-"" | "-h" | "--help")
-    cmd_help
-    ;;
-*)
-    shift
-    cmd_${COMMAND_NAME} $@
-    if [ $? = 127 ]; then
-        echo -e "${RED}$ARROW Error: '$COMMAND_NAME' is not a known command or has errors.${NC}" >&2
-        cmd_help
-        exit 1
+build_roles() {
+    if [[ "$OS" == "macos" ]]; then
+        add_role "Xcode CLT"      xcode    "Command Line Tools"          "macOS"
+        add_role "Homebrew"        homebrew "Package manager & packages"  "macOS"
     fi
-    ;;
-esac
+
+    if [[ "$OS" == "linux" || "$OS" == "wsl" ]]; then
+        add_role "APT Packages"   apt      "Essential system packages"   "Linux"
+    fi
+
+    add_role "Fonts"              fonts    "D2Coding font family"        "Common"
+    add_role "Git"                git      "Git config & aliases"        "Common"
+    add_role "Zsh"                zsh      "Zsh, plugins & Starship"     "Common"
+    add_role "Mise"               mise     "Node, Python, Java, Ruby"    "Common"
+    add_role "Apps"               apps     "Ghostty terminal config"     "Common"
+    add_role "Dotfiles CLI"       cli      "This CLI tool"               "Common"
+
+    if [[ "$OS" == "macos" ]]; then
+        add_role "macOS Defaults"  macos   "System preferences & apps"   "macOS"
+        add_role "Dock"            dock    "Dock layout & hot corners"   "macOS"
+    fi
+
+    if [[ "$OS" == "wsl" ]]; then
+        add_role "WSL"             wsl     "systemd, 1Password SSH"      "WSL"
+    fi
+}
+
+# ── TUI: Profile Selector (macOS) ────────────────────
+select_profile() {
+    local options=("personal" "work")
+    local descs=(
+        "Personal — includes 1Password, Karabiner, etc."
+        "Work — common packages only"
+    )
+    local cur=0
+
+    while true; do
+        printf '\033[H\033[J'
+        printf '\n'
+        printf '  %bdotfiles%b  %bSelect a profile%b\n' "$BOLD" "$NC" "$DIM" "$NC"
+        printf '  %b─────────────────────────────────────────────%b\n' "$DIM" "$NC"
+        printf '\n'
+
+        for i in "${!options[@]}"; do
+            if ((i == cur)); then
+                printf '  %b %b%s%b  %b%s%b\n' \
+                    "$SYM_PTR" "$BOLD" "${options[$i]}" "$NC" "$DIM" "${descs[$i]}" "$NC"
+            else
+                printf '    %s  %b%s%b\n' \
+                    "${options[$i]}" "$DIM" "${descs[$i]}" "$NC"
+            fi
+        done
+
+        printf '\n  %b↑↓ move  enter select  q quit%b\n' "$DIM" "$NC"
+
+        case "$(read_key)" in
+            up)    ((cur > 0)) && ((cur--)) || true ;;
+            down)  ((cur < ${#options[@]} - 1)) && ((cur++)) || true ;;
+            enter) INVENTORY="${options[$cur]}"; return 0 ;;
+            quit)  return 1 ;;
+        esac
+    done
+}
+
+# ── TUI: Role Selector ───────────────────────────────
+select_roles() {
+    CURSOR=0
+    local total=${#ROLE_NAMES[@]}
+
+    while true; do
+        printf '\033[H\033[J'
+
+        # Header
+        printf '\n'
+        printf '  %bdotfiles%b  %b%s · %s%b\n' \
+            "$BOLD" "$NC" "$DIM" "$OS" "$INVENTORY" "$NC"
+        printf '  %b─────────────────────────────────────────────%b\n' "$DIM" "$NC"
+        printf '\n'
+        printf '  %b↑↓ move  ␣ toggle  a all/none  enter run  q quit%b\n' "$DIM" "$NC"
+        printf '\n'
+
+        # Roles grouped by category
+        local prev_cat=""
+        for i in "${!ROLE_NAMES[@]}"; do
+            local cat="${ROLE_CATEGORIES[$i]}"
+            if [[ "$cat" != "$prev_cat" ]]; then
+                [[ -n "$prev_cat" ]] && printf '\n'
+                printf '  %b%s%b\n' "$DIM" "$cat" "$NC"
+                prev_cat="$cat"
+            fi
+
+            local sym="$SYM_UNCHECK"
+            ((ROLE_SELECTED[i])) && sym="$SYM_CHECK"
+
+            if ((i == CURSOR)); then
+                printf '  %b %b %b%s%b  %b%s%b\n' \
+                    "$SYM_PTR" "$sym" "$BOLD" "${ROLE_NAMES[$i]}" "$NC" \
+                    "$DIM" "${ROLE_DESCS[$i]}" "$NC"
+            else
+                printf '    %b %s  %b%s%b\n' \
+                    "$sym" "${ROLE_NAMES[$i]}" "$DIM" "${ROLE_DESCS[$i]}" "$NC"
+            fi
+        done
+
+        # Count selected
+        local count=0
+        for s in "${ROLE_SELECTED[@]}"; do ((count += s)) || true; done
+        printf '\n  %b%d of %d selected%b\n' "$DIM" "$count" "$total" "$NC"
+
+        case "$(read_key)" in
+            up)    ((CURSOR > 0)) && ((CURSOR--)) || true ;;
+            down)  ((CURSOR < total - 1)) && ((CURSOR++)) || true ;;
+            space)
+                if ((ROLE_SELECTED[CURSOR])); then
+                    ROLE_SELECTED[CURSOR]=0
+                else
+                    ROLE_SELECTED[CURSOR]=1
+                fi
+                ;;
+            toggle_all)
+                local all=1
+                for s in "${ROLE_SELECTED[@]}"; do
+                    ((s == 0)) && { all=0; break; }
+                done
+                local val=1
+                ((all)) && val=0
+                for i in "${!ROLE_SELECTED[@]}"; do
+                    ROLE_SELECTED[$i]=$val
+                done
+                ;;
+            enter) return 0 ;;
+            quit)  return 1 ;;
+        esac
+    done
+}
+
+# ── Run Playbook ──────────────────────────────────────
+run_playbook() {
+    local tags=()
+    for i in "${!ROLE_NAMES[@]}"; do
+        ((ROLE_SELECTED[i])) && tags+=("${ROLE_TAGS[$i]}")
+    done
+
+    if [[ ${#tags[@]} -eq 0 ]]; then
+        printf '%bNo roles selected.%b\n' "$YELLOW" "$NC"
+        return 0
+    fi
+
+    local tag_str
+    tag_str=$(IFS=,; printf '%s' "${tags[*]}")
+
+    printf '\n'
+    printf '  %b❯ ansible-playbook%b site.yml -i inventory/%s.yml --tags %s\n' \
+        "$CYAN" "$NC" "$INVENTORY" "$tag_str"
+    printf '\n'
+
+    ansible-playbook "$DOTFILES_DIR/site.yml" \
+        -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
+        --tags "$tag_str"
+}
+
+# ── Help ──────────────────────────────────────────────
+show_help() {
+    cat <<EOF
+Usage: dotfiles [options]
+
+Options:
+  (none)           Interactive TUI mode
+  --all            Run all roles
+  --tags t1,t2     Run specific roles by tag
+  --help, -h       Show this help
+
+Available tags:
+  xcode  homebrew  apt   fonts  git   zsh
+  mise   apps      cli   macos  dock  wsl
+EOF
+}
+
+# ── Main ──────────────────────────────────────────────
+main() {
+    detect_env
+
+    case "${1:-}" in
+        --help|-h)
+            show_help
+            return 0
+            ;;
+        --all)
+            case "$OS" in
+                macos) INVENTORY="${2:-personal}" ;;
+                wsl)   INVENTORY="wsl" ;;
+                *)     INVENTORY="ubuntu" ;;
+            esac
+            ansible-playbook "$DOTFILES_DIR/site.yml" \
+                -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml"
+            return 0
+            ;;
+        --tags)
+            [[ -z "${2:-}" ]] && { printf '%bError: --tags requires an argument%b\n' "$RED" "$NC"; exit 1; }
+            case "$OS" in
+                macos) INVENTORY="${3:-personal}" ;;
+                wsl)   INVENTORY="wsl" ;;
+                *)     INVENTORY="ubuntu" ;;
+            esac
+            ansible-playbook "$DOTFILES_DIR/site.yml" \
+                -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
+                --tags "$2"
+            return 0
+            ;;
+    esac
+
+    # ── Interactive TUI ───────────────────────────────
+    setup_term
+    trap restore_term EXIT
+
+    case "$OS" in
+        macos)
+            if ! select_profile; then
+                restore_term; trap - EXIT
+                printf '%bCancelled.%b\n' "$DIM" "$NC"
+                exit 0
+            fi
+            ;;
+        wsl)   INVENTORY="wsl" ;;
+        linux) INVENTORY="ubuntu" ;;
+        *)
+            restore_term; trap - EXIT
+            printf '%bUnsupported OS.%b\n' "$RED" "$NC"
+            exit 1
+            ;;
+    esac
+
+    build_roles
+
+    if select_roles; then
+        restore_term; trap - EXIT
+        run_playbook
+    else
+        restore_term; trap - EXIT
+        printf '%bCancelled.%b\n' "$DIM" "$NC"
+    fi
+}
+
+main "$@"

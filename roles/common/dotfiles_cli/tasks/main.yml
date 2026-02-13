@@ -1,0 +1,5 @@
+---
+- name: Ensure dotfiles bin directory has execute permissions
+  ansible.builtin.file:
+    path: "{{ dotfiles_dir }}/bin/dotfiles"
+    mode: "0755"

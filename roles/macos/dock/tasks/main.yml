@@ -1,0 +1,24 @@
+---
+- name: Remove all Dock items
+  ansible.builtin.command: dockutil --no-restart --remove all
+  changed_when: false
+
+- name: Add apps to Dock
+  ansible.builtin.command: dockutil --no-restart --add "{{ item }}"
+  loop: "{{ dock_apps }}"
+  loop_control:
+    label: "{{ item | basename }}"
+  changed_when: false
+
+- name: Add folders to Dock
+  ansible.builtin.command: >
+    dockutil --no-restart --add "{{ item.path }}"
+    --display {{ item.display }} --sort {{ item.sort }} --before Trash
+  loop: "{{ dock_folders }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  changed_when: false
+
+- name: Restart Dock
+  ansible.builtin.command: killall Dock
+  changed_when: false

@@ -1,189 +1,256 @@
 #!/bin/bash
+set -euo pipefail
 
-export DOTHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export DOTCDIR="$HOME/.dotfiles.d"
-export DOTCBAK="$HOME/.dotfiles.d.bak"
-export DOT_EXCUTE_TIME=$(date +'%Y-%m-%dT%H:%M:%S')
+# ── Configuration (override via env vars) ─────────────
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/relomote/dotfiles.git}"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+PROFILE="${PROFILE:-}"
 
-# error handle
-set -e
+# ── Colors ────────────────────────────────────────────
+BOLD=$'\033[1m'
+DIM=$'\033[2m'
+RED=$'\033[31m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+CYAN=$'\033[36m'
+NC=$'\033[0m'
 
-source $DOTHOME/libs/os.sh
+# ── Helpers ───────────────────────────────────────────
+info()    { printf '  %b%s%b\n' "$CYAN" "$1" "$NC"; }
+success() { printf '  %b✓ %s%b\n' "$GREEN" "$1" "$NC"; }
+warn()    { printf '  %b! %s%b\n' "$YELLOW" "$1" "$NC"; }
+fail()    { printf '  %b✗ %s%b\n' "$RED" "$1" "$NC" >&2; exit 1; }
+step()    { printf '\n%b  %s%b\n' "$BOLD" "$1" "$NC"; }
+has()     { command -v "$1" &>/dev/null; }
 
-# Include Adam Eivy's library helpers.
-source $DOTHOME/libs/print.sh
+# ── OS Detection ──────────────────────────────────────
+OS=""
 
-source $DOTHOME/libs/permission.sh
-
-function clear_environment() {
-  unset sudoPW
-  unset SUDO_ASKPASS
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) OS="macos" ;;
+        Linux)
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                OS="wsl"
+            else
+                OS="linux"
+            fi
+            ;;
+        *) fail "Unsupported OS: $(uname -s)" ;;
+    esac
 }
 
-#############################################
-# Introduction
-#############################################
+detect_inventory() {
+    if [[ -n "$PROFILE" ]]; then
+        return
+    fi
+    case "$OS" in
+        macos) PROFILE="personal" ;;
+        wsl)   PROFILE="wsl" ;;
+        linux) PROFILE="ubuntu" ;;
+    esac
+}
 
-awesome_header
+# ── Sudo keep-alive ──────────────────────────────────
+SUDO_PID=""
 
-#############################################
-# permission
-#############################################
+acquire_sudo() {
+    if [[ "$OS" == "macos" ]] || [[ "$OS" == "linux" ]] || [[ "$OS" == "wsl" ]]; then
+        if ! sudo -n true 2>/dev/null; then
+            info "Sudo password required for system configuration"
+            sudo -v
+        fi
+        # Keep sudo timestamp alive in background
+        (while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done) &
+        SUDO_PID=$!
+    fi
+}
 
-clear_environment
+cleanup_sudo() {
+    [[ -n "$SUDO_PID" ]] && kill "$SUDO_PID" 2>/dev/null || true
+}
+trap cleanup_sudo EXIT
 
-echo ""
-read -s -p "Enter Password for sudo: " sudopassword
-export sudoPW=$sudopassword
-export SUDO_ASKPASS=$DOTHOME/libs/sudo-askpass.sh
+# ── macOS: Xcode Command Line Tools ──────────────────
+install_xcode_clt() {
+    if xcode-select -p &>/dev/null; then
+        success "Xcode CLT"
+        return
+    fi
 
-#############################################
-# Install packages
-#############################################
-bot "Install packages"
+    info "Installing Xcode Command Line Tools..."
+    sudo touch /tmp/.com.apple.dt.CommandLineTools.done
 
-running "xcode command line tools install"
-sh "$DOTHOME/packages/xcode-command-line-tools/install.sh"
-ok
+    PROD=$(softwareupdate -l 2>&1 \
+        | grep -E '^\s+\*.*Command Line Tools' \
+        | sed 's/^[[:space:]]*\* Label: //' \
+        | head -n 1)
 
-running "homebrew packages install (common)"
-sh $DOTHOME/packages/homebrew/install.sh common
-ok
+    if [[ -z "$PROD" ]]; then
+        # Fallback: trigger dialog-based install
+        sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
+        xcode-select --install 2>/dev/null || true
+        info "Waiting for Xcode CLT installation..."
+        until xcode-select -p &>/dev/null; do sleep 5; done
+    else
+        sudo softwareupdate -i "$PROD" --verbose
+        sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
+    fi
+    success "Xcode CLT"
+}
 
-running "homebrew packages install (private)"
-sh $DOTHOME/packages/homebrew/install.sh private
-ok
+# ── macOS: Homebrew ───────────────────────────────────
+install_homebrew() {
+    if has brew; then
+        success "Homebrew"
+        return
+    fi
 
-running "add homebrew path"
-export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
-ok
+    info "Installing Homebrew..."
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-action "fonts install"
-sh "$DOTHOME/packages/fonts/install.sh"
-ok
+    # Add brew to PATH for current session
+    if [[ -f /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f /usr/local/bin/brew ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+    success "Homebrew"
+}
 
-#############################################
-# Setup settings
-#############################################
-bot "Setup settings"
+# ── Ansible ───────────────────────────────────────────
+install_ansible_macos() {
+    if has ansible-playbook; then
+        success "Ansible"
+    else
+        info "Installing Ansible..."
+        brew install ansible
+        success "Ansible"
+    fi
 
-action "set data directory"
+    # community.general collection (osx_defaults, etc.)
+    if ansible-galaxy collection list 2>/dev/null | grep -q community.general; then
+        success "community.general collection"
+    else
+        info "Installing Ansible community.general collection..."
+        ansible-galaxy collection install community.general
+        success "community.general collection"
+    fi
+}
 
-mkdir -p $DOTCBAK/$DOT_EXCUTE_TIME
-if [[ -d "$DOTCDIR" ]]; then
-  mv $DOTCDIR $DOTCBAK/$DOT_EXCUTE_TIME
-else
-  cp $HOME/.bashrc $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.zshrc $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.aliases $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.gitconfig $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.gitconfig-company $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.gitconfig-personal $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-  cp $HOME/.gitignore $DOTCBAK/$DOT_EXCUTE_TIME/ &>/dev/null || :
-fi
-mkdir -p $DOTCDIR
+install_ansible_linux() {
+    if has ansible-playbook; then
+        success "Ansible"
+        return
+    fi
 
-ok
+    info "Installing Ansible..."
+    if has apt-get; then
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq software-properties-common
+        sudo apt-add-repository -y --update ppa:ansible/ansible
+        sudo apt-get install -y -qq ansible
+    elif has dnf; then
+        sudo dnf install -y ansible
+    else
+        # Fallback: pip
+        sudo apt-get update -qq 2>/dev/null || true
+        sudo apt-get install -y -qq python3 python3-pip 2>/dev/null || true
+        pip3 install --user ansible
+    fi
+    success "Ansible"
+}
 
-action "set macos defaults and add apps to dock"
-sh "$DOTHOME/settings/system/apply.sh"
-ok
+# ── Linux: git ────────────────────────────────────────
+install_git_linux() {
+    if has git; then
+        success "Git"
+        return
+    fi
 
-action "set git settings"
-sh "$DOTHOME/settings/git/apply.sh"
-ok
+    info "Installing Git..."
+    if has apt-get; then
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq git
+    elif has dnf; then
+        sudo dnf install -y git
+    fi
+    success "Git"
+}
 
-action "set zsh settings"
-sh "$DOTHOME/settings/zsh/apply.sh"
-ok
+# ── Clone/Update Repo ────────────────────────────────
+clone_dotfiles() {
+    if [[ -d "$DOTFILES_DIR/.git" ]]; then
+        info "Updating dotfiles repo..."
+        git -C "$DOTFILES_DIR" pull --rebase --quiet
+        success "Dotfiles updated ($DOTFILES_DIR)"
+    else
+        info "Cloning dotfiles repo..."
+        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+        success "Dotfiles cloned ($DOTFILES_DIR)"
+    fi
+}
 
-action "set apps settings"
-sh "$DOTHOME/settings/apps/apply.sh"
-ok
+# ── Run Ansible Playbook ─────────────────────────────
+run_playbook() {
+    info "Running playbook: inventory/$PROFILE.yml"
 
-action "clear cache"
-sh "$DOTHOME/bin/dotfiles" clean
-ok
+    # Override become_ask_pass since sudo is already authenticated
+    ANSIBLE_BECOME_ASK_PASS=false \
+    ansible-playbook "$DOTFILES_DIR/site.yml" \
+        -i "$DOTFILES_DIR/inventory/${PROFILE}.yml"
+}
 
-#############################################
-# Link
-#############################################
+# ── Banner ────────────────────────────────────────────
+banner() {
+    printf '\n'
+    printf '%b' "$BOLD"
+    cat <<'EOF'
+       __      __  _____ __
+  ____/ /___  / /_/ __(_) /__  _____
+ / __  / __ \/ __/ /_/ / / _ \/ ___/
+/ /_/ / /_/ / /_/ __/ / /  __(__  )
+\__,_/\____/\__/_/ /_/_/\___/____/
+EOF
+    printf '%b\n' "$NC"
+}
 
-action "linking"
-pushd $DOTCDIR >/dev/null 2>&1
-for name in $(ls -a); do
-  if [[ $name = "." || $name = ".." || $name = "" || $name = "plists" || $name = "karabiner" ]]; then
-    continue
-  fi
+# ── Main ──────────────────────────────────────────────
+main() {
+    banner
 
-  if [ -f "$HOME/$name" ]; then
-    unlink $HOME/$name
-  fi
+    detect_os
+    detect_inventory
 
-  ln -s $DOTCDIR/$name $HOME/$name
-done
-popd >/dev/null 2>&1
-ok
+    step "Environment"
+    info "OS: $OS  Profile: $PROFILE  Target: $DOTFILES_DIR"
 
-#############################################
-# Global install dotfiles command
-#############################################
-bot "dotfiles command install"
+    step "Sudo"
+    acquire_sudo
 
-action "set permission"
-chmod -R +wx ./bin
-ok
+    step "Prerequisites"
+    case "$OS" in
+        macos)
+            install_xcode_clt
+            install_homebrew
+            install_ansible_macos
+            ;;
+        *)
+            install_git_linux
+            install_ansible_linux
+            ;;
+    esac
 
-action "set path environment (bash)"
-echo '' >> $HOME/.bashrc
-sed -i '' "s#export DOTHOME=$DOTHOME##g" $HOME/.bashrc &>/dev/null || :
-sed -i '' "s#export DOTCDIR=$DOTCDIR##g" $HOME/.bashrc &>/dev/null || :
-sed -i '' "s#export DOTCBAK=$DOTCBAK##g" $HOME/.bashrc &>/dev/null || :
-sed -i '' "s#export DOT_EXCUTE_TIME=$DOT_EXCUTE_TIME##g" $HOME/.bashrc &>/dev/null || :
-echo "export DOTHOME="$DOTHOME"" >> $HOME/.bashrc
-echo "export DOTCDIR="$DOTCDIR"" >> $HOME/.bashrc
-echo "export DOTCBAK="$DOTCBAK"" >> $HOME/.bashrc
-echo "export DOT_EXCUTE_TIME="$DOT_EXCUTE_TIME"" >> $HOME/.bashrc
-echo '' >> $HOME/.bashrc
-ok
+    step "Dotfiles"
+    clone_dotfiles
 
-action "set path environment (zsh)"
-echo '' >> $HOME/.zshrc
-echo "export DOTHOME="$DOTHOME"" >> $HOME/.zshrc
-echo "export DOTCDIR="$DOTCDIR"" >> $HOME/.zshrc
-echo "export DOTCBAK="$DOTCBAK"" >> $HOME/.zshrc
-echo "export DOT_EXCUTE_TIME="$DOT_EXCUTE_TIME"" >> $HOME/.zshrc
-echo '' >> $HOME/.zshrc
-ok
+    step "Ansible Playbook"
+    run_playbook
 
-action "apply"
-echo 'export PATH="$DOTHOME/bin:$PATH"' >> $HOME/.zshrc
-ok
+    step "Done!"
+    success "Dotfiles setup complete"
+    info "Run 'dotfiles' for interactive management"
+    printf '\n'
+}
 
-#############################################
-# Install Version Managers
-#############################################
-bot "Install vms"
-
-running "fnm install"
-sh "$DOTHOME/vms/fnm/install.sh"
-ok
-
-running "jenv install"
-sh "$DOTHOME/vms/jenv/install.sh"
-ok
-
-running "pyenv install"
-sh "$DOTHOME/vms/pyenv/install.sh"
-ok
-
-running "rbenv install"
-sh "$DOTHOME/vms/rbenv/install.sh"
-ok
-
-clear_environment
-
-echo ""
-echo ""
-echo "Done! Dotfiles is installed."
-echo "Please 'Reboot' your mac !!"
+main "$@"

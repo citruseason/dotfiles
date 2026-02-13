@@ -1,8 +1,0 @@
-cask "karabiner-elements"
-cask "1password"
-cask "gureumkim"
-
-mas "Bandizip", id: 1265704574      # macOS unzip app
-mas "Magnet", id: 441258766         # macOS window spliter
-mas "KakaoTalk", id: 869223134
-mas "NAVER VIBE", id: 1542568299

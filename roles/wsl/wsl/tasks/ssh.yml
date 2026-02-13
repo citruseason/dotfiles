@@ -1,0 +1,29 @@
+---
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.ssh"
+    state: directory
+    mode: "0700"
+
+- name: Configure SSH to use 1Password agent
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+    marker: "# {mark} ANSIBLE MANAGED - 1Password SSH agent"
+    block: |
+      Host *
+          IdentityAgent ~/.1password/agent.sock
+    create: true
+    mode: "0600"
+
+- name: Set SSH_AUTH_SOCK for 1Password agent in .zshrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED - 1Password SSH agent"
+    block: |
+      export SSH_AUTH_SOCK=~/.1password/agent.sock
+
+- name: Remove git SSH override (native ssh uses 1Password agent)
+  ansible.builtin.command: git config --global --unset core.sshCommand
+  register: git_ssh_unset
+  changed_when: git_ssh_unset.rc == 0
+  failed_when: git_ssh_unset.rc not in [0, 5]

@@ -1,0 +1,27 @@
+---
+- name: Ensure font directory exists
+  ansible.builtin.file:
+    path: "{{ font_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Find font files
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files"
+    patterns: ["*.ttf", "*.otf", "*.ttc", "*.pcf.gz"]
+    recurse: true
+  register: font_files
+
+- name: Copy fonts to system font directory
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ font_dir }}/{{ item.path | basename }}"
+    mode: "0644"
+  loop: "{{ font_files.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+
+- name: Rebuild font cache (Linux)
+  ansible.builtin.command: fc-cache -f -v
+  when: is_linux | default(false)
+  changed_when: false

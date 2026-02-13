@@ -1,0 +1,41 @@
+######################################
+# Taps
+######################################
+tap "homebrew/bundle"
+
+######################################
+# CLI Tools
+######################################
+brew "git"
+brew "git-lfs"
+brew "diff-so-fancy"
+brew "mas"
+brew "wget"
+brew "tree"
+brew "dockutil"
+brew "mise"
+brew "nmap"
+
+######################################
+# Shell
+######################################
+brew "zsh"
+brew "starship"
+
+######################################
+# Editor
+######################################
+brew "neovim"
+
+######################################
+# Apps
+######################################
+cask "ghostty"
+cask "docker"
+cask "google-chrome"
+cask "slack"
+cask "notion"
+cask "iina"
+cask "scroll-reverser"
+cask "appcleaner"
+cask "font-hack-nerd-font"

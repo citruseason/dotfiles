@@ -1,0 +1,34 @@
+---
+- name: Check if Homebrew is installed
+  ansible.builtin.command: which brew
+  register: brew_check
+  changed_when: false
+  failed_when: false
+
+- name: Install Homebrew
+  ansible.builtin.shell: >
+    NONINTERACTIVE=1 /bin/bash -c
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: brew_check.rc != 0
+
+- name: Add Homebrew to PATH (Apple Silicon)
+  ansible.builtin.shell: eval "$(/opt/homebrew/bin/brew shellenv)"
+  when:
+    - brew_check.rc != 0
+    - ansible_architecture == 'arm64'
+  changed_when: false
+
+- name: Update Homebrew
+  community.general.homebrew:
+    update_homebrew: true
+
+- name: Install common packages via Brewfile
+  ansible.builtin.command:
+    cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.common --no-lock
+  changed_when: false
+
+- name: Install private packages via Brewfile
+  ansible.builtin.command:
+    cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.private --no-lock
+  when: homebrew_install_private
+  changed_when: false

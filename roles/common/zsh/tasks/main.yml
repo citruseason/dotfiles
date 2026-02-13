@@ -1,0 +1,54 @@
+---
+- name: Copy .zshrc
+  ansible.builtin.copy:
+    src: .zshrc
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    mode: "0644"
+    backup: true
+
+- name: Deploy .zshrc_extra from template
+  ansible.builtin.template:
+    src: .zshrc_extra.j2
+    dest: "{{ ansible_env.HOME }}/.zshrc_extra"
+    mode: "0644"
+
+- name: Ensure zsh plugins directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.zsh/plugins"
+    state: directory
+    mode: "0755"
+
+- name: Clone zsh plugins
+  ansible.builtin.git:
+    repo: "https://github.com/{{ item.repo }}.git"
+    dest: "{{ ansible_env.HOME }}/.zsh/plugins/{{ item.name }}"
+    depth: 1
+  loop:
+    - { repo: zsh-users/zsh-syntax-highlighting, name: zsh-syntax-highlighting }
+    - { repo: zsh-users/zsh-autosuggestions, name: zsh-autosuggestions }
+    - { repo: zsh-users/zsh-completions, name: zsh-completions }
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install Starship (Linux)
+  ansible.builtin.shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
+  args:
+    creates: /usr/local/bin/starship
+  when: is_linux
+
+- name: Get path to zsh
+  ansible.builtin.command: which zsh
+  register: zsh_path
+  changed_when: false
+
+- name: Ensure zsh is in /etc/shells
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    line: "{{ zsh_path.stdout }}"
+  become: true
+
+- name: Set zsh as default shell
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    shell: "{{ zsh_path.stdout }}"
+  become: true

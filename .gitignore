@@ -299,3 +299,6 @@ $RECYCLE.BIN/
 Brewfile.lock.json
 
 .idea
+
+### Ansible ###
+*.retry

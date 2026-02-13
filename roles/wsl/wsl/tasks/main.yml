@@ -1,0 +1,9 @@
+---
+- name: WSL systemd
+  ansible.builtin.include_tasks: systemd.yml
+
+- name: WSL 1Password SSH
+  ansible.builtin.include_tasks: ssh.yml
+
+- name: WSL Zsh config
+  ansible.builtin.include_tasks: zsh.yml

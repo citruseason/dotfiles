@@ -1,0 +1,545 @@
+---
+# macOS Tahoe 26 compatible defaults
+# Verified on macOS 26.2 (Apple Silicon)
+
+- name: Close System Settings
+  ansible.builtin.command: osascript -e 'tell application "System Settings" to quit'
+  changed_when: false
+  failed_when: false
+
+###############################################################################
+# General UI/UX
+###############################################################################
+
+- name: Set standby delay to 24 hours
+  ansible.builtin.command: pmset -a standbydelay 86400
+  become: true
+  changed_when: false
+
+- name: Apply General UI/UX defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain | default('NSGlobalDomain') }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Set sidebar icon size to medium
+    - { key: NSTableViewDefaultSizeMode, type: int, value: 2 }
+    # Increase window resize speed for Cocoa applications
+    - { key: NSWindowResizeTime, type: float, value: 0.001 }
+    # Automatically quit printer app once the print jobs complete
+    - { domain: com.apple.print.PrintingPrefs, key: "Quit When Finished", type: bool, value: "true" }
+    # Disable the "Are you sure you want to open this application?" dialog
+    - { domain: com.apple.LaunchServices, key: LSQuarantine, type: bool, value: "false" }
+    # Display ASCII control characters using caret notation
+    - { key: NSTextShowsControlCharacters, type: bool, value: "true" }
+    # Disable Resume system-wide
+    - { domain: com.apple.systempreferences, key: NSQuitAlwaysKeepsWindows, type: bool, value: "false" }
+    # Disable automatic termination of inactive apps
+    - { key: NSDisableAutomaticTermination, type: bool, value: "true" }
+    # Disable automatic capitalization
+    - { key: NSAutomaticCapitalizationEnabled, type: bool, value: "false" }
+    # Disable smart dashes
+    - { key: NSAutomaticDashSubstitutionEnabled, type: bool, value: "false" }
+    # Disable automatic period substitution
+    - { key: NSAutomaticPeriodSubstitutionEnabled, type: bool, value: "false" }
+    # Disable smart quotes
+    - { key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: "false" }
+    # Disable auto-correct
+    - { key: NSAutomaticSpellingCorrectionEnabled, type: bool, value: "false" }
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Reveal IP address in login window
+  community.general.osx_defaults:
+    domain: /Library/Preferences/com.apple.loginwindow
+    key: AdminHostInfo
+    type: string
+    value: HostName
+  become: true
+
+###############################################################################
+# Trackpad, mouse, keyboard, Bluetooth accessories, and input
+###############################################################################
+
+- name: Set trackpad speed
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: com.apple.trackpad.scaling
+    type: float
+    value: 1
+
+- name: Apply trackpad defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain | default('NSGlobalDomain') }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    host: "{{ item.host | default(omit) }}"
+  loop:
+    # Trackpad click threshold
+    - { domain: com.apple.AppleMultitouchTrackpad, key: FirstClickThreshold, type: int, value: 0 }
+    # Tap to click (Bluetooth trackpad)
+    - { domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: Clicking, type: bool, value: "true" }
+    # Tap to click (current host)
+    - { key: com.apple.mouse.tapBehavior, type: int, value: 1, host: currentHost }
+    # Tap to click (global)
+    - { key: com.apple.mouse.tapBehavior, type: int, value: 1 }
+    # Tap to click (Multitouch)
+    - { domain: com.apple.AppleMultitouchTrackpad, key: Clicking, type: bool, value: "true" }
+    # 3-finger drag (Bluetooth)
+    - { domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadThreeFingerDrag, type: bool, value: "true" }
+    # 3-finger drag (Multitouch)
+    - { domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerDrag, type: bool, value: "true" }
+    # 3-finger find (Bluetooth)
+    - { domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadThreeFingerTapGesture, type: int, value: 2 }
+    # 3-finger find (Multitouch)
+    - { domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerTapGesture, type: int, value: 2 }
+    # Trackpad click sound
+    - { domain: com.apple.AppleMultitouchTrackpad, key: ActuationStrength, type: int, value: 1 }
+    # Natural scrolling
+    - { key: com.apple.swipescrolldirection, type: bool, value: "true" }
+    # Full keyboard access for all controls
+    - { key: AppleKeyboardUIMode, type: int, value: 3 }
+    # Disable press-and-hold for keys (enable key repeat)
+    - { key: ApplePressAndHoldEnabled, type: bool, value: "false" }
+    # Fast keyboard repeat rate
+    - { key: KeyRepeat, type: int, value: 1 }
+    # Short initial key repeat delay
+    - { key: InitialKeyRepeat, type: int, value: 15 }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Screen
+###############################################################################
+
+- name: Apply screen defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Save screenshots to the desktop
+    - { domain: com.apple.screencapture, key: location, type: string, value: "{{ ansible_env.HOME }}/Desktop" }
+    # Save screenshots in PNG format
+    - { domain: com.apple.screencapture, key: type, type: string, value: png }
+    # Disable shadow in screenshots
+    - { domain: com.apple.screencapture, key: disable-shadow, type: bool, value: "true" }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Finder
+###############################################################################
+
+- name: Apply Finder defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain | default('com.apple.finder') }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Allow quitting via Cmd + Q
+    - { key: QuitMenuItem, type: bool, value: "true" }
+    # Disable window animations
+    - { key: DisableAllAnimations, type: bool, value: "true" }
+    # Set Desktop as default location
+    - { key: NewWindowTarget, type: string, value: PfDe }
+    - { key: NewWindowTargetPath, type: string, value: "file://{{ ansible_env.HOME }}/Desktop/" }
+    # Show icons on desktop
+    - { key: ShowExternalHardDrivesOnDesktop, type: bool, value: "true" }
+    - { key: ShowHardDrivesOnDesktop, type: bool, value: "true" }
+    - { key: ShowMountedServersOnDesktop, type: bool, value: "true" }
+    - { key: ShowRemovableMediaOnDesktop, type: bool, value: "true" }
+    # Show all filename extensions
+    - { domain: NSGlobalDomain, key: AppleShowAllExtensions, type: bool, value: "true" }
+    # Show status bar
+    - { key: ShowStatusBar, type: bool, value: "true" }
+    # Show path bar
+    - { key: ShowPathbar, type: bool, value: "true" }
+    # Display full POSIX path as Finder window title
+    - { key: _FXShowPosixPathInTitle, type: bool, value: "true" }
+    # Keep folders on top when sorting by name
+    - { key: _FXSortFoldersFirst, type: bool, value: "true" }
+    # Search current folder by default
+    - { key: FXDefaultSearchScope, type: string, value: SCcf }
+    # Disable warning when changing file extension
+    - { key: FXEnableExtensionChangeWarning, type: bool, value: "false" }
+    # Enable spring loading for directories
+    - { domain: NSGlobalDomain, key: com.apple.springing.enabled, type: bool, value: "true" }
+    # Remove spring loading delay
+    - { domain: NSGlobalDomain, key: com.apple.springing.delay, type: float, value: 0 }
+    # Avoid .DS_Store on network and USB volumes
+    - { domain: com.apple.desktopservices, key: DSDontWriteNetworkStores, type: bool, value: "true" }
+    - { domain: com.apple.desktopservices, key: DSDontWriteUSBStores, type: bool, value: "true" }
+    # Disable disk image verification
+    - { domain: com.apple.frameworks.diskimages, key: skip-verify, type: bool, value: "true" }
+    - { domain: com.apple.frameworks.diskimages, key: skip-verify-locked, type: bool, value: "true" }
+    - { domain: com.apple.frameworks.diskimages, key: skip-verify-remote, type: bool, value: "true" }
+    # Auto-open Finder window when volume is mounted
+    - { domain: com.apple.frameworks.diskimages, key: auto-open-ro-root, type: bool, value: "true" }
+    - { domain: com.apple.frameworks.diskimages, key: auto-open-rw-root, type: bool, value: "true" }
+    - { key: OpenWindowForNewRemovableDisk, type: bool, value: "true" }
+    # Use list view by default
+    - { key: FXPreferredViewStyle, type: string, value: Nlsv }
+    # Disable warning before emptying Trash
+    - { key: WarnOnEmptyTrash, type: bool, value: "false" }
+    # Enable AirDrop over Ethernet
+    - { domain: com.apple.NetworkBrowser, key: BrowseAllInterfaces, type: bool, value: "true" }
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Expand Finder File Info panes
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXInfoPanesExpanded
+    type: dict
+    value:
+      General: true
+      OpenWith: true
+      Privileges: true
+
+- name: Set Finder icon view settings via PlistBuddy
+  ansible.builtin.shell: |
+    plist=~/Library/Preferences/com.apple.finder.plist
+    {% for view in ['DesktopViewSettings', 'FK_StandardViewSettings', 'StandardViewSettings'] %}
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:showItemInfo true" "$plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:labelOnBottom true" "$plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:arrangeBy name" "$plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:gridSpacing 33" "$plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:textSize 12" "$plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c "Set :{{ view }}:IconViewSettings:iconSize 52" "$plist" 2>/dev/null || true
+    {% endfor %}
+  changed_when: false
+
+- name: Show ~/Library folder
+  ansible.builtin.command: chflags nohidden {{ ansible_env.HOME }}/Library
+  changed_when: false
+
+###############################################################################
+# Dock
+###############################################################################
+
+- name: Apply Dock defaults
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Automatically hide and show the Dock
+    - { key: autohide, type: bool, value: "true" }
+    # Dock orientation
+    - { key: orientation, type: string, value: bottom }
+    # Enable highlight hover effect for stack grid view
+    - { key: mouse-over-hilite-stack, type: bool, value: "true" }
+    # Set icon size to 36 pixels
+    - { key: tilesize, type: int, value: 36 }
+    # Scale minimize effect
+    - { key: mineffect, type: string, value: scale }
+    # Minimize windows into application icon
+    - { key: minimize-to-application, type: bool, value: "true" }
+    # Enable spring loading for all Dock items
+    - { key: enable-spring-load-actions-on-all-items, type: bool, value: "true" }
+    # Show indicator lights for open applications
+    - { key: show-process-indicators, type: bool, value: "true" }
+    # Don't animate opening applications
+    - { key: launchanim, type: bool, value: "false" }
+    # Speed up Mission Control animations
+    - { key: expose-animation-duration, type: float, value: 0.1 }
+    # Don't group windows by application in Mission Control
+    - { key: expose-group-by-app, type: bool, value: "false" }
+    # Disable recent apps
+    - { key: show-recents, type: bool, value: "false" }
+    # Don't automatically rearrange Spaces
+    - { key: mru-spaces, type: bool, value: "false" }
+    # Remove the auto-hiding Dock delay
+    - { key: autohide-delay, type: float, value: 0 }
+    # Remove the animation when hiding/showing the Dock
+    - { key: autohide-time-modifier, type: float, value: 0 }
+    # Make hidden application icons translucent
+    - { key: showhidden, type: bool, value: "true" }
+    # Hot corners - all disabled (0)
+    - { key: wvous-tl-corner, type: int, value: 0 }
+    - { key: wvous-tl-modifier, type: int, value: 0 }
+    - { key: wvous-tr-corner, type: int, value: 0 }
+    - { key: wvous-tr-modifier, type: int, value: 0 }
+    - { key: wvous-br-corner, type: int, value: 0 }
+    - { key: wvous-br-modifier, type: int, value: 0 }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Mail
+###############################################################################
+
+- name: Apply Mail defaults
+  community.general.osx_defaults:
+    domain: com.apple.mail
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Disable reply animations
+    - { key: DisableReplyAnimations, type: bool, value: "true" }
+    # Disable send animations
+    - { key: DisableSendAnimations, type: bool, value: "true" }
+    # Copy addresses without names
+    - { key: AddressesIncludeNameOnPasteboard, type: bool, value: "false" }
+    # Disable inline attachments
+    - { key: DisableInlineAttachmentViewing, type: bool, value: "true" }
+    # Disable automatic spell checking
+    - { key: SpellCheckingBehavior, type: string, value: NoSpellCheckingEnabled }
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Add Cmd+Enter shortcut to send email
+  ansible.builtin.shell: defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" -string "@\\U21a9"
+  changed_when: false
+
+- name: Configure Mail threaded view
+  ansible.builtin.shell: |
+    defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreadedMode" -string "yes"
+    defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
+    defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date"
+  changed_when: false
+
+###############################################################################
+# Time Machine
+###############################################################################
+
+- name: Prevent Time Machine from prompting for new hard drives
+  community.general.osx_defaults:
+    domain: com.apple.TimeMachine
+    key: DoNotOfferNewDisksForBackup
+    type: bool
+    value: "true"
+
+###############################################################################
+# Activity Monitor
+###############################################################################
+
+- name: Apply Activity Monitor defaults
+  community.general.osx_defaults:
+    domain: com.apple.ActivityMonitor
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Show main window when launching
+    - { key: OpenMainWindow, type: bool, value: "true" }
+    # Visualize CPU usage in Dock icon
+    - { key: IconType, type: int, value: 5 }
+    # Show all processes
+    - { key: ShowCategory, type: int, value: 0 }
+    # Sort by CPU usage
+    - { key: SortColumn, type: string, value: CPUUsage }
+    - { key: SortDirection, type: int, value: 0 }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# TextEdit & Disk Utility
+###############################################################################
+
+- name: Apply TextEdit and Disk Utility defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Use plain text mode for new TextEdit documents
+    - { domain: com.apple.TextEdit, key: RichText, type: int, value: 0 }
+    # Open and save files as UTF-8 in TextEdit
+    - { domain: com.apple.TextEdit, key: PlainTextEncoding, type: int, value: 4 }
+    - { domain: com.apple.TextEdit, key: PlainTextEncodingForWrite, type: int, value: 4 }
+    # Enable debug menu in Disk Utility
+    - { domain: com.apple.DiskUtility, key: DUDebugMenuEnabled, type: bool, value: "true" }
+    - { domain: com.apple.DiskUtility, key: advanced-image-options, type: bool, value: "true" }
+    # Auto-play videos in QuickTime
+    - { domain: com.apple.QuickTimePlayerX, key: MGPlayMovieOnOpen, type: bool, value: "true" }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Mac App Store & Software Update
+###############################################################################
+
+- name: Apply Software Update defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    # Enable automatic update check
+    - { domain: com.apple.SoftwareUpdate, key: AutomaticCheckEnabled, type: bool, value: "true" }
+    # Check for updates daily
+    - { domain: com.apple.SoftwareUpdate, key: ScheduleFrequency, type: int, value: 1 }
+    # Download updates in background
+    - { domain: com.apple.SoftwareUpdate, key: AutomaticDownload, type: int, value: 1 }
+    # Install security updates
+    - { domain: com.apple.SoftwareUpdate, key: CriticalUpdateInstall, type: int, value: 1 }
+    # Download apps purchased on other Macs
+    - { domain: com.apple.SoftwareUpdate, key: ConfigDataInstall, type: int, value: 1 }
+    # Turn on app auto-update
+    - { domain: com.apple.commerce, key: AutoUpdate, type: bool, value: "true" }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Photos
+###############################################################################
+
+- name: Prevent Photos from opening when devices are plugged in
+  community.general.osx_defaults:
+    domain: com.apple.ImageCapture
+    key: disableHotPlug
+    type: bool
+    value: "true"
+    host: currentHost
+
+###############################################################################
+# Messages
+###############################################################################
+
+- name: Configure Messages defaults
+  ansible.builtin.shell: |
+    defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false
+    defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
+    defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
+  changed_when: false
+
+###############################################################################
+# Keyboard Shortcuts
+###############################################################################
+
+- name: "Mission Control: Spaces Left (Control+Left)"
+  ansible.builtin.shell: |
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>type</key><string>standard</string>
+          <key>parameters</key>
+          <array>
+            <integer>65535</integer>
+            <integer>123</integer>
+            <integer>262144</integer>
+          </array>
+        </dict>
+      </dict>
+    "
+  changed_when: false
+
+- name: "Mission Control: Spaces Right (Control+Right)"
+  ansible.builtin.shell: |
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>type</key><string>standard</string>
+          <key>parameters</key>
+          <array>
+            <integer>65535</integer>
+            <integer>124</integer>
+            <integer>262144</integer>
+          </array>
+        </dict>
+      </dict>
+    "
+  changed_when: false
+
+- name: "Spotlight: Show search field (Cmd+Shift+Space)"
+  ansible.builtin.shell: |
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>type</key><string>standard</string>
+          <key>parameters</key>
+          <array>
+            <integer>65535</integer>
+            <integer>49</integer>
+            <integer>1179648</integer>
+          </array>
+        </dict>
+      </dict>
+    "
+  changed_when: false
+
+- name: "Select previous input source (Cmd+Space)"
+  ansible.builtin.shell: |
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>type</key><string>standard</string>
+          <key>parameters</key>
+          <array>
+            <integer>32</integer>
+            <integer>49</integer>
+            <integer>1048576</integer>
+          </array>
+        </dict>
+      </dict>
+    "
+  changed_when: false
+
+- name: "Select next input source (Cmd+Option+Space)"
+  ansible.builtin.shell: |
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>type</key><string>standard</string>
+          <key>parameters</key>
+          <array>
+            <integer>32</integer>
+            <integer>49</integer>
+            <integer>1572864</integer>
+          </array>
+        </dict>
+      </dict>
+    "
+  changed_when: false
+
+###############################################################################
+# Scroll Reverser
+###############################################################################
+
+- name: Apply Scroll Reverser defaults
+  community.general.osx_defaults:
+    domain: com.pilotmoon.scroll-reverser
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop:
+    - { key: ReverseTrackpad, type: bool, value: "false" }
+    - { key: ReverseTablet, type: bool, value: "false" }
+    - { key: SUEnableAutomaticChecks, type: bool, value: "true" }
+  loop_control:
+    label: "{{ item.key }}"
+
+###############################################################################
+# Kill affected applications
+###############################################################################
+
+- name: Kill affected applications to apply changes
+  ansible.builtin.command: killall "{{ item }}"
+  loop:
+    - Activity Monitor
+    - Calendar
+    - cfprefsd
+    - Contacts
+    - Dock
+    - Finder
+    - Mail
+    - Messages
+    - Photos
+    - SystemUIServer
+  changed_when: false
+  failed_when: false

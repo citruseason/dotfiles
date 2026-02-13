@@ -1,0 +1,65 @@
+---
+- name: Dotfiles Setup
+  hosts: localhost
+  connection: local
+
+  pre_tasks:
+    - name: Detect OS
+      ansible.builtin.set_fact:
+        is_macos: "{{ ansible_os_family == 'Darwin' }}"
+        is_linux: "{{ ansible_os_family in ['Debian', 'RedHat'] }}"
+
+  roles:
+    ##################################
+    # Package managers (OS-specific)
+    ##################################
+    - role: xcode
+      when: is_macos
+      tags: [xcode]
+
+    - role: homebrew
+      when: is_macos
+      tags: [homebrew]
+
+    - role: apt
+      when: is_linux
+      tags: [apt]
+
+    ##################################
+    # Common (cross-platform)
+    ##################################
+    - role: fonts
+      tags: [fonts]
+
+    - role: git
+      tags: [git]
+
+    - role: zsh
+      tags: [zsh]
+
+    - role: mise
+      tags: [mise]
+
+    - role: apps
+      tags: [apps]
+
+    - role: dotfiles_cli
+      tags: [cli]
+
+    ##################################
+    # macOS only
+    ##################################
+    - role: defaults
+      when: is_macos
+      tags: [macos]
+
+    - role: dock
+      when: is_macos
+      tags: [dock]
+
+    ##################################
+    # WSL only
+    ##################################
+    - role: wsl
+      when: "'wsl' in group_names"
+      tags: [wsl]

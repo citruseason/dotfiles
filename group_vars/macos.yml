@@ -1,0 +1,24 @@
+font_dir: "{{ ansible_env.HOME }}/Library/Fonts"
+
+dock_apps:
+  - /Applications/Safari.app
+  - /Applications/Google Chrome.app
+  - /System/Applications/Calendar.app
+  - /System/Applications/Notes.app
+  - /Applications/Notion.app
+  - /Applications/Slack.app
+  - /Applications/Ghostty.app
+
+dock_folders:
+  - path: /Applications
+    display: stack
+    sort: name
+  - path: "{{ ansible_env.HOME }}/Downloads"
+    display: stack
+    sort: dateadded
+  - path: "{{ ansible_env.HOME }}/Documents"
+    display: stack
+    sort: name
+  - path: "{{ ansible_env.HOME }}/Pictures"
+    display: stack
+    sort: name
