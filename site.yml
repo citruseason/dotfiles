@@ -3,19 +3,12 @@
   hosts: localhost
   connection: local
 
-  vars_prompt:
-    - name: sudo_password
-      prompt: "Enter sudo password"
-      private: true
-
-  vars:
-    ansible_become_password: "{{ sudo_password }}"
-
   pre_tasks:
     - name: Detect OS
       ansible.builtin.set_fact:
         is_macos: "{{ ansible_facts['os_family'] == 'Darwin' }}"
         is_linux: "{{ ansible_facts['os_family'] in ['Debian', 'RedHat'] }}"
+      tags: [always]
 
   roles:
     ##################################

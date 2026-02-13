@@ -240,6 +240,7 @@ run_playbook() {
         "$CYAN" "$NC" "$INVENTORY" "$tag_str"
     printf '\n'
 
+    sudo -v
     ansible-playbook "$DOTFILES_DIR/site.yml" \
         -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
         --tags "$tag_str"
@@ -277,6 +278,7 @@ main() {
                 wsl)   INVENTORY="wsl" ;;
                 *)     INVENTORY="ubuntu" ;;
             esac
+            sudo -v
             ansible-playbook "$DOTFILES_DIR/site.yml" \
                 -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml"
             return 0
@@ -288,6 +290,7 @@ main() {
                 wsl)   INVENTORY="wsl" ;;
                 *)     INVENTORY="ubuntu" ;;
             esac
+            sudo -v
             ansible-playbook "$DOTFILES_DIR/site.yml" \
                 -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
                 --tags "$2"

@@ -195,8 +195,6 @@ clone_dotfiles() {
 run_playbook() {
     info "Running playbook: inventory/$PROFILE.yml"
 
-    # Override become_ask_pass since sudo is already authenticated
-    ANSIBLE_BECOME_ASK_PASS=false \
     ansible-playbook "$DOTFILES_DIR/site.yml" \
         -i "$DOTFILES_DIR/inventory/${PROFILE}.yml"
 }
