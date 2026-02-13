@@ -36,18 +36,28 @@
     name: "{{ homebrew_formulae }}"
     state: present
 
+- name: Allow passwordless cask installs
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/homebrew_cask
+    line: "{{ ansible_facts['user_id'] }} ALL=(ALL) NOPASSWD:SETENV: /usr/bin/chmod, /usr/sbin/installer, /bin/rm"
+    create: true
+    mode: "0440"
+    validate: "visudo -cf %s"
+  become: true
+
 - name: Install casks
   community.general.homebrew_cask:
     name: "{{ homebrew_casks }}"
     state: present
     install_options: adopt
+    sudo_password: "{{ sudo_password }}"
 
 - name: Install private casks
   community.general.homebrew_cask:
     name: "{{ homebrew_private_casks }}"
     state: present
     install_options: adopt
-    sudo_password: "{{ sudo_password | default(omit) }}"
+    sudo_password: "{{ sudo_password }}"
   when: homebrew_install_private
 
 - name: Install Mac App Store apps
