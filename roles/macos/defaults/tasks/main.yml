@@ -12,8 +12,7 @@
 ###############################################################################
 
 - name: Set standby delay to 24 hours
-  ansible.builtin.command: pmset -a standbydelay 86400
-  become: true
+  ansible.builtin.command: sudo pmset -a standbydelay 86400
   changed_when: false
 
 - name: Apply General UI/UX defaults
@@ -51,12 +50,8 @@
     label: "{{ item.key }}"
 
 - name: Reveal IP address in login window
-  community.general.osx_defaults:
-    domain: /Library/Preferences/com.apple.loginwindow
-    key: AdminHostInfo
-    type: string
-    value: HostName
-  become: true
+  ansible.builtin.command: sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo -string HostName
+  changed_when: false
 
 ###############################################################################
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input

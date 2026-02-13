@@ -42,13 +42,9 @@
   changed_when: false
 
 - name: Ensure zsh is in /etc/shells
-  ansible.builtin.lineinfile:
-    path: /etc/shells
-    line: "{{ zsh_path.stdout }}"
-  become: true
+  ansible.builtin.shell: grep -qxF '{{ zsh_path.stdout }}' /etc/shells || sudo tee -a /etc/shells <<< '{{ zsh_path.stdout }}'
+  changed_when: false
 
 - name: Set zsh as default shell
-  ansible.builtin.user:
-    name: "{{ ansible_facts['env']['USER'] }}"
-    shell: "{{ zsh_path.stdout }}"
-  become: true
+  ansible.builtin.shell: sudo chsh -s '{{ zsh_path.stdout }}' '{{ ansible_facts["env"]["USER"] }}'
+  changed_when: false

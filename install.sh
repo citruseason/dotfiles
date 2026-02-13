@@ -65,14 +65,12 @@ acquire_sudo() {
         SUDO_PID=$!
     fi
 
-    # Allow Homebrew cask installs without password (macOS)
-    if [[ "$OS" == "macos" ]]; then
-        local sudoers_file="/etc/sudoers.d/homebrew_cask"
-        local sudoers_rule="$(whoami) ALL=(ALL) NOPASSWD:SETENV: /bin/chmod, /usr/sbin/installer, /bin/rm"
-        if [[ ! -f "$sudoers_file" ]] || ! grep -qF "$sudoers_rule" "$sudoers_file" 2>/dev/null; then
-            sudo sh -c "echo '$sudoers_rule' > $sudoers_file && chmod 0440 $sudoers_file"
-            success "Homebrew cask sudoers rule"
-        fi
+    # Allow passwordless sudo for dotfiles provisioning
+    local sudoers_file="/etc/sudoers.d/dotfiles"
+    local sudoers_rule="$(whoami) ALL=(ALL) NOPASSWD:SETENV: ALL"
+    if [[ ! -f "$sudoers_file" ]] || ! grep -qF "$sudoers_rule" "$sudoers_file" 2>/dev/null; then
+        sudo sh -c "echo '$sudoers_rule' > $sudoers_file && chmod 0440 $sudoers_file"
+        success "Dotfiles sudoers rule"
     fi
 }
 
