@@ -41,12 +41,6 @@
     name: "{{ homebrew_casks }}"
     state: present
 
-- name: Cache sudo credentials for cask installs
-  ansible.builtin.command: sudo -v
-  become: true
-  changed_when: false
-  when: homebrew_install_private
-
 - name: Install private casks
   community.general.homebrew_cask:
     name: "{{ homebrew_private_casks }}"
