@@ -27,5 +27,5 @@
     backup: true
 
 - name: Install mise tools
-  ansible.builtin.shell: mise install
+  ansible.builtin.shell: mise install --yes
   changed_when: false
