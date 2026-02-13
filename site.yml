@@ -3,6 +3,15 @@
   hosts: localhost
   connection: local
 
+  vars_prompt:
+    - name: sudo_password
+      prompt: "Enter sudo password (press Enter to skip)"
+      private: true
+      default: ""
+
+  vars:
+    ansible_become_password: "{{ sudo_password }}"
+
   pre_tasks:
     - name: Detect OS
       ansible.builtin.set_fact:
