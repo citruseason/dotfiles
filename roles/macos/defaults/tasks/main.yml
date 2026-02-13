@@ -58,11 +58,8 @@
 ###############################################################################
 
 - name: Set trackpad speed
-  community.general.osx_defaults:
-    domain: NSGlobalDomain
-    key: com.apple.trackpad.scaling
-    type: float
-    value: 1
+  ansible.builtin.command: defaults write NSGlobalDomain com.apple.trackpad.scaling -float 1
+  changed_when: false
 
 - name: Apply trackpad defaults
   community.general.osx_defaults:
@@ -187,14 +184,12 @@
     label: "{{ item.key }}"
 
 - name: Expand Finder File Info panes
-  community.general.osx_defaults:
-    domain: com.apple.finder
-    key: FXInfoPanesExpanded
-    type: dict
-    value:
-      General: true
-      OpenWith: true
-      Privileges: true
+  ansible.builtin.shell: |
+    defaults write com.apple.finder FXInfoPanesExpanded -dict \
+      General -bool true \
+      OpenWith -bool true \
+      Privileges -bool true
+  changed_when: false
 
 - name: Set Finder icon view settings via PlistBuddy
   ansible.builtin.shell: |
@@ -265,41 +260,6 @@
     - { key: wvous-br-modifier, type: int, value: 0 }
   loop_control:
     label: "{{ item.key }}"
-
-###############################################################################
-# Mail
-###############################################################################
-
-- name: Apply Mail defaults
-  community.general.osx_defaults:
-    domain: com.apple.mail
-    key: "{{ item.key }}"
-    type: "{{ item.type }}"
-    value: "{{ item.value }}"
-  loop:
-    # Disable reply animations
-    - { key: DisableReplyAnimations, type: bool, value: "true" }
-    # Disable send animations
-    - { key: DisableSendAnimations, type: bool, value: "true" }
-    # Copy addresses without names
-    - { key: AddressesIncludeNameOnPasteboard, type: bool, value: "false" }
-    # Disable inline attachments
-    - { key: DisableInlineAttachmentViewing, type: bool, value: "true" }
-    # Disable automatic spell checking
-    - { key: SpellCheckingBehavior, type: string, value: NoSpellCheckingEnabled }
-  loop_control:
-    label: "{{ item.key }}"
-
-- name: Add Cmd+Enter shortcut to send email
-  ansible.builtin.shell: defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" -string "@\\U21a9"
-  changed_when: false
-
-- name: Configure Mail threaded view
-  ansible.builtin.shell: |
-    defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreadedMode" -string "yes"
-    defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
-    defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date"
-  changed_when: false
 
 ###############################################################################
 # Time Machine
