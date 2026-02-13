@@ -47,7 +47,7 @@
     name: "{{ homebrew_private_casks }}"
     state: present
     install_options: adopt
-  when: homebrew_install_private
+  when: homebrew_install_private | bool
 
 - name: Install Mac App Store apps
   community.general.mas:
@@ -56,4 +56,4 @@
   loop: "{{ homebrew_mas_apps }}"
   loop_control:
     label: "{{ item.name }}"
-  when: homebrew_install_private
+  when: homebrew_install_private | bool
