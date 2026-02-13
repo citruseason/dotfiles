@@ -36,9 +36,14 @@
     cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.common
   changed_when: false
 
+- name: Cache sudo credentials for cask installs
+  ansible.builtin.command: sudo -v
+  become: true
+  changed_when: false
+  when: homebrew_install_private
+
 - name: Install private packages via Brewfile
   ansible.builtin.command:
     cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.private
-  become: true
   when: homebrew_install_private
   changed_when: false
