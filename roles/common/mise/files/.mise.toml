@@ -1,6 +1,9 @@
 [tools]
 node = "lts"
-bun = "lts"
-python = "lts"
+bun = "latest"
+python = "latest"
 java = "lts"
-ruby = "lts"
+ruby = "latest"
+
+[settings]
+ruby.compile = false

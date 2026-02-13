@@ -26,6 +26,10 @@
     mode: "0644"
     backup: true
 
+- name: Trust mise config
+  ansible.builtin.command: mise trust {{ ansible_facts['env']['HOME'] }}/.mise.toml
+  changed_when: false
+
 - name: Install mise tools
   ansible.builtin.shell: mise install --yes
   changed_when: false
