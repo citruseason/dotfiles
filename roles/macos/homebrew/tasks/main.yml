@@ -40,11 +40,13 @@
   community.general.homebrew_cask:
     name: "{{ homebrew_casks }}"
     state: present
+    install_options: adopt
 
 - name: Install private casks
   community.general.homebrew_cask:
     name: "{{ homebrew_private_casks }}"
     state: present
+    install_options: adopt
     sudo_password: "{{ ansible_become_password | default(omit) }}"
   when: homebrew_install_private
 
