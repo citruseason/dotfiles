@@ -36,14 +36,21 @@
     name: "{{ homebrew_formulae }}"
     state: present
 
+- name: Write sudo password file
+  ansible.builtin.copy:
+    content: "{{ sudo_password }}"
+    dest: /tmp/.ansible_sudo_pass
+    mode: "0600"
+  no_log: true
+  changed_when: false
+
 - name: Create sudo askpass helper
   ansible.builtin.copy:
     content: |
       #!/bin/sh
-      echo '{{ sudo_password }}'
+      cat /tmp/.ansible_sudo_pass
     dest: /tmp/.ansible_askpass
     mode: "0700"
-  no_log: true
   changed_when: false
 
 - name: Install casks
@@ -63,10 +70,13 @@
     SUDO_ASKPASS: /tmp/.ansible_askpass
   when: homebrew_install_private
 
-- name: Remove sudo askpass helper
+- name: Remove sudo askpass files
   ansible.builtin.file:
-    path: /tmp/.ansible_askpass
+    path: "{{ item }}"
     state: absent
+  loop:
+    - /tmp/.ansible_askpass
+    - /tmp/.ansible_sudo_pass
 
 - name: Install Mac App Store apps
   community.general.mas:
