@@ -2,7 +2,7 @@
 - name: Copy git configuration files
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ ansible_env.HOME }}/{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
     mode: "0644"
     backup: true
   loop:

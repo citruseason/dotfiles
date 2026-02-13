@@ -1,7 +1,7 @@
 ---
 - name: Add color aliases to .zshrc
   ansible.builtin.blockinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
+    path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
     marker: "# {mark} ANSIBLE MANAGED - WSL color aliases"
     block: |
       # enable color support of ls and also add handy aliases

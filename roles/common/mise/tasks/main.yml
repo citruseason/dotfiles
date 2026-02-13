@@ -22,7 +22,7 @@
 - name: Copy global .mise.toml
   ansible.builtin.copy:
     src: .mise.toml
-    dest: "{{ ansible_env.HOME }}/.mise.toml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.mise.toml"
     mode: "0644"
     backup: true
 

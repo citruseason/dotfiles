@@ -2,26 +2,26 @@
 - name: Copy .zshrc
   ansible.builtin.copy:
     src: .zshrc
-    dest: "{{ ansible_env.HOME }}/.zshrc"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
     mode: "0644"
     backup: true
 
 - name: Deploy .zshrc_extra from template
   ansible.builtin.template:
     src: .zshrc_extra.j2
-    dest: "{{ ansible_env.HOME }}/.zshrc_extra"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zshrc_extra"
     mode: "0644"
 
 - name: Ensure zsh plugins directory exists
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.zsh/plugins"
+    path: "{{ ansible_facts['env']['HOME'] }}/.zsh/plugins"
     state: directory
     mode: "0755"
 
 - name: Clone zsh plugins
   ansible.builtin.git:
     repo: "https://github.com/{{ item.repo }}.git"
-    dest: "{{ ansible_env.HOME }}/.zsh/plugins/{{ item.name }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zsh/plugins/{{ item.name }}"
     depth: 1
   loop:
     - { repo: zsh-users/zsh-syntax-highlighting, name: zsh-syntax-highlighting }
@@ -49,6 +49,6 @@
 
 - name: Set zsh as default shell
   ansible.builtin.user:
-    name: "{{ ansible_env.USER }}"
+    name: "{{ ansible_facts['env']['USER'] }}"
     shell: "{{ zsh_path.stdout }}"
   become: true

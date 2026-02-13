@@ -1,4 +1,4 @@
-font_dir: "{{ ansible_env.HOME }}/Library/Fonts"
+font_dir: "{{ ansible_facts['env']['HOME'] }}/Library/Fonts"
 
 dock_apps:
   - /Applications/Safari.app
@@ -13,12 +13,12 @@ dock_folders:
   - path: /Applications
     display: stack
     sort: name
-  - path: "{{ ansible_env.HOME }}/Downloads"
+  - path: "{{ ansible_facts['env']['HOME'] }}/Downloads"
     display: stack
     sort: dateadded
-  - path: "{{ ansible_env.HOME }}/Documents"
+  - path: "{{ ansible_facts['env']['HOME'] }}/Documents"
     display: stack
     sort: name
-  - path: "{{ ansible_env.HOME }}/Pictures"
+  - path: "{{ ansible_facts['env']['HOME'] }}/Pictures"
     display: stack
     sort: name

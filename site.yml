@@ -6,8 +6,8 @@
   pre_tasks:
     - name: Detect OS
       ansible.builtin.set_fact:
-        is_macos: "{{ ansible_os_family == 'Darwin' }}"
-        is_linux: "{{ ansible_os_family in ['Debian', 'RedHat'] }}"
+        is_macos: "{{ ansible_facts['os_family'] == 'Darwin' }}"
+        is_linux: "{{ ansible_facts['os_family'] in ['Debian', 'RedHat'] }}"
 
   roles:
     ##################################

@@ -122,7 +122,7 @@
     value: "{{ item.value }}"
   loop:
     # Save screenshots to the desktop
-    - { domain: com.apple.screencapture, key: location, type: string, value: "{{ ansible_env.HOME }}/Desktop" }
+    - { domain: com.apple.screencapture, key: location, type: string, value: "{{ ansible_facts['env']['HOME'] }}/Desktop" }
     # Save screenshots in PNG format
     - { domain: com.apple.screencapture, key: type, type: string, value: png }
     # Disable shadow in screenshots
@@ -147,7 +147,7 @@
     - { key: DisableAllAnimations, type: bool, value: "true" }
     # Set Desktop as default location
     - { key: NewWindowTarget, type: string, value: PfDe }
-    - { key: NewWindowTargetPath, type: string, value: "file://{{ ansible_env.HOME }}/Desktop/" }
+    - { key: NewWindowTargetPath, type: string, value: "file://{{ ansible_facts['env']['HOME'] }}/Desktop/" }
     # Show icons on desktop
     - { key: ShowExternalHardDrivesOnDesktop, type: bool, value: "true" }
     - { key: ShowHardDrivesOnDesktop, type: bool, value: "true" }
@@ -215,7 +215,7 @@
   changed_when: false
 
 - name: Show ~/Library folder
-  ansible.builtin.command: chflags nohidden {{ ansible_env.HOME }}/Library
+  ansible.builtin.command: chflags nohidden {{ ansible_facts['env']['HOME'] }}/Library
   changed_when: false
 
 ###############################################################################

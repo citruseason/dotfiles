@@ -15,7 +15,7 @@
   ansible.builtin.shell: eval "$(/opt/homebrew/bin/brew shellenv)"
   when:
     - brew_check.rc != 0
-    - ansible_architecture == 'arm64'
+    - ansible_facts['architecture'] == 'arm64'
   changed_when: false
 
 - name: Remove deprecated taps
