@@ -39,5 +39,6 @@
 - name: Install private packages via Brewfile
   ansible.builtin.command:
     cmd: brew bundle --file={{ dotfiles_dir }}/roles/macos/homebrew/files/Brewfile.private
+  become: true
   when: homebrew_install_private
   changed_when: false
