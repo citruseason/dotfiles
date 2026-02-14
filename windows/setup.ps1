@@ -100,8 +100,34 @@ function Install-WSL {
 }
 
 function Invoke-Debloat {
-    Write-Step "Running Win11Debloat (default settings)"
-    & ([scriptblock]::Create((irm "https://debloat.raphi.re/"))) -RunDefaults -Silent
+    Write-Step "Running Win11Debloat"
+
+    $debloat = [scriptblock]::Create((irm "https://debloat.raphi.re/"))
+    & $debloat `
+        -RunDefaults `
+        -Silent `
+        -RemoveGamingApps `
+        -DisableTelemetry `
+        -DisableBing `
+        -DisableSuggestions `
+        -DisableLockscreenTips `
+        -DisableEdgeAds `
+        -DisableSettings365Ads `
+        -DisableDesktopSpotlight `
+        -DisableCopilot `
+        -DisableRecall `
+        -DisableWidgets `
+        -HideChat `
+        -HideTaskview `
+        -TaskbarAlignLeft `
+        -RevertContextMenu `
+        -ShowKnownFileExt `
+        -ShowHiddenFolders `
+        -DisableMouseAcceleration `
+        -DisableStickyKeys `
+        -DisableFastStartup `
+        -ExplorerToThisPC
+
     Write-Ok "Win11Debloat completed"
 }
 
