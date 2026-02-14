@@ -6,6 +6,12 @@
     mode: "0644"
     backup: true
 
+- name: Copy .aliases
+  ansible.builtin.copy:
+    src: .aliases
+    dest: "{{ ansible_facts['env']['HOME'] }}/.aliases"
+    mode: "0644"
+
 - name: Deploy .zshrc_extra from template
   ansible.builtin.template:
     src: .zshrc_extra.j2
