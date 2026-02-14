@@ -53,7 +53,7 @@ function Install-Apps {
 
     $apps = @(
         @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "1password.install"; Name = "1Password" }
+        @{ Id = "1password"; Name = "1Password" }
         @{ Id = "tailscale";     Name = "Tailscale" }
         @{ Id = "kakaotalk";     Name = "KakaoTalk" }
         @{ Id = "discord.install"; Name = "Discord" }
