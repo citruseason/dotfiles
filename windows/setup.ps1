@@ -7,38 +7,37 @@ function Write-Ok    { param([string]$msg) Write-Host "   $msg" -ForegroundColor
 function Write-Warn  { param([string]$msg) Write-Host "   $msg" -ForegroundColor Yellow }
 function Write-Err   { param([string]$msg) Write-Host "   $msg" -ForegroundColor Red }
 
-# ── Chocolatey ───────────────────────────────────────
-function Assert-Chocolatey {
-    if (Get-Command choco -ErrorAction SilentlyContinue) {
-        Write-Host "   Upgrading Chocolatey ..."
-        choco upgrade chocolatey -y 2>$null | Out-Null
-        Write-Ok "Chocolatey ready"
+# ── Winget ───────────────────────────────────────────
+function Assert-Winget {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-Err "winget not found. Please update App Installer from Microsoft Store."
+        exit 1
+    }
+
+    # Upgrade App Installer (winget) to latest version
+    Write-Host "   Upgrading App Installer ..."
+    winget upgrade --id Microsoft.AppInstaller --silent --source winget `
+        --accept-package-agreements --accept-source-agreements 2>$null
+
+    # Reset sources to fix "Failed when searching source: msstore" error
+    Write-Host "   Resetting winget sources ..."
+    winget source reset --force --disable-interactivity 2>$null
+    winget settings --enable BypassCertificatePinningForMicrosoftStore 2>$null
+    Write-Ok "winget ready"
+}
+
+function Install-WingetPackage {
+    param([string]$Id, [string]$Name)
+
+    $listOutput = winget list --id $Id --source winget --accept-source-agreements 2>&1 | Out-String
+    if ($listOutput -match [regex]::Escape($Id)) {
+        Write-Ok "$Name is already installed"
         return
     }
 
-    Write-Host "   Installing Chocolatey ..."
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    [System.Net.ServicePointManager]::SecurityProtocol = `
-        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString(
-        'https://community.chocolatey.org/install.ps1'))
-
-    # Refresh PATH so choco is available immediately
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
-                [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Err "Chocolatey installation failed."
-        exit 1
-    }
-    Write-Ok "Chocolatey installed"
-}
-
-function Install-ChocoPackage {
-    param([string]$Id, [string]$Name)
-
     Write-Host "   Installing $Name ..."
-    choco install $Id -y --no-progress 2>&1 | Out-Null
+    winget install --id $Id --silent --source winget `
+        --accept-package-agreements --accept-source-agreements
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -69,30 +68,21 @@ function Install-DirectDownload {
 
 # ── Steps ────────────────────────────────────────────
 function Install-Apps {
-    Write-Step "Installing applications via Chocolatey"
+    Write-Step "Installing applications via winget"
 
     $apps = @(
-        @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "1password";     Name = "1Password" }
-        @{ Id = "tailscale";     Name = "Tailscale" }
-        @{ Id = "googlechrome";  Name = "Google Chrome" }
-        @{ Id = "kakaotalk";     Name = "KakaoTalk" }
-        @{ Id = "discord";       Name = "Discord" }
-        @{ Id = "starship";      Name = "Starship" }
+        @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
+        @{ Id = "AgileBits.1Password";   Name = "1Password" }
+        @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
+        @{ Id = "Google.Chrome";         Name = "Google Chrome" }
+        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
+        @{ Id = "Discord.Discord";       Name = "Discord" }
+        @{ Id = "Google.Antigravity";    Name = "Antigravity" }
+        @{ Id = "Starship.Starship";     Name = "Starship" }
     )
 
     foreach ($app in $apps) {
-        Install-ChocoPackage -Id $app.Id -Name $app.Name
-    }
-
-    # Antigravity (not available in package managers)
-    $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
-    if ($agInstalled) {
-        Write-Ok "Antigravity is already installed"
-    }
-    else {
-        Write-Warn "Antigravity is not available via Chocolatey"
-        Write-Warn "Install manually: https://antigravity.withgoogle.com"
+        Install-WingetPackage -Id $app.Id -Name $app.Name
     }
 }
 
@@ -186,7 +176,7 @@ function Install-Drivers {
     Write-Host "   CPU: $($cpu.Name)"
 
     if ($cpu.Manufacturer -match "Intel") {
-        Install-ChocoPackage -Id "intel-dsa" -Name "Intel Driver & Support Assistant"
+        Install-WingetPackage -Id "Intel.IntelDriverAndSupportAssistant" -Name "Intel Driver & Support Assistant"
     }
     elseif ($cpu.Manufacturer -match "AMD|Advanced Micro") {
         $amdInstalled = Get-StartApps | Where-Object { $_.Name -match "AMD Software" } -ErrorAction SilentlyContinue
@@ -249,7 +239,7 @@ function Main {
     Write-Host "`n  dotfiles - Windows 11 Setup" -ForegroundColor White
     Write-Host "  ─────────────────────────────────────────────`n" -ForegroundColor DarkGray
 
-    Assert-Chocolatey
+    Assert-Winget
     Install-Apps
     Install-ChattingPlus
     Invoke-Debloat
