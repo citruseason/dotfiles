@@ -74,6 +74,7 @@ function Install-Apps {
         @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
         @{ Id = "AgileBits.1Password";   Name = "1Password" }
         @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
+        @{ Id = "Google.Chrome";         Name = "Google Chrome" }
         @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
         @{ Id = "Discord.Discord";       Name = "Discord" }
         @{ Id = "Google.Antigravity";    Name = "Antigravity" }
@@ -83,22 +84,6 @@ function Install-Apps {
     foreach ($app in $apps) {
         Install-WingetPackage -Id $app.Id -Name $app.Name
     }
-}
-
-function Install-Chrome {
-    Write-Step "Installing Google Chrome"
-
-    $chromeInstalled = Get-StartApps | Where-Object { $_.Name -match "Google Chrome" } -ErrorAction SilentlyContinue
-    if ($chromeInstalled) {
-        Write-Ok "Google Chrome is already installed"
-        return
-    }
-
-    Install-DirectDownload `
-        -Name "Google Chrome" `
-        -Url "https://dl.google.com/chrome/install/latest/chrome_installer.exe" `
-        -FileName "chrome_installer.exe" `
-        -Args "/silent /install"
 }
 
 function Install-ChattingPlus {
@@ -256,7 +241,6 @@ function Main {
 
     Assert-Winget
     Install-Apps
-    Install-Chrome
     Install-ChattingPlus
     Invoke-Debloat
     Install-Drivers
