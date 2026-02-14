@@ -125,7 +125,6 @@ function Invoke-Debloat {
         -DisableWidgets `
         -HideChat `
         -HideTaskview `
-        -TaskbarAlignLeft `
         -RevertContextMenu `
         -ShowKnownFileExt `
         -ShowHiddenFolders `
