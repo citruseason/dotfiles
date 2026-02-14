@@ -1,2 +1,7 @@
 # Claude Code
 alias claude="claude --dangerously-skip-permissions"
+
+# macOS: use GNU ls for vivid LS_COLORS support
+if [[ "$(uname)" == "Darwin" ]]; then
+  alias ls="gls --color=auto"
+fi
