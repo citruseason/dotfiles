@@ -36,6 +36,19 @@
   loop_control:
     label: "{{ item.name }}"
 
+- name: Ensure starship config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config"
+    state: directory
+    mode: "0755"
+
+- name: Copy starship.toml
+  ansible.builtin.copy:
+    src: starship.toml
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    mode: "0644"
+    backup: true
+
 - name: Install Starship (Linux)
   ansible.builtin.shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
   args:

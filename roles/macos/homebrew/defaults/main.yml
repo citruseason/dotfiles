@@ -13,6 +13,7 @@ homebrew_formulae:
   # Shell
   - zsh
   - starship
+  - vivid
   # Editor
   - neovim
 
