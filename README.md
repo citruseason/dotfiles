@@ -4,21 +4,32 @@
 
 ## Quick Start
 
+### macOS / Ubuntu / WSL
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | bash
 ```
 
-Supports **macOS**, **Ubuntu**, and **WSL**. OS and profile are auto-detected.
-
-### Options
+OS and profile are auto-detected. Options:
 
 ```bash
 # Specify profile
-curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | PROFILE=work bash
+curl ... | PROFILE=work bash
 
 # Custom install path
-curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | DOTFILES_DIR=~/my-dotfiles bash
+curl ... | DOTFILES_DIR=~/my-dotfiles bash
 ```
+
+### Windows 11
+
+Run as **Administrator** in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/citruseason/dotfiles/master/windows/setup.ps1 -OutFile setup.ps1
+PowerShell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+Installs PowerToys, 1Password, Tailscale, WSL+Ubuntu, Win11Debloat, and auto-detects CPU/GPU drivers.
 
 ## Manual Setup
 
@@ -48,7 +59,6 @@ roles/
 │   ├── apps/        # Ghostty terminal config
 │   └── dotfiles_cli/# dotfiles CLI setup
 ├── macos/           # macOS only
-│   ├── xcode/       # Xcode Command Line Tools
 │   ├── homebrew/    # Homebrew packages (common + private)
 │   ├── defaults/    # System preferences, app defaults
 │   └── dock/        # Dock layout
@@ -56,6 +66,9 @@ roles/
 │   └── apt/         # Essential apt packages
 └── wsl/             # WSL only
     └── wsl/         # systemd, 1Password SSH, color aliases
+
+windows/
+└── setup.ps1        # Windows 11 setup (PowerShell)
 ```
 
 ## `dotfiles` CLI
