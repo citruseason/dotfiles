@@ -53,22 +53,31 @@ function Install-Apps {
 function Install-ChattingPlus {
     Write-Step "Installing ChattingPlus (채팅플러스)"
 
-    $installed = Get-AppxPackage -Name "*ChattingPlus*" -ErrorAction SilentlyContinue
-    if ($installed) {
+    $found = Get-AppxPackage | Where-Object { $_.Name -match "Chatting|채팅" } -ErrorAction SilentlyContinue
+    if (-not $found) {
+        $found = Get-StartApps | Where-Object { $_.Name -match "채팅|Chatting" } -ErrorAction SilentlyContinue
+    }
+    if ($found) {
         Write-Ok "ChattingPlus is already installed"
         return
     }
 
-    $installer = "$env:TEMP\ChattingPlus_Setup.msix"
-    Write-Host "   Downloading ..." -NoNewline
-    Invoke-WebRequest -Uri "https://d3bjr3tfd36e0x.cloudfront.net/files/appversion/CHAT_PLUS_WIN/ChattingPlus_Setup.msix" `
-        -OutFile $installer -UseBasicParsing
-    Write-Ok " done"
+    try {
+        $installer = "$env:TEMP\ChattingPlus_Setup.msix"
+        Write-Host "   Downloading ..." -NoNewline
+        Invoke-WebRequest -Uri "https://d3bjr3tfd36e0x.cloudfront.net/files/appversion/CHAT_PLUS_WIN/ChattingPlus_Setup.msix" `
+            -OutFile $installer -UseBasicParsing
+        Write-Ok " done"
 
-    Write-Host "   Installing ..." -NoNewline
-    Add-AppxPackage -Path $installer
-    Remove-Item $installer -Force
-    Write-Ok " done"
+        Write-Host "   Installing ..." -NoNewline
+        Add-AppxPackage -Path $installer
+        Remove-Item $installer -Force -ErrorAction SilentlyContinue
+        Write-Ok " done"
+    }
+    catch {
+        Write-Warn "ChattingPlus installation failed: $($_.Exception.Message)"
+        Write-Warn "Install manually: https://chattingplus.co.kr/down"
+    }
 }
 
 function Install-WSL {
