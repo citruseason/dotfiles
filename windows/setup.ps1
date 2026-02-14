@@ -7,40 +7,38 @@ function Write-Ok    { param([string]$msg) Write-Host "   $msg" -ForegroundColor
 function Write-Warn  { param([string]$msg) Write-Host "   $msg" -ForegroundColor Yellow }
 function Write-Err   { param([string]$msg) Write-Host "   $msg" -ForegroundColor Red }
 
-# ── Winget ───────────────────────────────────────────
-function Assert-Winget {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Err "winget not found. Please update App Installer from Microsoft Store."
-        exit 1
-    }
-
-    # Upgrade App Installer (winget) to latest version
-    Write-Host "   Upgrading App Installer ..."
-    winget upgrade --id Microsoft.AppInstaller --silent --source winget `
-        --accept-package-agreements --accept-source-agreements 2>$null
-
-    # Reset sources to fix "Failed when searching source: msstore" error
-    Write-Host "   Resetting winget sources ..."
-    winget source reset --force --disable-interactivity 2>$null
-    winget settings --enable BypassCertificatePinningForMicrosoftStore 2>$null
-    winget settings --enable InstallerHashOverride 2>$null
-    Write-Ok "winget ready"
-}
-
-function Install-WingetPackage {
-    param([string]$Id, [string]$Name, [switch]$IgnoreHash)
-
-    $listOutput = winget list --id $Id --source winget --accept-source-agreements 2>&1 | Out-String
-    if ($listOutput -match [regex]::Escape($Id)) {
-        Write-Ok "$Name is already installed"
+# ── Chocolatey ───────────────────────────────────────
+function Assert-Chocolatey {
+    if (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Host "   Upgrading Chocolatey ..."
+        choco upgrade chocolatey -y 2>$null | Out-Null
+        Write-Ok "Chocolatey ready"
         return
     }
 
+    Write-Host "   Installing Chocolatey ..."
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = `
+        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString(
+        'https://community.chocolatey.org/install.ps1'))
+
+    # Refresh PATH so choco is available immediately
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+                [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Err "Chocolatey installation failed."
+        exit 1
+    }
+    Write-Ok "Chocolatey installed"
+}
+
+function Install-ChocoPackage {
+    param([string]$Id, [string]$Name)
+
     Write-Host "   Installing $Name ..."
-    $wingetArgs = @("install", "--id", $Id, "--silent", "--source", "winget",
-                    "--accept-package-agreements", "--accept-source-agreements")
-    if ($IgnoreHash) { $wingetArgs += "--ignore-security-hash" }
-    & winget @wingetArgs
+    choco install $Id -y --no-progress 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -49,53 +47,32 @@ function Install-WingetPackage {
     }
 }
 
-# ── Direct Download Install ──────────────────────────
-function Install-DirectDownload {
-    param([string]$Name, [string]$Url, [string]$FileName, [string]$InstallArgs)
-
-    $installer = "$env:TEMP\$FileName"
-    try {
-        Write-Host "   Downloading $Name ..."
-        Invoke-WebRequest -Uri $Url -OutFile $installer -UseBasicParsing
-        Write-Host "   Installing $Name ..."
-        if ($InstallArgs) {
-            Start-Process -FilePath $installer -ArgumentList $InstallArgs -Wait
-        }
-        else {
-            Start-Process -FilePath $installer -Wait
-        }
-        Write-Ok "$Name installed"
-    }
-    catch {
-        Write-Warn "$Name installation failed: $($_.Exception.Message)"
-    }
-    finally {
-        Remove-Item $installer -Force -ErrorAction SilentlyContinue
-    }
-}
-
 # ── Steps ────────────────────────────────────────────
 function Install-Apps {
-    Write-Step "Installing applications via winget"
+    Write-Step "Installing applications via Chocolatey"
 
     $apps = @(
-        @{ Id = "Microsoft.PowerToys";   Name = "PowerToys";      IgnoreHash = $false }
-        @{ Id = "AgileBits.1Password";   Name = "1Password";      IgnoreHash = $false }
-        @{ Id = "tailscale.tailscale";   Name = "Tailscale";      IgnoreHash = $false }
-        @{ Id = "Google.Chrome";         Name = "Google Chrome";   IgnoreHash = $true  }
-        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk";      IgnoreHash = $false }
-        @{ Id = "Discord.Discord";       Name = "Discord";        IgnoreHash = $false }
-        @{ Id = "Google.Antigravity";    Name = "Antigravity";    IgnoreHash = $false }
-        @{ Id = "Starship.Starship";     Name = "Starship";       IgnoreHash = $false }
+        @{ Id = "powertoys";     Name = "PowerToys" }
+        @{ Id = "1password";     Name = "1Password" }
+        @{ Id = "tailscale";     Name = "Tailscale" }
+        @{ Id = "googlechrome";  Name = "Google Chrome" }
+        @{ Id = "kakaotalk";     Name = "KakaoTalk" }
+        @{ Id = "discord";       Name = "Discord" }
+        @{ Id = "starship";      Name = "Starship" }
     )
 
     foreach ($app in $apps) {
-        if ($app.IgnoreHash) {
-            Install-WingetPackage -Id $app.Id -Name $app.Name -IgnoreHash
-        }
-        else {
-            Install-WingetPackage -Id $app.Id -Name $app.Name
-        }
+        Install-ChocoPackage -Id $app.Id -Name $app.Name
+    }
+
+    # Antigravity (not available in package managers)
+    $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
+    if ($agInstalled) {
+        Write-Ok "Antigravity is already installed"
+    }
+    else {
+        Write-Warn "Antigravity is not available via Chocolatey"
+        Write-Warn "Install manually: https://antigravity.withgoogle.com"
     }
 }
 
@@ -189,20 +166,10 @@ function Install-Drivers {
     Write-Host "   CPU: $($cpu.Name)"
 
     if ($cpu.Manufacturer -match "Intel") {
-        Install-WingetPackage -Id "Intel.IntelDriverAndSupportAssistant" -Name "Intel Driver & Support Assistant"
+        Install-ChocoPackage -Id "intel-dsa" -Name "Intel Driver & Support Assistant"
     }
     elseif ($cpu.Manufacturer -match "AMD|Advanced Micro") {
-        $amdInstalled = Get-StartApps | Where-Object { $_.Name -match "AMD Software" } -ErrorAction SilentlyContinue
-        if ($amdInstalled) {
-            Write-Ok "AMD Software is already installed"
-        }
-        else {
-            Install-DirectDownload `
-                -Name "AMD Auto-Detect Driver" `
-                -Url "https://drivers.amd.com/drivers/installer/24.10/beta/amd-software-auto-detect.exe" `
-                -FileName "amd-software-auto-detect.exe" `
-                -InstallArgs "/S"
-        }
+        Install-ChocoPackage -Id "amd-software-adrenalin-edition" -Name "AMD Software: Adrenalin Edition"
     }
 
     # GPU
@@ -212,35 +179,10 @@ function Install-Drivers {
         Write-Host "   GPU: $($gpu.Name)"
 
         if ($gpu.Name -match "NVIDIA") {
-            $nvInstalled = Get-StartApps | Where-Object { $_.Name -match "NVIDIA App" } -ErrorAction SilentlyContinue
-            if ($nvInstalled) {
-                Write-Ok "NVIDIA App is already installed"
-            }
-            else {
-                try {
-                    $page = Invoke-WebRequest -Uri "https://www.nvidia.com/en-us/software/nvidia-app/" -UseBasicParsing
-                    $dlUrl = ($page.Links | Where-Object { $_.href -match "us\.download\.nvidia\.com.*NVIDIA_app.*\.exe" } | Select-Object -First 1).href
-                    if ($dlUrl) {
-                        Install-DirectDownload `
-                            -Name "NVIDIA App" `
-                            -Url $dlUrl `
-                            -FileName "NVIDIA_App_Setup.exe" `
-                            -InstallArgs "-s -noreboot -noeula -nofinish -nosplash"
-                    }
-                    else {
-                        Write-Warn "NVIDIA App download URL not found"
-                        Write-Warn "Install manually: https://www.nvidia.com/en-us/software/nvidia-app/"
-                    }
-                }
-                catch {
-                    Write-Warn "NVIDIA App installation failed: $($_.Exception.Message)"
-                    Write-Warn "Install manually: https://www.nvidia.com/en-us/software/nvidia-app/"
-                }
-            }
+            Install-ChocoPackage -Id "nvidia-app" -Name "NVIDIA App"
         }
         elseif ($gpu.Name -match "AMD|Radeon") {
-            # AMD GPU driver is handled by the AMD Auto-Detect tool above
-            Write-Ok "AMD GPU driver managed by AMD Software"
+            Write-Ok "AMD GPU driver managed by AMD Software: Adrenalin Edition"
         }
     }
 }
@@ -252,7 +194,7 @@ function Main {
     Write-Host "`n  dotfiles - Windows 11 Setup" -ForegroundColor White
     Write-Host "  ─────────────────────────────────────────────`n" -ForegroundColor DarkGray
 
-    Assert-Winget
+    Assert-Chocolatey
     Install-Apps
     Install-ChattingPlus
     Invoke-Debloat
