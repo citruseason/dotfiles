@@ -27,19 +27,8 @@ setopt hist_ignore_space
 # Key bindings
 bindkey -e
 
-# Aliases
-[ -f ~/.aliases ] && source ~/.aliases
-
 # SSH agent
 eval "$(ssh-agent -s)" &>/dev/null
-
-# LS_COLORS (vivid)
-if command -v vivid &>/dev/null; then
-  export LS_COLORS="$(vivid generate snazzy)"
-fi
-
-# Starship prompt
-eval "$(starship init zsh)"
 
 # Load Ansible-managed extra configuration
 [ -f ~/.zshrc_extra ] && source ~/.zshrc_extra

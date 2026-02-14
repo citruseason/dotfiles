@@ -4,5 +4,16 @@
 export DOTHOME="{{ dotfiles_dir }}"
 export PATH="$DOTHOME/bin:$PATH"
 
+# Aliases
+[ -f ~/.aliases ] && source ~/.aliases
+
+# LS_COLORS (vivid)
+if command -v vivid &>/dev/null; then
+  export LS_COLORS="$(vivid generate snazzy)"
+fi
+
+# Starship prompt
+eval "$(starship init zsh)"
+
 # mise (runtime version manager)
 eval "$(mise activate zsh)"
