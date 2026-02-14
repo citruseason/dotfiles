@@ -39,6 +39,7 @@ function Install-Apps {
         @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
         @{ Id = "AgileBits.1Password";   Name = "1Password" }
         @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
+        @{ Id = "Google.Chrome";           Name = "Google Chrome" }
         @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
         @{ Id = "Discord.Discord";       Name = "Discord" }
         @{ Id = "Google.Antigravity";    Name = "Antigravity" }
