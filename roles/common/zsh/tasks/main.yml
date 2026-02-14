@@ -19,6 +19,18 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.aliases"
     mode: "0644"
 
+- name: Copy platform-specific aliases
+  ansible.builtin.copy:
+    src: "{{ aliases_platform_file }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.aliases_platform"
+    mode: "0644"
+  vars:
+    aliases_platform_file: >-
+      {%- if 'wsl' in group_names -%}.aliases_wsl
+      {%- elif is_macos | bool -%}.aliases_macos
+      {%- else -%}.aliases_linux
+      {%- endif -%}
+
 - name: Deploy .zshrc_extra from template
   ansible.builtin.template:
     src: .zshrc_extra.j2

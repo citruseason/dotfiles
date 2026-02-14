@@ -1,0 +1,2 @@
+# macOS: use GNU ls for vivid LS_COLORS support
+alias ls="gls --color=auto"

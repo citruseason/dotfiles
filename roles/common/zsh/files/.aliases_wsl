@@ -1,0 +1,6 @@
+# WSL-Ubuntu aliases
+
+# Use Windows OpenSSH for 1Password SSH agent integration
+alias ssh='ssh.exe'
+alias ssh-add='ssh-add.exe'
+export GIT_SSH_COMMAND="ssh.exe"

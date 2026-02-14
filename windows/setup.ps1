@@ -92,6 +92,7 @@ function Install-Apps {
         @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
         @{ Id = "Discord.Discord";       Name = "Discord" }
         @{ Id = "Starship.Starship";     Name = "Starship" }
+        @{ Id = "Audient.iD";            Name = "Audient iD" }
     )
 
     foreach ($app in $wingetApps) {
