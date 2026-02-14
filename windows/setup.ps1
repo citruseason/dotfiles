@@ -74,13 +74,15 @@ function Install-ChattingPlus {
 function Install-WSL {
     Write-Step "Installing WSL + Ubuntu 24.04 LTS"
 
-    $wslStatus = wsl --status 2>&1
-    if ($LASTEXITCODE -eq 0 -and $wslStatus -notmatch "no installed distributions") {
-        $distros = wsl --list --quiet 2>&1
-        if ($distros -match "Ubuntu") {
+    try {
+        $distros = (wsl --list --quiet 2>$null) | Where-Object { $_ -match "Ubuntu" }
+        if ($distros) {
             Write-Ok "WSL Ubuntu is already installed"
             return
         }
+    }
+    catch {
+        # WSL not installed yet
     }
 
     wsl --install -d Ubuntu-24.04 --no-launch
