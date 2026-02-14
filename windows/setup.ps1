@@ -35,10 +35,12 @@ function Assert-Chocolatey {
 }
 
 function Install-ChocoPackage {
-    param([string]$Id, [string]$Name)
+    param([string]$Id, [string]$Name, [switch]$IgnoreChecksums)
 
     Write-Host "   Installing $Name ..."
-    choco install $Id -y --no-progress 2>&1 | Out-Null
+    $chocoArgs = @($Id, "-y", "--no-progress")
+    if ($IgnoreChecksums) { $chocoArgs += "--ignore-checksums" }
+    choco install @chocoArgs 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -55,14 +57,19 @@ function Install-Apps {
         @{ Id = "powertoys";     Name = "PowerToys" }
         @{ Id = "1password";     Name = "1Password" }
         @{ Id = "tailscale";     Name = "Tailscale" }
-        @{ Id = "googlechrome";  Name = "Google Chrome" }
+        @{ Id = "googlechrome";  Name = "Google Chrome";  IgnoreChecksums = $true }
         @{ Id = "kakaotalk";     Name = "KakaoTalk" }
         @{ Id = "discord";       Name = "Discord" }
         @{ Id = "starship";      Name = "Starship" }
     )
 
     foreach ($app in $apps) {
-        Install-ChocoPackage -Id $app.Id -Name $app.Name
+        if ($app.IgnoreChecksums) {
+            Install-ChocoPackage -Id $app.Id -Name $app.Name -IgnoreChecksums
+        }
+        else {
+            Install-ChocoPackage -Id $app.Id -Name $app.Name
+        }
     }
 
     # Antigravity (not available in package managers)
