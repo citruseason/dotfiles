@@ -39,11 +39,36 @@ function Install-Apps {
         @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
         @{ Id = "AgileBits.1Password";   Name = "1Password" }
         @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
+        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
+        @{ Id = "Discord.Discord";       Name = "Discord" }
+        @{ Id = "Google.Antigravity";    Name = "Antigravity" }
+        @{ Id = "Starship.Starship";     Name = "Starship" }
     )
 
     foreach ($app in $apps) {
         Install-WingetPackage -Id $app.Id -Name $app.Name
     }
+}
+
+function Install-ChattingPlus {
+    Write-Step "Installing ChattingPlus (채팅플러스)"
+
+    $installed = Get-AppxPackage -Name "*ChattingPlus*" -ErrorAction SilentlyContinue
+    if ($installed) {
+        Write-Ok "ChattingPlus is already installed"
+        return
+    }
+
+    $installer = "$env:TEMP\ChattingPlus_Setup.msix"
+    Write-Host "   Downloading ..." -NoNewline
+    Invoke-WebRequest -Uri "https://d3bjr3tfd36e0x.cloudfront.net/files/appversion/CHAT_PLUS_WIN/ChattingPlus_Setup.msix" `
+        -OutFile $installer -UseBasicParsing
+    Write-Ok " done"
+
+    Write-Host "   Installing ..." -NoNewline
+    Add-AppxPackage -Path $installer
+    Remove-Item $installer -Force
+    Write-Ok " done"
 }
 
 function Install-WSL {
@@ -108,6 +133,7 @@ function Main {
 
     Assert-Winget
     Install-Apps
+    Install-ChattingPlus
     Invoke-Debloat
     Install-WSL
     Install-Drivers
