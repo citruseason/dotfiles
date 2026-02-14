@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ── Configuration (override via env vars) ─────────────
-DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/relomote/dotfiles.git}"
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/citruseason/dotfiles.git}"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 PROFILE="${PROFILE:-}"
 
@@ -202,6 +202,8 @@ clone_dotfiles() {
 # ── Run Ansible Playbook ─────────────────────────────
 run_playbook() {
     info "Running playbook: inventory/$PROFILE.yml"
+
+    cd "$DOTFILES_DIR"
 
     ansible-playbook "$DOTFILES_DIR/site.yml" \
         -i "$DOTFILES_DIR/inventory/${PROFILE}.yml"
