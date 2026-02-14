@@ -97,9 +97,9 @@ install_xcode_clt() {
     if [[ -z "$PROD" ]]; then
         # Fallback: trigger dialog-based install
         sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
-        xcode-select --install 2>/dev/null || true
+        sudo xcode-select --install 2>/dev/null || true
         info "Waiting for Xcode CLT installation..."
-        until xcode-select -p &>/dev/null; do sleep 5; done
+        until sudo xcode-select -p &>/dev/null; do sleep 5; done
     else
         sudo softwareupdate -i "$PROD" --verbose
         sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
