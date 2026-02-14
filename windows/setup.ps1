@@ -13,6 +13,12 @@ function Assert-Winget {
         Write-Err "winget not found. Please update App Installer from Microsoft Store."
         exit 1
     }
+
+    # Reset sources to fix "Failed when searching source: msstore" error
+    Write-Host "   Resetting winget sources ..."
+    winget source reset --force --disable-interactivity 2>$null
+    winget settings --enable BypassCertificatePinningForMicrosoftStore 2>$null
+    Write-Ok "winget ready"
 }
 
 function Install-WingetPackage {
