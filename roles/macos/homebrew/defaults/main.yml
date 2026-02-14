@@ -38,6 +38,8 @@ homebrew_private_casks:
   - tailscale
   - claude-code
   - codex
+  - discord
+  - kakaotalk
 
 homebrew_mas_apps:
   - { name: Bandizip, id: 1265704574 }
