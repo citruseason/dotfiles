@@ -70,6 +70,12 @@ function Install-Apps {
     if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
     else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
 
+    # Refresh Start Menu index
+    Write-Host "   Refreshing Explorer ..."
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+    Write-Ok "Explorer restarted"
+
     # Antigravity (not available in package managers)
     $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
     if ($agInstalled) {
