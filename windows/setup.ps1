@@ -1,6 +1,5 @@
 #Requires -RunAsAdministrator
 Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
 
 # ── Colors ───────────────────────────────────────────
 function Write-Step  { param([string]$msg) Write-Host "`n>> $msg" -ForegroundColor Cyan }
@@ -19,16 +18,41 @@ function Assert-Winget {
 function Install-WingetPackage {
     param([string]$Id, [string]$Name)
 
-    $installed = winget list --id $Id --exact --accept-source-agreements 2>&1
-    if ($installed -match $Id) {
+    $listOutput = winget list --id $Id --exact --accept-source-agreements 2>&1 | Out-String
+    if ($listOutput -match [regex]::Escape($Id)) {
         Write-Ok "$Name is already installed"
         return
     }
 
-    Write-Host "   Installing $Name ..." -NoNewline
+    Write-Host "   Installing $Name ..."
     winget install --id $Id --exact --silent `
-        --accept-package-agreements --accept-source-agreements | Out-Null
-    Write-Ok " done"
+        --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -eq 0) {
+        Write-Ok "$Name installed"
+    }
+    else {
+        Write-Warn "$Name installation may have failed (exit code: $LASTEXITCODE)"
+    }
+}
+
+# ── Direct Download Install ──────────────────────────
+function Install-DirectDownload {
+    param([string]$Name, [string]$Url, [string]$FileName, [string]$Args)
+
+    $installer = "$env:TEMP\$FileName"
+    try {
+        Write-Host "   Downloading $Name ..."
+        Invoke-WebRequest -Uri $Url -OutFile $installer -UseBasicParsing
+        Write-Host "   Installing $Name ..."
+        Start-Process -FilePath $installer -ArgumentList $Args -Wait
+        Write-Ok "$Name installed"
+    }
+    catch {
+        Write-Warn "$Name installation failed: $($_.Exception.Message)"
+    }
+    finally {
+        Remove-Item $installer -Force -ErrorAction SilentlyContinue
+    }
 }
 
 # ── Steps ────────────────────────────────────────────
@@ -39,7 +63,7 @@ function Install-Apps {
         @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
         @{ Id = "AgileBits.1Password";   Name = "1Password" }
         @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
-        @{ Id = "Google.Chrome";           Name = "Google Chrome" }
+        @{ Id = "Google.Chrome";         Name = "Google Chrome" }
         @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
         @{ Id = "Discord.Discord";       Name = "Discord" }
         @{ Id = "Google.Antigravity";    Name = "Antigravity" }
@@ -65,15 +89,13 @@ function Install-ChattingPlus {
 
     try {
         $installer = "$env:TEMP\ChattingPlus_Setup.msix"
-        Write-Host "   Downloading ..." -NoNewline
+        Write-Host "   Downloading ..."
         Invoke-WebRequest -Uri "https://d3bjr3tfd36e0x.cloudfront.net/files/appversion/CHAT_PLUS_WIN/ChattingPlus_Setup.msix" `
             -OutFile $installer -UseBasicParsing
-        Write-Ok " done"
-
-        Write-Host "   Installing ..." -NoNewline
+        Write-Host "   Installing ..."
         Add-AppxPackage -Path $installer
         Remove-Item $installer -Force -ErrorAction SilentlyContinue
-        Write-Ok " done"
+        Write-Ok "ChattingPlus installed"
     }
     catch {
         Write-Warn "ChattingPlus installation failed: $($_.Exception.Message)"
@@ -85,7 +107,6 @@ function Install-WSL {
     Write-Step "Installing WSL + Ubuntu 24.04 LTS"
 
     try {
-        # wsl.exe outputs UTF-16 LE — decode to avoid null-byte matching issues
         $raw = [System.Text.Encoding]::Unicode.GetString([System.Text.Encoding]::Default.GetBytes(
             (wsl --list --quiet 2>$null | Out-String)
         ))
@@ -147,8 +168,17 @@ function Install-Drivers {
         Install-WingetPackage -Id "Intel.IntelDriverAndSupportAssistant" -Name "Intel Driver & Support Assistant"
     }
     elseif ($cpu.Manufacturer -match "AMD|Advanced Micro") {
-        Write-Warn "AMD chipset drivers are not available via winget"
-        Write-Warn "Download manually: https://www.amd.com/en/support"
+        $amdInstalled = Get-StartApps | Where-Object { $_.Name -match "AMD Software" } -ErrorAction SilentlyContinue
+        if ($amdInstalled) {
+            Write-Ok "AMD Software is already installed"
+        }
+        else {
+            Install-DirectDownload `
+                -Name "AMD Auto-Detect Driver" `
+                -Url "https://drivers.amd.com/drivers/installer/24.10/beta/amd-software-auto-detect.exe" `
+                -FileName "amd-software-auto-detect.exe" `
+                -Args "/S"
+        }
     }
 
     # GPU
@@ -161,7 +191,8 @@ function Install-Drivers {
             Install-WingetPackage -Id "Nvidia.GeForceExperience" -Name "NVIDIA GeForce Experience"
         }
         elseif ($gpu.Name -match "AMD|Radeon") {
-            Install-WingetPackage -Id "AMD.AMDSoftware" -Name "AMD Software: Adrenalin Edition"
+            # AMD GPU driver is handled by the AMD Auto-Detect tool above
+            Write-Ok "AMD GPU driver managed by AMD Software"
         }
     }
 }
