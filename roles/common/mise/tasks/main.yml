@@ -1,4 +1,8 @@
 ---
+- name: Set mise binary path
+  ansible.builtin.set_fact:
+    mise_bin: "{{ (is_linux | default(false)) | ternary(ansible_facts['env']['HOME'] + '/.local/bin/mise', 'mise') }}"
+
 - name: Check if mise is installed
   ansible.builtin.command: which mise
   register: mise_check
@@ -27,9 +31,9 @@
     backup: true
 
 - name: Trust mise config
-  ansible.builtin.command: mise trust {{ ansible_facts['env']['HOME'] }}/.mise.toml
+  ansible.builtin.command: "{{ mise_bin }} trust {{ ansible_facts['env']['HOME'] }}/.mise.toml"
   changed_when: false
 
 - name: Install mise tools
-  ansible.builtin.shell: mise install --yes
+  ansible.builtin.command: "{{ mise_bin }} install --yes"
   changed_when: false

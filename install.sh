@@ -5,6 +5,7 @@ set -euo pipefail
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/citruseason/dotfiles.git}"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 PROFILE="${PROFILE:-}"
+SKIP_REPO_UPDATE="${SKIP_REPO_UPDATE:-0}"
 
 # ── Colors ────────────────────────────────────────────
 BOLD=$'\033[1m'
@@ -205,9 +206,13 @@ install_git_linux() {
 # ── Clone/Update Repo ────────────────────────────────
 clone_dotfiles() {
     if [[ -d "$DOTFILES_DIR/.git" ]]; then
-        info "Updating dotfiles repo..."
-        git -C "$DOTFILES_DIR" pull --rebase --quiet
-        success "Dotfiles updated ($DOTFILES_DIR)"
+        if [[ "$SKIP_REPO_UPDATE" == "1" ]]; then
+            info "Skipping repo update (SKIP_REPO_UPDATE=1)"
+        else
+            info "Updating dotfiles repo..."
+            git -C "$DOTFILES_DIR" pull --rebase --quiet
+            success "Dotfiles updated ($DOTFILES_DIR)"
+        fi
     else
         info "Cloning dotfiles repo..."
         git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
