@@ -195,6 +195,60 @@ function Install-Drivers {
     }
 }
 
+function Set-TaskbarLayout {
+    Write-Step "Configuring taskbar layout"
+
+    # Show search icon on taskbar (1 = icon only, 2 = search box)
+    $searchPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"
+    Set-ItemProperty -Path $searchPath -Name "SearchboxTaskbarMode" -Value 1 -Force
+    Write-Ok "Search icon enabled"
+
+    # Taskbar pinned apps: Explorer, Chrome, Discord, KakaoTalk
+    $xml = @'
+<?xml version="1.0" encoding="utf-8"?>
+<LayoutModificationTemplate
+    xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"
+    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout"
+    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout"
+    xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout"
+    Version="1">
+  <CustomTaskbarLayoutCollection PinListPlacement="Replace">
+    <defaultlayout:TaskbarLayout>
+      <taskbar:TaskbarPinList>
+        <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer"/>
+        <taskbar:DesktopApp DesktopApplicationLinkPath="%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk"/>
+        <taskbar:DesktopApp DesktopApplicationLinkPath="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Discord Inc\Discord.lnk"/>
+        <taskbar:DesktopApp DesktopApplicationLinkPath="%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Kakao\KakaoTalk\KakaoTalk.lnk"/>
+      </taskbar:TaskbarPinList>
+    </defaultlayout:TaskbarLayout>
+  </CustomTaskbarLayoutCollection>
+</LayoutModificationTemplate>
+'@
+
+    $layoutFile = "$env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml"
+    $xml | Out-File -FilePath $layoutFile -Encoding utf8 -Force
+
+    # Also place in default profile for new users
+    $defaultLayout = "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"
+    $xml | Out-File -FilePath $defaultLayout -Encoding utf8 -Force
+
+    # Apply via registry policy
+    $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+    if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+    Set-ItemProperty -Path $regPath -Name "StartLayoutFile" -Value $layoutFile -Force
+    Set-ItemProperty -Path $regPath -Name "LockedStartLayout" -Value 1 -Type DWord -Force
+
+    # Restart explorer to apply
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+
+    # Unlock so user can modify later
+    Set-ItemProperty -Path $regPath -Name "LockedStartLayout" -Value 0 -Type DWord -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+
+    Write-Ok "Taskbar layout configured (Explorer, Chrome, Discord, KakaoTalk)"
+}
+
 # ── Main ─────────────────────────────────────────────
 function Main {
     $script:NeedsReboot = $false
@@ -207,6 +261,7 @@ function Main {
     Install-ChattingPlus
     Invoke-Debloat
     Install-Drivers
+    Set-TaskbarLayout
     Install-WSL
 
     Write-Host "`n" -NoNewline
