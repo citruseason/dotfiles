@@ -115,6 +115,25 @@ function Install-Apps {
     }
 }
 
+function Disable-OpenSSHAgent {
+    Write-Step "Disabling OpenSSH Agent (use 1Password SSH agent instead)"
+
+    $svc = Get-Service -Name ssh-agent -ErrorAction SilentlyContinue
+    if (-not $svc) {
+        Write-Ok "OpenSSH Agent service not found"
+        return
+    }
+
+    if ($svc.StartType -eq 'Disabled') {
+        Write-Ok "OpenSSH Agent is already disabled"
+        return
+    }
+
+    Stop-Service -Name ssh-agent -Force -ErrorAction SilentlyContinue
+    Set-Service -Name ssh-agent -StartupType Disabled
+    Write-Ok "OpenSSH Agent stopped and disabled"
+}
+
 function Install-ChattingPlus {
     Write-Step "Installing ChattingPlus (채팅플러스)"
 
@@ -356,6 +375,7 @@ function Main {
     Assert-Winget
     Assert-Chocolatey
     Install-Apps
+    Disable-OpenSSHAgent
     Install-ChattingPlus
     Invoke-Debloat
     Install-Drivers
