@@ -51,14 +51,19 @@ function Install-WingetPackage {
 
 # ── Direct Download Install ──────────────────────────
 function Install-DirectDownload {
-    param([string]$Name, [string]$Url, [string]$FileName, [string]$Args)
+    param([string]$Name, [string]$Url, [string]$FileName, [string]$InstallArgs)
 
     $installer = "$env:TEMP\$FileName"
     try {
         Write-Host "   Downloading $Name ..."
         Invoke-WebRequest -Uri $Url -OutFile $installer -UseBasicParsing
         Write-Host "   Installing $Name ..."
-        Start-Process -FilePath $installer -ArgumentList $Args -Wait
+        if ($InstallArgs) {
+            Start-Process -FilePath $installer -ArgumentList $InstallArgs -Wait
+        }
+        else {
+            Start-Process -FilePath $installer -Wait
+        }
         Write-Ok "$Name installed"
     }
     catch {
@@ -196,7 +201,7 @@ function Install-Drivers {
                 -Name "AMD Auto-Detect Driver" `
                 -Url "https://drivers.amd.com/drivers/installer/24.10/beta/amd-software-auto-detect.exe" `
                 -FileName "amd-software-auto-detect.exe" `
-                -Args "/S"
+                -InstallArgs "/S"
         }
     }
 
@@ -220,7 +225,7 @@ function Install-Drivers {
                             -Name "NVIDIA App" `
                             -Url $dlUrl `
                             -FileName "NVIDIA_App_Setup.exe" `
-                            -Args "-s -noreboot -noeula -nofinish -nosplash"
+                            -InstallArgs "-s -noreboot -noeula -nofinish -nosplash"
                     }
                     else {
                         Write-Warn "NVIDIA App download URL not found"
