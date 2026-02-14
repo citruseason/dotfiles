@@ -66,7 +66,7 @@ function Install-Apps {
 
     # Chrome: installer checksum changes frequently
     Write-Host "   Installing Google Chrome ..."
-    choco install googlechrome -y --no-progress --ignore-checksums 2>&1 | Out-Null
+    choco install googlechrome -y --ignore-checksums
     if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
     else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
 
