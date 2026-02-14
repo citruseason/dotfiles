@@ -14,10 +14,6 @@
     ##################################
     # Package managers (OS-specific)
     ##################################
-    - role: xcode
-      when: is_macos
-      tags: [xcode]
-
     - role: homebrew
       when: is_macos
       tags: [homebrew]

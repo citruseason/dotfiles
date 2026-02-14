@@ -86,7 +86,6 @@ add_role() {
 
 build_roles() {
     if [[ "$OS" == "macos" ]]; then
-        add_role "Xcode CLT"      xcode    "Command Line Tools"          "macOS"
         add_role "Homebrew"        homebrew "Package manager & packages"  "macOS"
     fi
 
@@ -269,8 +268,8 @@ Options:
   --help, -h       Show this help
 
 Available tags:
-  xcode  homebrew  apt   fonts  git   zsh
-  mise   apps      cli   macos  dock  wsl
+  homebrew  apt   fonts  git   zsh
+  mise      apps  cli    macos dock  wsl
 EOF
 }
 
