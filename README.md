@@ -25,9 +25,10 @@ curl ... | DOTFILES_DIR=~/my-dotfiles bash
 Run as **Administrator** in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/citruseason/dotfiles/master/windows/setup.ps1 -OutFile setup.ps1
-PowerShell -ExecutionPolicy Bypass -File setup.ps1
+irm https://raw.githubusercontent.com/citruseason/dotfiles/master/windows/setup.ps1 | iex
 ```
+
+항상 최신 스크립트를 원격에서 받아 실행합니다. 재실행해도 이미 설치된 항목은 건너뜁니다.
 
 Installs PowerToys, 1Password, Tailscale, WSL+Ubuntu, Win11Debloat, and auto-detects CPU/GPU drivers.
 
