@@ -14,6 +14,11 @@ function Assert-Winget {
         exit 1
     }
 
+    # Upgrade App Installer (winget) to latest version
+    Write-Host "   Upgrading App Installer ..."
+    winget upgrade --id Microsoft.AppInstaller --silent --source winget `
+        --accept-package-agreements --accept-source-agreements 2>$null
+
     # Reset sources to fix "Failed when searching source: msstore" error
     Write-Host "   Resetting winget sources ..."
     winget source reset --force --disable-interactivity 2>$null
