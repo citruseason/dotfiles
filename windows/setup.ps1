@@ -54,13 +54,13 @@ function Install-Apps {
     Write-Step "Installing applications via Chocolatey"
 
     $apps = @(
-        @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "1password";     Name = "1Password" }
-        @{ Id = "tailscale";     Name = "Tailscale" }
-        @{ Id = "googlechrome";  Name = "Google Chrome";  IgnoreChecksums = $true }
-        @{ Id = "kakaotalk";     Name = "KakaoTalk" }
-        @{ Id = "discord";       Name = "Discord" }
-        @{ Id = "starship";      Name = "Starship" }
+        @{ Id = "powertoys";     Name = "PowerToys";      IgnoreChecksums = $false }
+        @{ Id = "1password";     Name = "1Password";      IgnoreChecksums = $false }
+        @{ Id = "tailscale";     Name = "Tailscale";      IgnoreChecksums = $false }
+        @{ Id = "googlechrome";  Name = "Google Chrome";  IgnoreChecksums = $true  }
+        @{ Id = "kakaotalk";     Name = "KakaoTalk";      IgnoreChecksums = $false }
+        @{ Id = "discord";       Name = "Discord";        IgnoreChecksums = $false }
+        @{ Id = "starship";      Name = "Starship";       IgnoreChecksums = $false }
     )
 
     foreach ($app in $apps) {
