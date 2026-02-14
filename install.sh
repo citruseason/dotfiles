@@ -81,31 +81,45 @@ trap cleanup_sudo EXIT
 
 # ── macOS: Xcode Command Line Tools ──────────────────
 install_xcode_clt() {
-    if xcode-select -p &>/dev/null; then
+    if [[ -f "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
         success "Xcode CLT"
         return
     fi
 
     info "Installing Xcode Command Line Tools..."
 
-    # Trigger softwareupdate catalog for CLT
-    sudo touch /tmp/.com.apple.dt.CommandLineTools.done
+    # Placeholder trick: makes softwareupdate list CLT packages
+    # ref: Homebrew/install, MikeMcQuaid/strap
+    local clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+    sudo touch "$clt_placeholder"
 
-    PROD=$(softwareupdate -l 2>&1 \
-        | grep -E '^\s+\*.*Command Line Tools' \
-        | sed 's/^[[:space:]]*\* Label: //' \
-        | head -n 1)
+    local clt_package
+    clt_package=$(softwareupdate -l 2>/dev/null \
+        | grep -B 1 -E "Command Line Tools" \
+        | awk -F'*' '/^ *\*/ {print $2}' \
+        | sed -e 's/^ *Label: //' -e 's/^ *//' \
+        | sort -V \
+        | tail -n 1)
 
-    if [[ -n "$PROD" ]]; then
-        sudo softwareupdate -i "$PROD" --verbose
-    else
-        # Fallback: trigger GUI dialog-based install (no sudo)
-        xcode-select --install 2>/dev/null || true
-        info "Waiting for Xcode CLT installation..."
-        until xcode-select -p &>/dev/null; do sleep 5; done
+    if [[ -n "$clt_package" ]]; then
+        sudo softwareupdate -i "$clt_package" --verbose
     fi
 
-    sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
+    sudo rm -f "$clt_placeholder"
+
+    # Verify & activate
+    if [[ -f "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
+        sudo xcode-select --switch /Library/Developer/CommandLineTools
+    elif [[ -t 0 ]]; then
+        # GUI fallback — only in interactive terminals
+        warn "Headless install failed, requesting GUI install..."
+        xcode-select --install
+        info "Press any key when installation has completed."
+        read -n 1 -s -r
+    else
+        fail "Xcode CLT install failed. Run 'xcode-select --install' manually."
+    fi
+
     success "Xcode CLT"
 }
 
