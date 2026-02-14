@@ -35,12 +35,10 @@ function Assert-Chocolatey {
 }
 
 function Install-ChocoPackage {
-    param([string]$Id, [string]$Name, [switch]$IgnoreChecksums)
+    param([string]$Id, [string]$Name)
 
     Write-Host "   Installing $Name ..."
-    $chocoArgs = @($Id, "-y", "--no-progress")
-    if ($IgnoreChecksums) { $chocoArgs += "--ignore-checksums" }
-    choco install @chocoArgs 2>&1 | Out-Null
+    choco install $Id -y --no-progress 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -54,23 +52,23 @@ function Install-Apps {
     Write-Step "Installing applications via Chocolatey"
 
     $apps = @(
-        @{ Id = "powertoys";     Name = "PowerToys";      IgnoreChecksums = $false }
-        @{ Id = "1password";     Name = "1Password";      IgnoreChecksums = $false }
-        @{ Id = "tailscale";     Name = "Tailscale";      IgnoreChecksums = $false }
-        @{ Id = "googlechrome";  Name = "Google Chrome";  IgnoreChecksums = $true  }
-        @{ Id = "kakaotalk";     Name = "KakaoTalk";      IgnoreChecksums = $false }
-        @{ Id = "discord";       Name = "Discord";        IgnoreChecksums = $false }
-        @{ Id = "starship";      Name = "Starship";       IgnoreChecksums = $false }
+        @{ Id = "powertoys";     Name = "PowerToys" }
+        @{ Id = "1password";     Name = "1Password" }
+        @{ Id = "tailscale";     Name = "Tailscale" }
+        @{ Id = "kakaotalk";     Name = "KakaoTalk" }
+        @{ Id = "discord";       Name = "Discord" }
+        @{ Id = "starship";      Name = "Starship" }
     )
 
     foreach ($app in $apps) {
-        if ($app.IgnoreChecksums) {
-            Install-ChocoPackage -Id $app.Id -Name $app.Name -IgnoreChecksums
-        }
-        else {
-            Install-ChocoPackage -Id $app.Id -Name $app.Name
-        }
+        Install-ChocoPackage -Id $app.Id -Name $app.Name
     }
+
+    # Chrome: installer checksum changes frequently
+    Write-Host "   Installing Google Chrome ..."
+    choco install googlechrome -y --no-progress --ignore-checksums 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
+    else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
 
     # Antigravity (not available in package managers)
     $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
