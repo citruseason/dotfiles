@@ -107,6 +107,8 @@ function Invoke-Debloat {
         -RunDefaults `
         -Silent `
         -RemoveGamingApps `
+        -RemoveCommApps `
+        -RemoveW11Outlook `
         -DisableTelemetry `
         -DisableBing `
         -DisableSuggestions `
