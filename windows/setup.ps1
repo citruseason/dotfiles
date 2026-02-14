@@ -82,28 +82,27 @@ function Install-ChocoPackage {
 
 # ── Steps ────────────────────────────────────────────
 function Install-Apps {
-    Write-Step "Installing applications via Chocolatey"
+    Write-Step "Installing applications"
 
-    $apps = @(
-        @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "tailscale";     Name = "Tailscale" }
-        @{ Id = "kakaotalk";     Name = "KakaoTalk" }
-        @{ Id = "discord.install"; Name = "Discord" }
-        @{ Id = "starship";      Name = "Starship" }
+    # winget
+    $wingetApps = @(
+        @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
+        @{ Id = "AgileBits.1Password";   Name = "1Password" }
+        @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
+        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
+        @{ Id = "Discord.Discord";       Name = "Discord" }
+        @{ Id = "Starship.Starship";     Name = "Starship" }
     )
 
-    foreach ($app in $apps) {
-        Install-ChocoPackage -Id $app.Id -Name $app.Name
+    foreach ($app in $wingetApps) {
+        Install-WingetPackage -Id $app.Id -Name $app.Name
     }
 
-    # Chrome: installer checksum changes frequently
+    # Chrome: winget 해시 불일치 문제로 choco 사용
     Write-Host "   Installing Google Chrome ..."
     choco install googlechrome -y --ignore-checksums
     if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
     else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
-
-    # 1Password: winget으로 설치 (choco 패키지는 앱 목록에 등록 안 됨)
-    Install-WingetPackage -Id "AgileBits.1Password" -Name "1Password"
 
     # Antigravity (not available in package managers)
     $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
