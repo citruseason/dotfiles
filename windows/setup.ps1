@@ -178,8 +178,8 @@ function Main {
     Install-Apps
     Install-ChattingPlus
     Invoke-Debloat
-    Install-WSL
     Install-Drivers
+    Install-WSL
 
     Write-Host "`n" -NoNewline
     if ($script:NeedsReboot) {
