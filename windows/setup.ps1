@@ -37,10 +37,10 @@ function Install-WingetPackage {
     }
 
     Write-Host "   Installing $Name ..."
-    $args = @("install", "--id", $Id, "--silent", "--source", "winget",
-              "--accept-package-agreements", "--accept-source-agreements")
-    if ($IgnoreHash) { $args += "--ignore-security-hash" }
-    & winget @args
+    $wingetArgs = @("install", "--id", $Id, "--silent", "--source", "winget",
+                    "--accept-package-agreements", "--accept-source-agreements")
+    if ($IgnoreHash) { $wingetArgs += "--ignore-security-hash" }
+    & winget @wingetArgs
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
