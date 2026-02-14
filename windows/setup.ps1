@@ -23,11 +23,12 @@ function Assert-Winget {
     Write-Host "   Resetting winget sources ..."
     winget source reset --force --disable-interactivity 2>$null
     winget settings --enable BypassCertificatePinningForMicrosoftStore 2>$null
+    winget settings --enable InstallerHashOverride 2>$null
     Write-Ok "winget ready"
 }
 
 function Install-WingetPackage {
-    param([string]$Id, [string]$Name)
+    param([string]$Id, [string]$Name, [switch]$IgnoreHash)
 
     $listOutput = winget list --id $Id --source winget --accept-source-agreements 2>&1 | Out-String
     if ($listOutput -match [regex]::Escape($Id)) {
@@ -36,8 +37,10 @@ function Install-WingetPackage {
     }
 
     Write-Host "   Installing $Name ..."
-    winget install --id $Id --silent --source winget `
-        --accept-package-agreements --accept-source-agreements
+    $args = @("install", "--id", $Id, "--silent", "--source", "winget",
+              "--accept-package-agreements", "--accept-source-agreements")
+    if ($IgnoreHash) { $args += "--ignore-security-hash" }
+    & winget @args
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -71,18 +74,23 @@ function Install-Apps {
     Write-Step "Installing applications via winget"
 
     $apps = @(
-        @{ Id = "Microsoft.PowerToys";   Name = "PowerToys" }
-        @{ Id = "AgileBits.1Password";   Name = "1Password" }
-        @{ Id = "tailscale.tailscale";   Name = "Tailscale" }
-        @{ Id = "Google.Chrome";         Name = "Google Chrome" }
-        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk" }
-        @{ Id = "Discord.Discord";       Name = "Discord" }
-        @{ Id = "Google.Antigravity";    Name = "Antigravity" }
-        @{ Id = "Starship.Starship";     Name = "Starship" }
+        @{ Id = "Microsoft.PowerToys";   Name = "PowerToys";      IgnoreHash = $false }
+        @{ Id = "AgileBits.1Password";   Name = "1Password";      IgnoreHash = $false }
+        @{ Id = "tailscale.tailscale";   Name = "Tailscale";      IgnoreHash = $false }
+        @{ Id = "Google.Chrome";         Name = "Google Chrome";   IgnoreHash = $true  }
+        @{ Id = "Kakao.KakaoTalk";       Name = "KakaoTalk";      IgnoreHash = $false }
+        @{ Id = "Discord.Discord";       Name = "Discord";        IgnoreHash = $false }
+        @{ Id = "Google.Antigravity";    Name = "Antigravity";    IgnoreHash = $false }
+        @{ Id = "Starship.Starship";     Name = "Starship";       IgnoreHash = $false }
     )
 
     foreach ($app in $apps) {
-        Install-WingetPackage -Id $app.Id -Name $app.Name
+        if ($app.IgnoreHash) {
+            Install-WingetPackage -Id $app.Id -Name $app.Name -IgnoreHash
+        }
+        else {
+            Install-WingetPackage -Id $app.Id -Name $app.Name
+        }
     }
 }
 
