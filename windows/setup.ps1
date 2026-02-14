@@ -7,6 +7,39 @@ function Write-Ok    { param([string]$msg) Write-Host "   $msg" -ForegroundColor
 function Write-Warn  { param([string]$msg) Write-Host "   $msg" -ForegroundColor Yellow }
 function Write-Err   { param([string]$msg) Write-Host "   $msg" -ForegroundColor Red }
 
+# ── Winget ───────────────────────────────────────────
+function Assert-Winget {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-Err "winget not found. Please update App Installer from Microsoft Store."
+        exit 1
+    }
+
+    Write-Host "   Upgrading App Installer ..."
+    winget upgrade --id Microsoft.AppInstaller --silent --source winget `
+        --accept-package-agreements --accept-source-agreements 2>$null
+    Write-Ok "winget ready"
+}
+
+function Install-WingetPackage {
+    param([string]$Id, [string]$Name)
+
+    $listOutput = winget list --id $Id --source winget --accept-source-agreements 2>&1 | Out-String
+    if ($listOutput -match [regex]::Escape($Id)) {
+        Write-Ok "$Name is already installed"
+        return
+    }
+
+    Write-Host "   Installing $Name ..."
+    winget install --id $Id --silent --source winget `
+        --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -eq 0) {
+        Write-Ok "$Name installed"
+    }
+    else {
+        Write-Warn "$Name installation may have failed (exit code: $LASTEXITCODE)"
+    }
+}
+
 # ── Chocolatey ───────────────────────────────────────
 function Assert-Chocolatey {
     if (Get-Command choco -ErrorAction SilentlyContinue) {
@@ -53,7 +86,6 @@ function Install-Apps {
 
     $apps = @(
         @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "1password"; Name = "1Password" }
         @{ Id = "tailscale";     Name = "Tailscale" }
         @{ Id = "kakaotalk";     Name = "KakaoTalk" }
         @{ Id = "discord.install"; Name = "Discord" }
@@ -70,11 +102,8 @@ function Install-Apps {
     if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
     else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
 
-    # Refresh Start Menu index
-    Write-Host "   Refreshing Explorer ..."
-    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 2
-    Write-Ok "Explorer restarted"
+    # 1Password: winget으로 설치 (choco 패키지는 앱 목록에 등록 안 됨)
+    Install-WingetPackage -Id "AgileBits.1Password" -Name "1Password"
 
     # Antigravity (not available in package managers)
     $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
@@ -325,6 +354,7 @@ function Main {
     Write-Host "`n  dotfiles - Windows 11 Setup" -ForegroundColor White
     Write-Host "  ─────────────────────────────────────────────`n" -ForegroundColor DarkGray
 
+    Assert-Winget
     Assert-Chocolatey
     Install-Apps
     Install-ChattingPlus
