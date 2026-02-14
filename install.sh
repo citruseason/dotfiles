@@ -87,6 +87,8 @@ install_xcode_clt() {
     fi
 
     info "Installing Xcode Command Line Tools..."
+
+    # Trigger softwareupdate catalog for CLT
     sudo touch /tmp/.com.apple.dt.CommandLineTools.done
 
     PROD=$(softwareupdate -l 2>&1 \
@@ -94,16 +96,16 @@ install_xcode_clt() {
         | sed 's/^[[:space:]]*\* Label: //' \
         | head -n 1)
 
-    if [[ -z "$PROD" ]]; then
-        # Fallback: trigger dialog-based install
-        sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
-        sudo xcode-select --install 2>/dev/null || true
-        info "Waiting for Xcode CLT installation..."
-        until sudo xcode-select -p &>/dev/null; do sleep 5; done
-    else
+    if [[ -n "$PROD" ]]; then
         sudo softwareupdate -i "$PROD" --verbose
-        sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
+    else
+        # Fallback: trigger GUI dialog-based install (no sudo)
+        xcode-select --install 2>/dev/null || true
+        info "Waiting for Xcode CLT installation..."
+        until xcode-select -p &>/dev/null; do sleep 5; done
     fi
+
+    sudo rm -f /tmp/.com.apple.dt.CommandLineTools.done
     success "Xcode CLT"
 }
 
