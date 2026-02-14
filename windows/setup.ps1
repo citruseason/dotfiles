@@ -68,15 +68,16 @@ function Assert-Chocolatey {
 }
 
 function Install-ChocoPackage {
-    param([string]$Id, [string]$Name)
+    param([string]$Id, [string]$Name, [string[]]$ExtraArgs = @())
 
     Write-Host "   Installing $Name ..."
-    choco install $Id -y
+    $output = choco install $Id -y @ExtraArgs 2>&1 | Out-String
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
     else {
         Write-Warn "$Name installation may have failed (exit code: $LASTEXITCODE)"
+        Write-Host $output
     }
 }
 
@@ -100,10 +101,7 @@ function Install-Apps {
     }
 
     # Chrome: winget 해시 불일치 문제로 choco 사용
-    Write-Host "   Installing Google Chrome ..."
-    choco install googlechrome -y --ignore-checksums
-    if ($LASTEXITCODE -eq 0) { Write-Ok "Google Chrome installed" }
-    else { Write-Warn "Google Chrome installation may have failed (exit code: $LASTEXITCODE)" }
+    Install-ChocoPackage -Id "googlechrome" -Name "Google Chrome" -ExtraArgs @("--ignore-checksums")
 
     # Antigravity (not available in package managers)
     $agInstalled = Get-StartApps | Where-Object { $_.Name -match "Antigravity" } -ErrorAction SilentlyContinue
