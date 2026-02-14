@@ -85,8 +85,11 @@ function Install-WSL {
     Write-Step "Installing WSL + Ubuntu 24.04 LTS"
 
     try {
-        $distros = (wsl --list --quiet 2>$null) | Where-Object { $_ -match "Ubuntu" }
-        if ($distros) {
+        # wsl.exe outputs UTF-16 LE — decode to avoid null-byte matching issues
+        $raw = [System.Text.Encoding]::Unicode.GetString([System.Text.Encoding]::Default.GetBytes(
+            (wsl --list --quiet 2>$null | Out-String)
+        ))
+        if ($raw -match "Ubuntu") {
             Write-Ok "WSL Ubuntu is already installed"
             return
         }
@@ -95,7 +98,7 @@ function Install-WSL {
         # WSL not installed yet
     }
 
-    wsl --install -d Ubuntu-24.04 --no-launch
+    wsl --install -d Ubuntu-24.04
     $script:NeedsReboot = $true
     Write-Warn "Reboot required to complete WSL installation"
 }
