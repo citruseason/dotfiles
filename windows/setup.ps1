@@ -194,7 +194,31 @@ function Install-Drivers {
         Write-Host "   GPU: $($gpu.Name)"
 
         if ($gpu.Name -match "NVIDIA") {
-            Install-WingetPackage -Id "Nvidia.GeForceExperience" -Name "NVIDIA GeForce Experience"
+            $nvInstalled = Get-StartApps | Where-Object { $_.Name -match "NVIDIA App" } -ErrorAction SilentlyContinue
+            if ($nvInstalled) {
+                Write-Ok "NVIDIA App is already installed"
+            }
+            else {
+                try {
+                    $page = Invoke-WebRequest -Uri "https://www.nvidia.com/en-us/software/nvidia-app/" -UseBasicParsing
+                    $dlUrl = ($page.Links | Where-Object { $_.href -match "us\.download\.nvidia\.com.*NVIDIA_app.*\.exe" } | Select-Object -First 1).href
+                    if ($dlUrl) {
+                        Install-DirectDownload `
+                            -Name "NVIDIA App" `
+                            -Url $dlUrl `
+                            -FileName "NVIDIA_App_Setup.exe" `
+                            -Args "-s -noreboot -noeula -nofinish -nosplash"
+                    }
+                    else {
+                        Write-Warn "NVIDIA App download URL not found"
+                        Write-Warn "Install manually: https://www.nvidia.com/en-us/software/nvidia-app/"
+                    }
+                }
+                catch {
+                    Write-Warn "NVIDIA App installation failed: $($_.Exception.Message)"
+                    Write-Warn "Install manually: https://www.nvidia.com/en-us/software/nvidia-app/"
+                }
+            }
         }
         elseif ($gpu.Name -match "AMD|Radeon") {
             # AMD GPU driver is handled by the AMD Auto-Detect tool above
