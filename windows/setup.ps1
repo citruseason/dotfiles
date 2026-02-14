@@ -133,6 +133,9 @@ function Install-WSL {
 function Invoke-Debloat {
     Write-Step "Running Win11Debloat"
 
+    # Prevent debloat script from clearing the screen
+    function Clear-Host {}
+
     $debloat = [scriptblock]::Create((irm "https://debloat.raphi.re/"))
     & $debloat `
         -RunDefaults `
