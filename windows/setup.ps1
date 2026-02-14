@@ -38,7 +38,7 @@ function Install-ChocoPackage {
     param([string]$Id, [string]$Name)
 
     Write-Host "   Installing $Name ..."
-    choco install $Id -y --no-progress 2>&1 | Out-Null
+    choco install $Id -y
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
     }
@@ -53,10 +53,10 @@ function Install-Apps {
 
     $apps = @(
         @{ Id = "powertoys";     Name = "PowerToys" }
-        @{ Id = "1password";     Name = "1Password" }
+        @{ Id = "1password.install"; Name = "1Password" }
         @{ Id = "tailscale";     Name = "Tailscale" }
         @{ Id = "kakaotalk";     Name = "KakaoTalk" }
-        @{ Id = "discord";       Name = "Discord" }
+        @{ Id = "discord.install"; Name = "Discord" }
         @{ Id = "starship";      Name = "Starship" }
     )
 
@@ -195,6 +195,69 @@ function Install-Drivers {
     }
 }
 
+function Set-StarshipConfig {
+    Write-Step "Configuring Starship prompt"
+
+    $configDir = "$env:USERPROFILE\.config"
+    if (-not (Test-Path $configDir)) { New-Item -Path $configDir -ItemType Directory -Force | Out-Null }
+
+    $configFile = "$configDir\starship.toml"
+    @'
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$cmd_duration\
+$line_break\
+$python\
+$character"""
+
+[directory]
+style = "blue"
+
+[character]
+success_symbol = "[❯](purple)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+[git_branch]
+format = "[$branch]($style)"
+style = "bright-black"
+
+[git_status]
+format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+style = "cyan"
+conflicted = "​"
+untracked = "​"
+modified = "​"
+staged = "​"
+renamed = "​"
+deleted = "​"
+stashed = "≡"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "yellow"
+
+[python]
+format = "[$virtualenv]($style) "
+style = "bright-black"
+detect_extensions = []
+detect_files = []
+'@ | Out-File -FilePath $configFile -Encoding utf8 -Force
+
+    Write-Ok "Starship config written to $configFile"
+}
+
 function Set-TaskbarLayout {
     Write-Step "Configuring taskbar layout"
 
@@ -261,6 +324,7 @@ function Main {
     Install-ChattingPlus
     Invoke-Debloat
     Install-Drivers
+    Set-StarshipConfig
     Set-TaskbarLayout
     Install-WSL
 
