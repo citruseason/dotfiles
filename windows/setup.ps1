@@ -94,8 +94,7 @@ function Install-Drivers {
             Install-WingetPackage -Id "Nvidia.GeForceExperience" -Name "NVIDIA GeForce Experience"
         }
         elseif ($gpu.Name -match "AMD|Radeon") {
-            Write-Warn "AMD GPU drivers are not available via winget"
-            Write-Warn "Download manually: https://www.amd.com/en/support"
+            Install-WingetPackage -Id "AMD.AMDSoftware" -Name "AMD Software: Adrenalin Edition"
         }
     }
 }
