@@ -29,14 +29,14 @@ function Assert-Winget {
 function Install-WingetPackage {
     param([string]$Id, [string]$Name)
 
-    $listOutput = winget list --id $Id --exact --source winget --accept-source-agreements 2>&1 | Out-String
+    $listOutput = winget list --id $Id --source winget --accept-source-agreements 2>&1 | Out-String
     if ($listOutput -match [regex]::Escape($Id)) {
         Write-Ok "$Name is already installed"
         return
     }
 
     Write-Host "   Installing $Name ..."
-    winget install --id $Id --exact --silent --source winget `
+    winget install --id $Id --silent --source winget `
         --accept-package-agreements --accept-source-agreements
     if ($LASTEXITCODE -eq 0) {
         Write-Ok "$Name installed"
