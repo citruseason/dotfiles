@@ -205,6 +205,7 @@ run_playbook() {
 
     cd "$DOTFILES_DIR"
 
+    ANSIBLE_CONFIG="$DOTFILES_DIR/ansible.cfg" \
     ansible-playbook "$DOTFILES_DIR/site.yml" \
         -i "$DOTFILES_DIR/inventory/${PROFILE}.yml"
 }
