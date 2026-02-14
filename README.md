@@ -28,6 +28,12 @@ Run as **Administrator** in PowerShell:
 irm https://raw.githubusercontent.com/citruseason/dotfiles/master/windows/setup.ps1 | iex
 ```
 
+CDN 캐시 무효화 (테스트/변경 직후):
+
+```powershell
+irm "https://raw.githubusercontent.com/citruseason/dotfiles/master/windows/setup.ps1?$(Get-Date -Format 'yyyyMMddHHmmss')" | iex
+```
+
 항상 최신 스크립트를 원격에서 받아 실행합니다. 재실행해도 이미 설치된 항목은 건너뜁니다.
 
 Installs PowerToys, 1Password, Tailscale, WSL+Ubuntu, Win11Debloat, and auto-detects CPU/GPU drivers.
