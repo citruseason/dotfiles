@@ -215,6 +215,12 @@ function Invoke-Debloat {
         -DisableFastStartup `
         -ExplorerToThisPC
 
+    # Disable Game DVR / App Capture
+    $gameDvrPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR"
+    if (-not (Test-Path $gameDvrPath)) { New-Item -Path $gameDvrPath -Force | Out-Null }
+    Set-ItemProperty -Path $gameDvrPath -Name "AppCaptureEnabled" -Value 0 -Type DWord -Force
+    Write-Ok "Game DVR disabled"
+
     Write-Ok "Win11Debloat completed"
 }
 
