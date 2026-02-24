@@ -57,3 +57,19 @@
   loop_control:
     label: "{{ item.name }}"
   when: homebrew_install_private | bool
+  ignore_errors: true
+  register: mas_result
+
+- name: Show Mac App Store manual install notice
+  ansible.builtin.debug:
+    msg: >-
+      다음 앱은 App Store에서 직접 설치하세요:
+      {{ mas_result.results | default([])
+         | selectattr('failed', 'defined')
+         | selectattr('failed')
+         | map(attribute='item')
+         | map(attribute='name')
+         | list | join(', ') }}
+  when:
+    - homebrew_install_private | bool
+    - mas_result.results | default([]) | selectattr('failed', 'defined') | selectattr('failed') | list | length > 0
