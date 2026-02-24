@@ -4,6 +4,8 @@ bun = "latest"
 python = "latest"
 java = "lts"
 ruby = "latest"
+rust = "stable"
 
 [settings]
+idiomatic_version_file_enable_tools = ["node", "bun", "python", "ruby", "java", "rust"]
 ruby.compile = false

@@ -29,7 +29,7 @@ ROLE_CATEGORIES=()
 # ── Terminal ──────────────────────────────────────────
 setup_term() {
     STTY_STATE=$(stty -g)
-    stty raw -echo
+    stty -icanon -echo
     printf '\033[?25l'
     printf '\033[?1049h'
 }
@@ -52,7 +52,7 @@ read_key() {
             esac
             ;;
         ' ')   printf 'space' ;;
-        $'\r') printf 'enter' ;;
+        ''|$'\r') printf 'enter' ;;
         a|A)   printf 'toggle_all' ;;
         q|Q)   printf 'quit' ;;
         k)     printf 'up' ;;
