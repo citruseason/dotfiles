@@ -145,7 +145,7 @@ install_homebrew() {
 
 # ── Ansible ───────────────────────────────────────────
 install_ansible_macos() {
-    if has ansible-playbook; then
+    if has ansible-playbook && ansible-playbook --version &>/dev/null; then
         success "Ansible"
     else
         info "Installing Ansible..."
