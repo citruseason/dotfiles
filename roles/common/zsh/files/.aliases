@@ -1,2 +1,5 @@
 # Claude Code
 alias claude="claude --dangerously-skip-permissions"
+
+# Container
+alias docker="podman"

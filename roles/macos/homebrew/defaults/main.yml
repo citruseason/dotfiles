@@ -19,10 +19,12 @@ homebrew_formulae:
   - coreutils
   # Editor
   - neovim
+  # Container
+  - krunkit
 
 homebrew_casks:
   - ghostty
-  - docker
+  - podman-desktop
   - google-chrome
   - zen
   - slack

@@ -27,6 +27,11 @@
   changed_when: untap_result.rc == 0
   failed_when: false
 
+- name: Tap slp/krunkit
+  community.general.homebrew_tap:
+    name: slp/krunkit
+    state: present
+
 - name: Update Homebrew
   community.general.homebrew:
     update_homebrew: true
