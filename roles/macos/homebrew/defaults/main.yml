@@ -9,6 +9,7 @@ homebrew_formulae:
   - tree
   - dockutil
   - mise
+  - mole
   - nmap
   - tmux
   # Shell
@@ -23,6 +24,7 @@ homebrew_casks:
   - ghostty
   - docker
   - google-chrome
+  - zen
   - slack
   - notion
   - iina
