@@ -6,6 +6,9 @@ java = "lts"
 ruby = "latest"
 rust = "stable"
 
+[hooks]
+enter = "mise i -q"
+
 [settings]
 idiomatic_version_file_enable_tools = ["node", "bun", "python", "ruby", "java", "rust"]
 ruby.compile = false
