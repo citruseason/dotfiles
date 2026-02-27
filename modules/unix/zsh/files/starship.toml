@@ -10,6 +10,11 @@ $git_status\
 $cmd_duration\
 $line_break\
 $python\
+$nodejs\
+$bun\
+$rust\
+$golang\
+$java\
 $character"""
 
 [directory]
@@ -44,7 +49,31 @@ format = "[$duration]($style) "
 style = "yellow"
 
 [python]
-format = "[$virtualenv]($style) "
+format = "[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)"
+symbol = " "
 style = "bright-black"
-detect_extensions = []
-detect_files = []
+
+[nodejs]
+format = "[${symbol}(${version} )]($style)"
+symbol = " "
+style = "bright-black"
+
+[bun]
+format = "[${symbol}(${version} )]($style)"
+symbol = "🥟 "
+style = "bright-black"
+
+[rust]
+format = "[${symbol}(${version} )]($style)"
+symbol = " "
+style = "bright-black"
+
+[golang]
+format = "[${symbol}(${version} )]($style)"
+symbol = " "
+style = "bright-black"
+
+[java]
+format = "[${symbol}(${version} )]($style)"
+symbol = " "
+style = "bright-black"
