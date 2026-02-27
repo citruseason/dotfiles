@@ -1,4 +1,8 @@
 #Requires -RunAsAdministrator
+param(
+    [string[]]$Tags = @(),
+    [switch]$Help
+)
 Set-StrictMode -Version Latest
 
 # ── Colors ───────────────────────────────────────────
@@ -371,8 +375,38 @@ function Set-TaskbarLayout {
     Write-Ok "Taskbar layout configured (Explorer, Chrome, Discord, KakaoTalk)"
 }
 
+# ── Tag → Function Mapping ────────────────────────────
+$AllSteps = [ordered]@{
+    "winget-apps"    = @{ Fn = "Install-Apps";          Desc = "Application packages (winget/choco)" }
+    "openssh"        = @{ Fn = "Disable-OpenSSHAgent";  Desc = "Disable OpenSSH agent (1Password)" }
+    "chattingplus"   = @{ Fn = "Install-ChattingPlus";  Desc = "ChattingPlus messenger" }
+    "debloat"        = @{ Fn = "Invoke-Debloat";        Desc = "Win11Debloat (telemetry, bloatware)" }
+    "drivers"        = @{ Fn = "Install-Drivers";       Desc = "CPU/GPU drivers" }
+    "starship"       = @{ Fn = "Set-StarshipConfig";    Desc = "Starship prompt config" }
+    "taskbar"        = @{ Fn = "Set-TaskbarLayout";     Desc = "Taskbar pin layout" }
+    "wsl"            = @{ Fn = "Install-WSL";           Desc = "WSL + Ubuntu 24.04 LTS" }
+}
+
+function Show-Help {
+    Write-Host "`nUsage: .\setup.ps1 [options]`n"
+    Write-Host "Options:"
+    Write-Host "  (none)               Run all steps"
+    Write-Host "  -Tags t1,t2          Run specific steps by tag"
+    Write-Host "  -Help                Show this help`n"
+    Write-Host "Available tags:"
+    foreach ($key in $AllSteps.Keys) {
+        Write-Host ("  {0,-20} {1}" -f $key, $AllSteps[$key].Desc)
+    }
+    Write-Host ""
+}
+
 # ── Main ─────────────────────────────────────────────
 function Main {
+    if ($Help) {
+        Show-Help
+        return
+    }
+
     $script:NeedsReboot = $false
 
     Write-Host "`n  dotfiles - Windows 11 Setup" -ForegroundColor White
@@ -380,14 +414,20 @@ function Main {
 
     Assert-Winget
     Assert-Chocolatey
-    Install-Apps
-    Disable-OpenSSHAgent
-    Install-ChattingPlus
-    Invoke-Debloat
-    Install-Drivers
-    Set-StarshipConfig
-    Set-TaskbarLayout
-    Install-WSL
+
+    if ($Tags.Count -gt 0) {
+        foreach ($tag in $Tags) {
+            if ($AllSteps.Contains($tag)) {
+                & $AllSteps[$tag].Fn
+            } else {
+                Write-Warn "Unknown tag: $tag"
+            }
+        }
+    } else {
+        foreach ($key in $AllSteps.Keys) {
+            & $AllSteps[$key].Fn
+        }
+    }
 
     Write-Host "`n" -NoNewline
     if ($script:NeedsReboot) {

@@ -1,2 +1,0 @@
-dotfiles_dir: "{{ ansible_facts['env']['HOME'] }}/dotfiles"
-homebrew_install_private: false

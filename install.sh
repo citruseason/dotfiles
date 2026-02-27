@@ -6,6 +6,7 @@ DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/citruseason/dotfiles.git}"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 PROFILE="${PROFILE:-}"
 SKIP_REPO_UPDATE="${SKIP_REPO_UPDATE:-0}"
+RESUME_MODE=0
 
 # ── Colors ────────────────────────────────────────────
 BOLD=$'\033[1m'
@@ -41,7 +42,7 @@ detect_os() {
     esac
 }
 
-detect_inventory() {
+detect_profile() {
     if [[ -n "$PROFILE" ]]; then
         return
     fi
@@ -89,8 +90,6 @@ install_xcode_clt() {
 
     info "Installing Xcode Command Line Tools..."
 
-    # Placeholder trick: makes softwareupdate list CLT packages
-    # ref: Homebrew/install, MikeMcQuaid/strap
     local clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
     sudo touch "$clt_placeholder"
 
@@ -108,11 +107,9 @@ install_xcode_clt() {
 
     sudo rm -f "$clt_placeholder"
 
-    # Verify & activate
     if [[ -f "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
         sudo xcode-select --switch /Library/Developer/CommandLineTools
     elif [[ -t 0 ]]; then
-        # GUI fallback — only in interactive terminals
         warn "Headless install failed, requesting GUI install..."
         xcode-select --install
         info "Press any key when installation has completed."
@@ -134,56 +131,12 @@ install_homebrew() {
     info "Installing Homebrew..."
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    # Add brew to PATH for current session
     if [[ -f /opt/homebrew/bin/brew ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     elif [[ -f /usr/local/bin/brew ]]; then
         eval "$(/usr/local/bin/brew shellenv)"
     fi
     success "Homebrew"
-}
-
-# ── Ansible ───────────────────────────────────────────
-install_ansible_macos() {
-    if has ansible-playbook && ansible-playbook --version &>/dev/null; then
-        success "Ansible"
-    else
-        info "Installing Ansible..."
-        brew install ansible
-        success "Ansible"
-    fi
-
-    # community.general collection (osx_defaults, etc.)
-    if ansible-galaxy collection list 2>/dev/null | grep -q community.general; then
-        success "community.general collection"
-    else
-        info "Installing Ansible community.general collection..."
-        ansible-galaxy collection install community.general
-        success "community.general collection"
-    fi
-}
-
-install_ansible_linux() {
-    if has ansible-playbook; then
-        success "Ansible"
-        return
-    fi
-
-    info "Installing Ansible..."
-    if has apt-get; then
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq software-properties-common
-        sudo apt-add-repository -y --update ppa:ansible/ansible
-        sudo apt-get install -y -qq ansible
-    elif has dnf; then
-        sudo dnf install -y ansible
-    else
-        # Fallback: pip
-        sudo apt-get update -qq 2>/dev/null || true
-        sudo apt-get install -y -qq python3 python3-pip 2>/dev/null || true
-        pip3 install --user ansible
-    fi
-    success "Ansible"
 }
 
 # ── Linux: git ────────────────────────────────────────
@@ -220,15 +173,46 @@ clone_dotfiles() {
     fi
 }
 
-# ── Run Ansible Playbook ─────────────────────────────
-run_playbook() {
-    info "Running playbook: inventory/$PROFILE.yml"
+# ── Run Modules ──────────────────────────────────────
+run_dotfiles() {
+    local tag_str="${1:-}"
 
-    cd "$DOTFILES_DIR"
+    # Source libraries
+    . "$DOTFILES_DIR/lib/core.sh"
+    . "$DOTFILES_DIR/lib/config.sh"
+    . "$DOTFILES_DIR/lib/module.sh"
 
-    ANSIBLE_CONFIG="$DOTFILES_DIR/ansible.cfg" \
-    ansible-playbook "$DOTFILES_DIR/site.yml" \
-        -i "$DOTFILES_DIR/inventory/${PROFILE}.yml"
+    export DOTFILES_DIR OS PROFILE
+    load_config
+    load_registry
+
+    if [[ -n "$tag_str" ]]; then
+        info "Running modules: $tag_str (profile: $PROFILE)"
+        run_modules_by_tags "$tag_str"
+    else
+        info "Running all modules (profile: $PROFILE)"
+        local total=${#_REG_TAGS[@]}
+        local i
+        for i in "${!_REG_TAGS[@]}"; do
+            run_module "$i" "$total" || {
+                local tag="${_REG_TAGS[$i]}"
+                local remaining=()
+                local j
+                for j in "${!_REG_TAGS[@]}"; do
+                    [[ $j -ge $i ]] && remaining+=("${_REG_TAGS[$j]}")
+                done
+                local remaining_str
+                remaining_str=$(IFS=,; printf '%s' "${remaining[*]}")
+                save_resume_state "$PROFILE" "$tag" "$remaining_str"
+                printf '\n  %b✗ Failed at: %s%b\n' "$RED" "$tag" "$NC"
+                printf '  %bResume state saved. Run with --resume to continue.%b\n' \
+                    "$DIM" "$NC"
+                return 1
+            }
+        done
+    fi
+
+    clear_resume_state
 }
 
 # ── Banner ────────────────────────────────────────────
@@ -247,10 +231,49 @@ EOF
 
 # ── Main ──────────────────────────────────────────────
 main() {
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --resume)  RESUME_MODE=1; shift ;;
+            --profile) PROFILE="$2"; shift 2 ;;
+            *)         shift ;;
+        esac
+    done
+
     banner
 
     detect_os
-    detect_inventory
+    detect_profile
+
+    # Handle resume mode
+    if [[ "$RESUME_MODE" == "1" ]]; then
+        . "$DOTFILES_DIR/lib/core.sh"
+        . "$DOTFILES_DIR/lib/config.sh"
+        . "$DOTFILES_DIR/lib/module.sh"
+
+        if ! load_resume_state; then
+            fail "No resume state found. Run install.sh normally first."
+        fi
+
+        step "Resuming"
+        info "OS: $OS  Profile: $PROFILE  Failed at: $FAILED_TAG  Tags: $TAGS"
+
+        step "Sudo"
+        acquire_sudo
+
+        step "Modules (resumed)"
+        export DOTFILES_DIR OS PROFILE
+        load_config
+        load_registry
+        run_modules_by_tags "$TAGS"
+        clear_resume_state
+
+        step "Done!"
+        success "Dotfiles setup complete"
+        info "Run 'dotfiles' for interactive management"
+        printf '\n'
+        return 0
+    fi
 
     step "Environment"
     info "OS: $OS  Profile: $PROFILE  Target: $DOTFILES_DIR"
@@ -263,19 +286,17 @@ main() {
         macos)
             install_xcode_clt
             install_homebrew
-            install_ansible_macos
             ;;
         *)
             install_git_linux
-            install_ansible_linux
             ;;
     esac
 
     step "Dotfiles"
     clone_dotfiles
 
-    step "Ansible Playbook"
-    run_playbook
+    step "Modules"
+    run_dotfiles
 
     step "Done!"
     success "Dotfiles setup complete"

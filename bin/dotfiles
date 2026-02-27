@@ -3,28 +3,20 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-# ── Colors & Symbols ──────────────────────────────────
-BOLD=$'\033[1m'
-DIM=$'\033[2m'
-RED=$'\033[31m'
-GREEN=$'\033[32m'
-YELLOW=$'\033[33m'
-CYAN=$'\033[36m'
-NC=$'\033[0m'
+# ── Load libraries ────────────────────────────────────
+. "$DOTFILES_DIR/lib/core.sh"
+. "$DOTFILES_DIR/lib/config.sh"
+. "$DOTFILES_DIR/lib/module.sh"
+
+# ── State ─────────────────────────────────────────────
+PROFILE="${PROFILE:-}"
+CURSOR=0
+STTY_STATE=""
+
+# ── TUI Symbols ──────────────────────────────────────
 SYM_CHECK="${GREEN}◉${NC}"
 SYM_UNCHECK="${DIM}○${NC}"
 SYM_PTR="${CYAN}❯${NC}"
-
-# ── State ─────────────────────────────────────────────
-OS=""
-INVENTORY=""
-CURSOR=0
-STTY_STATE=""
-ROLE_NAMES=()
-ROLE_TAGS=()
-ROLE_DESCS=()
-ROLE_SELECTED=()
-ROLE_CATEGORIES=()
 
 # ── Terminal ──────────────────────────────────────────
 setup_term() {
@@ -60,56 +52,6 @@ read_key() {
     esac
 }
 
-# ── Environment Detection ─────────────────────────────
-detect_env() {
-    case "$(uname -s)" in
-        Darwin) OS="macos" ;;
-        Linux)
-            if grep -qi microsoft /proc/version 2>/dev/null; then
-                OS="wsl"
-            else
-                OS="linux"
-            fi
-            ;;
-        *) OS="unknown" ;;
-    esac
-}
-
-# ── Build Roles ───────────────────────────────────────
-add_role() {
-    ROLE_NAMES+=("$1")
-    ROLE_TAGS+=("$2")
-    ROLE_DESCS+=("$3")
-    ROLE_SELECTED+=(1)
-    ROLE_CATEGORIES+=("$4")
-}
-
-build_roles() {
-    if [[ "$OS" == "macos" ]]; then
-        add_role "Homebrew"        homebrew "Package manager & packages"  "macOS"
-    fi
-
-    if [[ "$OS" == "linux" || "$OS" == "wsl" ]]; then
-        add_role "APT Packages"   apt      "Essential system packages"   "Linux"
-    fi
-
-    add_role "Fonts"              fonts    "D2Coding font family"        "Common"
-    add_role "Git"                git      "Git config & aliases"        "Common"
-    add_role "Zsh"                zsh      "Zsh, plugins & Starship"     "Common"
-    add_role "Mise"               mise     "Node, Python, Java, Ruby"    "Common"
-    add_role "Apps"               apps     "Ghostty terminal config"     "Common"
-    add_role "Dotfiles CLI"       cli      "This CLI tool"               "Common"
-
-    if [[ "$OS" == "macos" ]]; then
-        add_role "macOS Defaults"  macos   "System preferences & apps"   "macOS"
-        add_role "Dock"            dock    "Dock layout & hot corners"   "macOS"
-    fi
-
-    if [[ "$OS" == "wsl" ]]; then
-        add_role "WSL"             wsl     "systemd, 1Password SSH"      "WSL"
-    fi
-}
-
 # ── TUI: Profile Selector (macOS) ────────────────────
 select_profile() {
     local options=("personal" "work")
@@ -141,16 +83,26 @@ select_profile() {
         case "$(read_key)" in
             up)    ((cur > 0)) && ((cur--)) || true ;;
             down)  ((cur < ${#options[@]} - 1)) && ((cur++)) || true ;;
-            enter) INVENTORY="${options[$cur]}"; return 0 ;;
+            enter) PROFILE="${options[$cur]}"; return 0 ;;
             quit)  return 1 ;;
         esac
     done
 }
 
-# ── TUI: Role Selector ───────────────────────────────
-select_roles() {
+# ── TUI: Module Selector ─────────────────────────────
+# 선택 상태 배열 (레지스트리와 동일 크기)
+_SEL=()
+
+select_modules() {
     CURSOR=0
-    local total=${#ROLE_NAMES[@]}
+    local total=${#_REG_TAGS[@]}
+
+    # 기본: 모두 선택
+    _SEL=()
+    local i
+    for i in "${!_REG_TAGS[@]}"; do
+        _SEL+=(1)
+    done
 
     while true; do
         printf '\033[H\033[J'
@@ -158,16 +110,16 @@ select_roles() {
         # Header
         printf '\n'
         printf '  %bdotfiles%b  %b%s · %s%b\n' \
-            "$BOLD" "$NC" "$DIM" "$OS" "$INVENTORY" "$NC"
+            "$BOLD" "$NC" "$DIM" "$OS" "${PROFILE:-default}" "$NC"
         printf '  %b─────────────────────────────────────────────%b\n' "$DIM" "$NC"
         printf '\n'
         printf '  %b↑↓ move  ␣ toggle  a all/none  enter run  q quit%b\n' "$DIM" "$NC"
         printf '\n'
 
-        # Roles grouped by category
+        # Modules grouped by category
         local prev_cat=""
-        for i in "${!ROLE_NAMES[@]}"; do
-            local cat="${ROLE_CATEGORIES[$i]}"
+        for i in "${!_REG_TAGS[@]}"; do
+            local cat="${_REG_CATEGORIES[$i]}"
             if [[ "$cat" != "$prev_cat" ]]; then
                 [[ -n "$prev_cat" ]] && printf '\n'
                 printf '  %b%s%b\n' "$DIM" "$cat" "$NC"
@@ -175,42 +127,42 @@ select_roles() {
             fi
 
             local sym="$SYM_UNCHECK"
-            ((ROLE_SELECTED[i])) && sym="$SYM_CHECK"
+            ((_SEL[i])) && sym="$SYM_CHECK"
 
             if ((i == CURSOR)); then
                 printf '  %b %b %b%s%b  %b%s%b\n' \
-                    "$SYM_PTR" "$sym" "$BOLD" "${ROLE_NAMES[$i]}" "$NC" \
-                    "$DIM" "${ROLE_DESCS[$i]}" "$NC"
+                    "$SYM_PTR" "$sym" "$BOLD" "${_REG_LABELS[$i]}" "$NC" \
+                    "$DIM" "${_REG_DESCS[$i]}" "$NC"
             else
                 printf '    %b %s  %b%s%b\n' \
-                    "$sym" "${ROLE_NAMES[$i]}" "$DIM" "${ROLE_DESCS[$i]}" "$NC"
+                    "$sym" "${_REG_LABELS[$i]}" "$DIM" "${_REG_DESCS[$i]}" "$NC"
             fi
         done
 
         # Count selected
         local count=0
-        for s in "${ROLE_SELECTED[@]}"; do ((count += s)) || true; done
+        for s in "${_SEL[@]}"; do ((count += s)) || true; done
         printf '\n  %b%d of %d selected%b\n' "$DIM" "$count" "$total" "$NC"
 
         case "$(read_key)" in
             up)    ((CURSOR > 0)) && ((CURSOR--)) || true ;;
             down)  ((CURSOR < total - 1)) && ((CURSOR++)) || true ;;
             space)
-                if ((ROLE_SELECTED[CURSOR])); then
-                    ROLE_SELECTED[CURSOR]=0
+                if ((_SEL[CURSOR])); then
+                    _SEL[CURSOR]=0
                 else
-                    ROLE_SELECTED[CURSOR]=1
+                    _SEL[CURSOR]=1
                 fi
                 ;;
             toggle_all)
                 local all=1
-                for s in "${ROLE_SELECTED[@]}"; do
+                for s in "${_SEL[@]}"; do
                     ((s == 0)) && { all=0; break; }
                 done
                 local val=1
                 ((all)) && val=0
-                for i in "${!ROLE_SELECTED[@]}"; do
-                    ROLE_SELECTED[$i]=$val
+                for i in "${!_SEL[@]}"; do
+                    _SEL[$i]=$val
                 done
                 ;;
             enter) return 0 ;;
@@ -219,9 +171,51 @@ select_roles() {
     done
 }
 
+# ── TUI: Resume Prompt ───────────────────────────────
+select_resume() {
+    local options=("resume" "restart" "cancel")
+    local descs=(
+        "Resume — continue from '$FAILED_TAG' onward (tags: $TAGS)"
+        "Restart — ignore saved state, start fresh"
+        "Cancel — exit without running"
+    )
+    local cur=0
+
+    while true; do
+        printf '\033[H\033[J'
+        printf '\n'
+        printf '  %bdotfiles%b  %bPrevious run failed at: %s%b\n' \
+            "$BOLD" "$NC" "$YELLOW" "$FAILED_TAG" "$NC"
+        printf '  %b─────────────────────────────────────────────%b\n' "$DIM" "$NC"
+        printf '\n'
+
+        for i in "${!options[@]}"; do
+            if ((i == cur)); then
+                printf '  %b %b%s%b  %b%s%b\n' \
+                    "$SYM_PTR" "$BOLD" "${options[$i]}" "$NC" "$DIM" "${descs[$i]}" "$NC"
+            else
+                printf '    %s  %b%s%b\n' \
+                    "${options[$i]}" "$DIM" "${descs[$i]}" "$NC"
+            fi
+        done
+
+        printf '\n  %b↑↓ move  enter select  q quit%b\n' "$DIM" "$NC"
+
+        case "$(read_key)" in
+            up)    ((cur > 0)) && ((cur--)) || true ;;
+            down)  ((cur < ${#options[@]} - 1)) && ((cur++)) || true ;;
+            enter) printf '%s' "${options[$cur]}"; return 0 ;;
+            quit)  printf 'cancel'; return 0 ;;
+        esac
+    done
+}
+
 # ── Sudo ─────────────────────────────────────────────
 ensure_sudo() {
-    sudo -v
+    if ! sudo -n true 2>/dev/null; then
+        info "Sudo password required for system configuration"
+        sudo -v
+    fi
     # Allow passwordless sudo for dotfiles provisioning
     local sudoers_file="/etc/sudoers.d/dotfiles"
     local sudoers_rule="$(whoami) ALL=(ALL) NOPASSWD:SETENV: ALL"
@@ -230,15 +224,15 @@ ensure_sudo() {
     fi
 }
 
-# ── Run Playbook ──────────────────────────────────────
-run_playbook() {
+# ── Run Selected Modules ─────────────────────────────
+run_selected() {
     local tags=()
-    for i in "${!ROLE_NAMES[@]}"; do
-        ((ROLE_SELECTED[i])) && tags+=("${ROLE_TAGS[$i]}")
+    for i in "${!_REG_TAGS[@]}"; do
+        ((_SEL[i])) && tags+=("${_REG_TAGS[$i]}")
     done
 
     if [[ ${#tags[@]} -eq 0 ]]; then
-        printf '%bNo roles selected.%b\n' "$YELLOW" "$NC"
+        printf '%bNo modules selected.%b\n' "$YELLOW" "$NC"
         return 0
     fi
 
@@ -246,69 +240,167 @@ run_playbook() {
     tag_str=$(IFS=,; printf '%s' "${tags[*]}")
 
     printf '\n'
-    printf '  %b❯ ansible-playbook%b site.yml -i inventory/%s.yml --tags %s\n' \
-        "$CYAN" "$NC" "$INVENTORY" "$tag_str"
-    printf '\n'
+    printf '  %b❯ dotfiles%b --tags %s\n\n' "$CYAN" "$NC" "$tag_str"
 
     ensure_sudo
-    ansible-playbook "$DOTFILES_DIR/site.yml" \
-        -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
-        --tags "$tag_str"
-}
+    run_modules_by_tags "$tag_str"
+    local rc=$?
 
-# ── Help ──────────────────────────────────────────────
-show_help() {
-    cat <<EOF
-Usage: dotfiles [options]
+    if [[ $rc -ne 0 ]]; then
+        # 실패한 태그 찾기 및 resume 상태 저장
+        local remaining=()
+        local found=0
+        for t in "${tags[@]}"; do
+            local state_file="$HOME/.local/state/dotfiles/${t}.done"
+            if [[ ! -f "$state_file" ]] && [[ $found -eq 0 ]]; then
+                found=1
+                save_resume_state "${PROFILE:-default}" "$t" "$tag_str"
+            fi
+            if [[ $found -eq 1 ]]; then
+                remaining+=("$t")
+            fi
+        done
+        if [[ ${#remaining[@]} -gt 0 ]]; then
+            local remaining_str
+            remaining_str=$(IFS=,; printf '%s' "${remaining[*]}")
+            save_resume_state "${PROFILE:-default}" "${remaining[0]}" "$remaining_str"
+            printf '\n  %b✗ Failed at: %s%b\n' "$RED" "${remaining[0]}" "$NC"
+            printf '  %bResume state saved. Run %bdotfiles --resume%b to continue.%b\n' \
+                "$DIM" "$BOLD" "$DIM" "$NC"
+        fi
+        return 1
+    fi
 
-Options:
-  (none)           Interactive TUI mode
-  --all            Run all roles
-  --tags t1,t2     Run specific roles by tag
-  --help, -h       Show this help
-
-Available tags:
-  homebrew  apt   fonts  git   zsh
-  mise      apps  cli    macos dock  wsl
-EOF
+    clear_resume_state
 }
 
 # ── Main ──────────────────────────────────────────────
 main() {
-    detect_env
+    detect_os
 
     case "${1:-}" in
         --help|-h)
-            show_help
+            load_registry
+            show_module_help
+            return 0
+            ;;
+        --list)
+            load_registry
+            list_modules
             return 0
             ;;
         --all)
-            case "$OS" in
-                macos) INVENTORY="${2:-personal}" ;;
-                wsl)   INVENTORY="wsl" ;;
-                *)     INVENTORY="ubuntu" ;;
-            esac
-            sudo -v
-            ansible-playbook "$DOTFILES_DIR/site.yml" \
-                -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml"
+            PROFILE="${2:-}"
+            if [[ -z "$PROFILE" ]]; then
+                case "$OS" in
+                    macos) PROFILE="personal" ;;
+                    wsl)   PROFILE="wsl" ;;
+                    *)     PROFILE="ubuntu" ;;
+                esac
+            fi
+            load_config
+            load_registry
+
+            printf '\n'
+            printf '  %b❯ dotfiles%b --all (profile: %s)\n\n' "$CYAN" "$NC" "$PROFILE"
+
+            ensure_sudo
+
+            local total=${#_REG_TAGS[@]}
+            local i
+            for i in "${!_REG_TAGS[@]}"; do
+                run_module "$i" "$total" || {
+                    local tag="${_REG_TAGS[$i]}"
+                    # 남은 태그 계산
+                    local remaining=()
+                    local j
+                    for j in "${!_REG_TAGS[@]}"; do
+                        if [[ $j -ge $i ]]; then
+                            remaining+=("${_REG_TAGS[$j]}")
+                        fi
+                    done
+                    local remaining_str
+                    remaining_str=$(IFS=,; printf '%s' "${remaining[*]}")
+                    save_resume_state "$PROFILE" "$tag" "$remaining_str"
+                    printf '\n  %b✗ Failed at: %s%b\n' "$RED" "$tag" "$NC"
+                    printf '  %bResume state saved. Run %bdotfiles --resume%b to continue.%b\n' \
+                        "$DIM" "$BOLD" "$DIM" "$NC"
+                    return 1
+                }
+            done
+            clear_resume_state
             return 0
             ;;
         --tags)
             [[ -z "${2:-}" ]] && { printf '%bError: --tags requires an argument%b\n' "$RED" "$NC"; exit 1; }
-            case "$OS" in
-                macos) INVENTORY="${3:-personal}" ;;
-                wsl)   INVENTORY="wsl" ;;
-                *)     INVENTORY="ubuntu" ;;
-            esac
-            sudo -v
-            ansible-playbook "$DOTFILES_DIR/site.yml" \
-                -i "$DOTFILES_DIR/inventory/${INVENTORY}.yml" \
-                --tags "$2"
-            return 0
+            PROFILE="${3:-}"
+            if [[ -z "$PROFILE" ]]; then
+                case "$OS" in
+                    macos) PROFILE="personal" ;;
+                    wsl)   PROFILE="wsl" ;;
+                    *)     PROFILE="ubuntu" ;;
+                esac
+            fi
+            load_config
+            load_registry
+            ensure_sudo
+            run_modules_by_tags "$2"
+            return $?
+            ;;
+        --resume)
+            if ! load_resume_state; then
+                printf '%bNo resume state found.%b\n' "$YELLOW" "$NC"
+                return 1
+            fi
+            load_config
+            load_registry
+            printf '  %bResuming from tag: %s (tags: %s, profile: %s)%b\n' \
+                "$CYAN" "$FAILED_TAG" "$TAGS" "$PROFILE" "$NC"
+            ensure_sudo
+            run_modules_by_tags "$TAGS"
+            local rc=$?
+            [[ $rc -eq 0 ]] && clear_resume_state
+            return $rc
             ;;
     esac
 
     # ── Interactive TUI ───────────────────────────────
+
+    # Check for resume state before entering TUI
+    if [[ -f "$RESUME_FILE" ]]; then
+        load_resume_state
+        setup_term
+        trap restore_term EXIT
+
+        local choice
+        choice=$(select_resume)
+
+        case "$choice" in
+            resume)
+                restore_term; trap - EXIT
+                load_config
+                load_registry
+                printf '  %bResuming from tag: %s (tags: %s)%b\n' \
+                    "$CYAN" "$FAILED_TAG" "$TAGS" "$NC"
+                ensure_sudo
+                run_modules_by_tags "$TAGS"
+                local rc=$?
+                [[ $rc -eq 0 ]] && clear_resume_state
+                return $rc
+                ;;
+            restart)
+                clear_resume_state
+                restore_term; trap - EXIT
+                exec "$0"
+                ;;
+            cancel)
+                restore_term; trap - EXIT
+                printf '%bCancelled.%b\n' "$DIM" "$NC"
+                return 0
+                ;;
+        esac
+    fi
+
     setup_term
     trap restore_term EXIT
 
@@ -320,8 +412,8 @@ main() {
                 exit 0
             fi
             ;;
-        wsl)   INVENTORY="wsl" ;;
-        linux) INVENTORY="ubuntu" ;;
+        wsl)   PROFILE="wsl" ;;
+        linux) PROFILE="ubuntu" ;;
         *)
             restore_term; trap - EXIT
             printf '%bUnsupported OS.%b\n' "$RED" "$NC"
@@ -329,11 +421,12 @@ main() {
             ;;
     esac
 
-    build_roles
+    load_config
+    load_registry
 
-    if select_roles; then
+    if select_modules; then
         restore_term; trap - EXIT
-        run_playbook
+        run_selected
     else
         restore_term; trap - EXIT
         printf '%bCancelled.%b\n' "$DIM" "$NC"

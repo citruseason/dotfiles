@@ -121,7 +121,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/  -- removed: conflicts with dotfiles lib/
 lib64/
 parts/
 sdist/
@@ -300,5 +300,6 @@ Brewfile.lock.json
 
 .idea
 
-### Ansible ###
-*.retry
+### Dotfiles ###
+# Module state
+.resume

@@ -1,13 +1,16 @@
-.PHONY: personal work ubuntu wsl
+.PHONY: all personal work list help
+
+all:
+	./bin/dotfiles --all
 
 personal:
-	ansible-playbook site.yml -i inventory/personal.yml --ask-become-pass
+	./bin/dotfiles --all personal
 
 work:
-	ansible-playbook site.yml -i inventory/work.yml --ask-become-pass
+	./bin/dotfiles --all work
 
-ubuntu:
-	ansible-playbook site.yml -i inventory/ubuntu.yml --ask-become-pass
+list:
+	./bin/dotfiles --list
 
-wsl:
-	ansible-playbook site.yml -i inventory/wsl.yml --ask-become-pass
+help:
+	./bin/dotfiles --help

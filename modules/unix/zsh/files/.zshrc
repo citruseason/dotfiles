@@ -1,0 +1,36 @@
+# Zsh plugins directory
+ZSH_PLUGINS="$HOME/.zsh/plugins"
+
+# Load plugins
+[ -f "$ZSH_PLUGINS/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
+  source "$ZSH_PLUGINS/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+[ -f "$ZSH_PLUGINS/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
+  source "$ZSH_PLUGINS/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+[ -f "$ZSH_PLUGINS/zsh-completions/zsh-completions.plugin.zsh" ] && \
+  fpath=("$ZSH_PLUGINS/zsh-completions/src" $fpath)
+
+# Completion system
+autoload -Uz compinit && compinit
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history
+setopt share_history
+setopt hist_ignore_dups
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+
+# Key bindings
+bindkey -e
+
+# SSH agent
+eval "$(ssh-agent -s)" &>/dev/null
+
+# Load conf.d snippets
+for f in "$HOME/.config/shell/conf.d"/*.sh; do
+  [ -f "$f" ] && source "$f"
+done
