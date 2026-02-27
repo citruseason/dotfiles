@@ -33,7 +33,7 @@ FORMULAE=(
     # Editor
     neovim
     # Container
-    krunkit
+    kubectl krunkit
 )
 
 info "Installing formulae..."
