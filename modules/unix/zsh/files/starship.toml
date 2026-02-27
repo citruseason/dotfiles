@@ -26,54 +26,47 @@ error_symbol = "[❯](red)"
 vimcmd_symbol = "[❮](green)"
 
 [git_branch]
-format = "[$branch]($style)"
+format = '\[[$symbol$branch]($style)\]'
 style = "bright-black"
 
 [git_status]
-format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+format = '([\[$all_status$ahead_behind\]]($style))'
 style = "cyan"
-conflicted = "​"
-untracked = "​"
-modified = "​"
-staged = "​"
-renamed = "​"
-deleted = "​"
-stashed = "≡"
 
 [git_state]
-format = '\([$state( $progress_current/$progress_total)]($style)\) '
+format = '\[[$state( $progress_current/$progress_total)]($style)\]'
 style = "bright-black"
 
 [cmd_duration]
-format = "[$duration]($style) "
+format = '\[[⏱ $duration]($style)\]'
 style = "yellow"
 
 [python]
-format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
-symbol = " "
+format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
 style = "bright-black"
 
 [nodejs]
-format = "[${symbol}(${version} )]($style)"
-symbol = " "
+format = '\[[$symbol($version)]($style)\]'
 style = "bright-black"
 
 [bun]
-format = "[${symbol}(${version} )]($style)"
-symbol = "🥟 "
+format = '\[[$symbol($version)]($style)\]'
 style = "bright-black"
 
 [rust]
-format = "[${symbol}(${version} )]($style)"
-symbol = " "
+format = '\[[$symbol($version)]($style)\]'
 style = "bright-black"
 
 [golang]
-format = "[${symbol}(${version} )]($style)"
-symbol = " "
+format = '\[[$symbol($version)]($style)\]'
 style = "bright-black"
 
 [java]
-format = "[${symbol}(${version} )]($style)"
-symbol = " "
+format = '\[[$symbol($version)]($style)\]'
 style = "bright-black"
+
+[username]
+format = '\[[$user]($style)\]'
+
+[hostname]
+format = '\[[$ssh_symbol($hostname)]($style)\] '
