@@ -28,7 +28,7 @@
   quotepath = false
   autocrlf = input
   safecrlf = warn
-  editor = vim
+  editor = nvim
 
 [alias]
   c = commit
@@ -53,7 +53,7 @@
   prompt = false
 
 [diff]
-  tool = vimdiff
+  tool = nvimdiff
   compactionHeuristic = true
 
 [mergetool]
@@ -61,7 +61,7 @@
   keepBackup = false
 
 [merge]
-  tool = vimdiff
+  tool = nvimdiff
   # Always show a diffstat at the end of a merge
   stat = true
   conflictstyle = diff3
