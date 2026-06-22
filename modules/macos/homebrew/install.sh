@@ -44,8 +44,8 @@ success "Formulae"
 
 # ── Casks ──
 CASKS=(
-    ghostty podman-desktop google-chrome zen slack notion iina
-    scroll-reverser appcleaner
+    ghostty podman-desktop google-chrome slack notion iina
+    visual-studio-code scroll-reverser appcleaner
     font-hack-nerd-font
 )
 
@@ -58,7 +58,7 @@ success "Casks"
 # ── Private casks (personal 프로필만) ──
 if [[ "${HOMEBREW_INSTALL_PRIVATE}" == "true" ]]; then
     PRIVATE_CASKS=(
-        karabiner-elements 1password antigravity telegram tailscale
+        karabiner-elements 1password telegram tailscale
         claude-code codex discord
     )
 

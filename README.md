@@ -20,6 +20,12 @@ curl ... | PROFILE=work bash
 curl ... | DOTFILES_DIR=~/my-dotfiles bash
 ```
 
+Work profile (full command):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | PROFILE=work bash
+```
+
 ### Windows 11
 
 Run as **Administrator** in PowerShell:
