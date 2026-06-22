@@ -6,11 +6,15 @@
 
 ### macOS / Ubuntu / WSL
 
-```bash
-# Default
-curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | bash
+Default:
 
-# Work profile
+```bash
+curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | bash
+```
+
+Work profile:
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | PROFILE=work bash
 ```
 
