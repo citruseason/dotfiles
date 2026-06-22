@@ -18,7 +18,9 @@ brew untap homebrew/cask-versions 2>/dev/null || true
 brew untap homebrew/cask-fonts 2>/dev/null || true
 
 # ── tap 추가 ──
+# krunkit: Podman의 libkrun provider (macOS Apple Silicon)
 brew tap slp/krunkit 2>/dev/null || true
+brew trust slp/krunkit 2>/dev/null || true
 
 # ── Homebrew 업데이트 ──
 info "Updating Homebrew..."
@@ -58,8 +60,7 @@ success "Casks"
 # ── Private casks (personal 프로필만) ──
 if [[ "${HOMEBREW_INSTALL_PRIVATE}" == "true" ]]; then
     PRIVATE_CASKS=(
-        karabiner-elements 1password telegram tailscale
-        claude-code codex discord
+        karabiner-elements 1password telegram tailscale discord
     )
 
     info "Installing private casks..."
@@ -67,6 +68,20 @@ if [[ "${HOMEBREW_INSTALL_PRIVATE}" == "true" ]]; then
         brew install --cask --adopt "$cask" 2>/dev/null || true
     done
     success "Private casks"
+
+    # ── CLI tools (공식 설치 스크립트) ──
+    # brew 대신 공식 도큐먼트 권장 방식으로 설치 (자동 업데이트 지원)
+    if ! has claude; then
+        info "Installing Claude Code..."
+        curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null || true
+    fi
+    success "Claude Code"
+
+    if ! has codex; then
+        info "Installing Codex..."
+        curl -fsSL https://chatgpt.com/codex/install.sh | sh 2>/dev/null || true
+    fi
+    success "Codex"
 
     # ── Mac App Store ──
     MAS_APPS=(
