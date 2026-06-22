@@ -7,7 +7,11 @@
 ### macOS / Ubuntu / WSL
 
 ```bash
+# Default
 curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | bash
+
+# Work profile
+curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | PROFILE=work bash
 ```
 
 OS and profile are auto-detected. Options:
@@ -18,12 +22,6 @@ curl ... | PROFILE=work bash
 
 # Custom install path
 curl ... | DOTFILES_DIR=~/my-dotfiles bash
-```
-
-Work profile (full command):
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/citruseason/dotfiles/master/install.sh | PROFILE=work bash
 ```
 
 ### Windows 11
