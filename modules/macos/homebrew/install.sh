@@ -1,5 +1,6 @@
 #!/bin/bash
 # modules/macos/homebrew/install.sh — Homebrew 패키지 관리
+# 패키지 목록은 Brewfile / Brewfile.private 에서 선언적으로 관리
 
 # ── Homebrew 설치 확인 ──
 if ! has brew; then
@@ -17,8 +18,8 @@ success "Homebrew"
 brew untap homebrew/cask-versions 2>/dev/null || true
 brew untap homebrew/cask-fonts 2>/dev/null || true
 
-# ── tap 추가 ──
-# krunkit: Podman의 libkrun provider (macOS Apple Silicon)
+# ── 서드파티 tap 신뢰 ──
+# Brewfile의 tap 항목은 trust까지 처리하지 못하므로 bundle 전에 실행
 brew tap slp/krunkit 2>/dev/null || true
 brew trust slp/krunkit 2>/dev/null || true
 
@@ -26,48 +27,22 @@ brew trust slp/krunkit 2>/dev/null || true
 info "Updating Homebrew..."
 brew update --quiet
 
-# ── Formulae ──
-FORMULAE=(
-    # CLI Tools
-    git git-lfs diff-so-fancy mas wget tree dockutil mise mole nmap tmux
-    # Shell
-    zsh starship vivid coreutils
-    # Editor
-    neovim
-    # Container
-    kubectl krunkit
-)
+# ── Brewfile 설치 ──
+# --no-upgrade: 설치만 하고 기존 패키지는 업그레이드하지 않음 (빠른 멱등 실행)
+# cask는 brew bundle이 --adopt를 자동 적용 (기존 설치 앱을 brew 관리로 편입)
+info "Installing packages from Brewfile..."
+if ! brew bundle install --file="$MODULE_DIR/Brewfile" --no-upgrade; then
+    warn "일부 패키지 설치 실패 — 위 로그를 확인하세요"
+fi
+success "Brewfile"
 
-info "Installing formulae..."
-for pkg in "${FORMULAE[@]}"; do
-    brew install "$pkg" 2>/dev/null || true
-done
-success "Formulae"
-
-# ── Casks ──
-CASKS=(
-    ghostty podman-desktop google-chrome slack notion iina
-    visual-studio-code scroll-reverser appcleaner
-    font-hack-nerd-font
-)
-
-info "Installing casks..."
-for cask in "${CASKS[@]}"; do
-    brew install --cask --adopt "$cask" 2>/dev/null || true
-done
-success "Casks"
-
-# ── Private casks (personal 프로필만) ──
+# ── Private 패키지 (personal 프로필만) ──
 if [[ "${HOMEBREW_INSTALL_PRIVATE}" == "true" ]]; then
-    PRIVATE_CASKS=(
-        karabiner-elements 1password telegram tailscale discord
-    )
-
-    info "Installing private casks..."
-    for cask in "${PRIVATE_CASKS[@]}"; do
-        brew install --cask --adopt "$cask" 2>/dev/null || true
-    done
-    success "Private casks"
+    info "Installing packages from Brewfile.private..."
+    if ! brew bundle install --file="$MODULE_DIR/Brewfile.private" --no-upgrade; then
+        warn "일부 항목 설치 실패 — mas 앱은 App Store 로그인이 필요합니다"
+    fi
+    success "Brewfile.private"
 
     # ── CLI tools (공식 설치 스크립트) ──
     # brew 대신 공식 도큐먼트 권장 방식으로 설치 (자동 업데이트 지원)
@@ -82,29 +57,6 @@ if [[ "${HOMEBREW_INSTALL_PRIVATE}" == "true" ]]; then
         curl -fsSL https://chatgpt.com/codex/install.sh | sh 2>/dev/null || true
     fi
     success "Codex"
-
-    # ── Mac App Store ──
-    MAS_APPS=(
-        "1265704574:Bandizip"
-        "441258766:Magnet"
-        "869223134:KakaoTalk"
-    )
-
-    info "Installing Mac App Store apps..."
-    local failed_apps=()
-    for entry in "${MAS_APPS[@]}"; do
-        local app_id="${entry%%:*}"
-        local app_name="${entry#*:}"
-        if ! mas install "$app_id" 2>/dev/null; then
-            failed_apps+=("$app_name")
-        fi
-    done
-
-    if [[ ${#failed_apps[@]} -gt 0 ]]; then
-        local IFS=', '
-        warn "다음 앱은 App Store에서 직접 설치하세요: ${failed_apps[*]}"
-    fi
-    success "Mac App Store apps"
 fi
 
 success "Homebrew"

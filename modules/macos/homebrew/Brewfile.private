@@ -1,0 +1,15 @@
+# modules/macos/homebrew/Brewfile.private — personal 프로필 전용
+# HOMEBREW_INSTALL_PRIVATE=true 일 때만 설치됨 (config/personal.sh)
+
+# ── Apps ──
+cask "karabiner-elements"
+cask "1password"
+cask "telegram"
+cask "tailscale-app"
+cask "discord"
+cask "betterdisplay"
+
+# ── Mac App Store ──
+mas "Bandizip", id: 1265704574
+mas "Magnet", id: 441258766
+mas "KakaoTalk", id: 869223134

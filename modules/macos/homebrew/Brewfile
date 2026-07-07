@@ -1,0 +1,45 @@
+# modules/macos/homebrew/Brewfile — 공통 패키지 (모든 프로필)
+# 항목 추가/삭제 후 `dotfiles --tags homebrew` 실행
+
+# krunkit: Podman의 libkrun provider (macOS Apple Silicon)
+tap "slp/krunkit"
+
+# ── CLI Tools ──
+brew "git"
+brew "git-lfs"
+brew "diff-so-fancy"
+brew "mas"
+brew "wget"
+brew "tree"
+brew "dockutil"
+brew "mise"
+brew "mole"
+brew "nmap"
+brew "tmux"
+
+# ── Shell ──
+brew "zsh"
+brew "starship"
+brew "vivid"
+brew "coreutils"
+
+# ── Editor ──
+brew "neovim"
+
+# ── Container ──
+brew "kubectl"
+brew "krunkit"
+
+# ── Apps ──
+cask "ghostty"
+cask "podman-desktop"
+cask "google-chrome"
+cask "slack"
+cask "notion"
+cask "iina"
+cask "visual-studio-code"
+cask "scroll-reverser"
+cask "appcleaner"
+
+# ── Fonts ──
+cask "font-hack-nerd-font"

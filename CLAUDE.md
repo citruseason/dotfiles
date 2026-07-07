@@ -14,6 +14,7 @@ Ansible 기반에서 순수 shell script로 마이그레이션 완료.
 - `windows/setup.ps1` — Windows PowerShell 셋업
 - `lib/` — 공유 셸 라이브러리
 - `modules/` — 셸 모듈 시스템
+- `modules/macos/homebrew/Brewfile`, `Brewfile.private` — macOS 패키지 목록 (brew bundle, private은 personal 프로필 전용)
 - `config/` — 플랫폼/프로필 변수
 
 ## 규칙
