@@ -33,14 +33,17 @@ restore_term() {
 }
 
 read_key() {
-    local c
+    local c seq
     IFS= read -r -n1 c
     case "$c" in
         $'\x1b')
-            IFS= read -r -n2 -t 0.1 c || true
-            case "$c" in
-                '[A') printf 'up'   ;;
-                '[B') printf 'down' ;;
+            # bash 3.2는 소수 타임아웃(-t 0.1) 미지원 — 정수만 사용 가능
+            seq=""
+            IFS= read -r -n2 -t 1 seq 2>/dev/null || true
+            case "$seq" in
+                '[A'|'OA') printf 'up'   ;;
+                '[B'|'OB') printf 'down' ;;
+                '')        printf 'quit' ;;
             esac
             ;;
         ' ')   printf 'space' ;;
@@ -78,7 +81,7 @@ select_profile() {
             fi
         done
 
-        printf '\n  %b↑↓ move  enter select  q quit%b\n' "$DIM" "$NC"
+        printf '\n  %b↑↓ move  enter select  q/esc quit%b\n' "$DIM" "$NC"
 
         case "$(read_key)" in
             up)    ((cur > 0)) && ((cur--)) || true ;;
@@ -113,7 +116,7 @@ select_modules() {
             "$BOLD" "$NC" "$DIM" "$OS" "${PROFILE:-default}" "$NC"
         printf '  %b─────────────────────────────────────────────%b\n' "$DIM" "$NC"
         printf '\n'
-        printf '  %b↑↓ move  ␣ toggle  a all/none  enter run  q quit%b\n' "$DIM" "$NC"
+        printf '  %b↑↓ move  ␣ toggle  a all/none  enter run  q/esc quit%b\n' "$DIM" "$NC"
         printf '\n'
 
         # Modules grouped by category
@@ -172,6 +175,9 @@ select_modules() {
 }
 
 # ── TUI: Resume Prompt ───────────────────────────────
+# 결과는 RESUME_CHOICE 전역에 저장 — $(...) 캡처는 화면 출력까지 삼켜 TUI가 보이지 않음
+RESUME_CHOICE=""
+
 select_resume() {
     local options=("resume" "restart" "cancel")
     local descs=(
@@ -199,13 +205,13 @@ select_resume() {
             fi
         done
 
-        printf '\n  %b↑↓ move  enter select  q quit%b\n' "$DIM" "$NC"
+        printf '\n  %b↑↓ move  enter select  q/esc quit%b\n' "$DIM" "$NC"
 
         case "$(read_key)" in
             up)    ((cur > 0)) && ((cur--)) || true ;;
             down)  ((cur < ${#options[@]} - 1)) && ((cur++)) || true ;;
-            enter) printf '%s' "${options[$cur]}"; return 0 ;;
-            quit)  printf 'cancel'; return 0 ;;
+            enter) RESUME_CHOICE="${options[$cur]}"; return 0 ;;
+            quit)  RESUME_CHOICE="cancel"; return 0 ;;
         esac
     done
 }
@@ -243,32 +249,12 @@ run_selected() {
     printf '  %b❯ dotfiles%b --tags %s\n\n' "$CYAN" "$NC" "$tag_str"
 
     ensure_sudo
-    run_modules_by_tags "$tag_str"
-    local rc=$?
 
+    # resume 상태 저장은 run_modules_by_tags가 처리
+    local rc=0
+    run_modules_by_tags "$tag_str" || rc=$?
     if [[ $rc -ne 0 ]]; then
-        # 실패한 태그 찾기 및 resume 상태 저장
-        local remaining=()
-        local found=0
-        for t in "${tags[@]}"; do
-            local state_file="$HOME/.local/state/dotfiles/${t}.done"
-            if [[ ! -f "$state_file" ]] && [[ $found -eq 0 ]]; then
-                found=1
-                save_resume_state "${PROFILE:-default}" "$t" "$tag_str"
-            fi
-            if [[ $found -eq 1 ]]; then
-                remaining+=("$t")
-            fi
-        done
-        if [[ ${#remaining[@]} -gt 0 ]]; then
-            local remaining_str
-            remaining_str=$(IFS=,; printf '%s' "${remaining[*]}")
-            save_resume_state "${PROFILE:-default}" "${remaining[0]}" "$remaining_str"
-            printf '\n  %b✗ Failed at: %s%b\n' "$RED" "${remaining[0]}" "$NC"
-            printf '  %bResume state saved. Run %bdotfiles --resume%b to continue.%b\n' \
-                "$DIM" "$BOLD" "$DIM" "$NC"
-        fi
-        return 1
+        return $rc
     fi
 
     clear_resume_state
@@ -344,8 +330,9 @@ main() {
             load_config
             load_registry
             ensure_sudo
-            run_modules_by_tags "$2"
-            return $?
+            local rc=0
+            run_modules_by_tags "$2" || rc=$?
+            return $rc
             ;;
         --resume)
             if ! load_resume_state; then
@@ -357,8 +344,8 @@ main() {
             printf '  %bResuming from tag: %s (tags: %s, profile: %s)%b\n' \
                 "$CYAN" "$FAILED_TAG" "$TAGS" "$PROFILE" "$NC"
             ensure_sudo
-            run_modules_by_tags "$TAGS"
-            local rc=$?
+            local rc=0
+            run_modules_by_tags "$TAGS" || rc=$?
             [[ $rc -eq 0 ]] && clear_resume_state
             return $rc
             ;;
@@ -372,10 +359,9 @@ main() {
         setup_term
         trap restore_term EXIT
 
-        local choice
-        choice=$(select_resume)
+        select_resume
 
-        case "$choice" in
+        case "$RESUME_CHOICE" in
             resume)
                 restore_term; trap - EXIT
                 load_config
@@ -383,8 +369,8 @@ main() {
                 printf '  %bResuming from tag: %s (tags: %s)%b\n' \
                     "$CYAN" "$FAILED_TAG" "$TAGS" "$NC"
                 ensure_sudo
-                run_modules_by_tags "$TAGS"
-                local rc=$?
+                local rc=0
+                run_modules_by_tags "$TAGS" || rc=$?
                 [[ $rc -eq 0 ]] && clear_resume_state
                 return $rc
                 ;;

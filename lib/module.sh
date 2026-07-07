@@ -145,9 +145,24 @@ run_modules_by_tags() {
     fi
 
     local n=1
-    local idx
-    for idx in "${indices[@]}"; do
-        run_module "$idx" "$total" "$n" || return $?
+    local pos rc
+    for pos in "${!indices[@]}"; do
+        rc=0
+        run_module "${indices[$pos]}" "$total" "$n" || rc=$?
+        if [[ $rc -ne 0 ]]; then
+            # 실패 지점부터 남은 태그로 resume 상태 저장 → dotfiles --resume
+            local remaining=()
+            local p
+            for p in "${!indices[@]}"; do
+                if [[ $p -ge $pos ]]; then
+                    remaining+=("${_REG_TAGS[${indices[$p]}]}")
+                fi
+            done
+            local remaining_str
+            remaining_str=$(IFS=,; printf '%s' "${remaining[*]}")
+            save_resume_state "${PROFILE:-default}" "${remaining[0]}" "$remaining_str"
+            return $rc
+        fi
         n=$((n + 1))
     done
 }
