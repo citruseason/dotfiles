@@ -18,11 +18,6 @@ success "Homebrew"
 brew untap homebrew/cask-versions 2>/dev/null || true
 brew untap homebrew/cask-fonts 2>/dev/null || true
 
-# ── 서드파티 tap 신뢰 ──
-# Brewfile의 tap 항목은 trust까지 처리하지 못하므로 bundle 전에 실행
-brew tap slp/krunkit 2>/dev/null || true
-brew trust slp/krunkit 2>/dev/null || true
-
 # ── Homebrew 업데이트 ──
 info "Updating Homebrew..."
 brew update --quiet

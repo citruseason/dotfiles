@@ -1,9 +1,6 @@
 # modules/macos/homebrew/Brewfile — 공통 패키지 (모든 프로필)
 # 항목 추가/삭제 후 `dotfiles --tags homebrew` 실행
 
-# krunkit: Podman의 libkrun provider (macOS Apple Silicon)
-tap "slp/krunkit"
-
 # ── CLI Tools ──
 brew "git"
 brew "git-lfs"
@@ -27,12 +24,12 @@ brew "coreutils"
 brew "neovim"
 
 # ── Container ──
+# nerdctl은 별도 formula 대신 `colima nerdctl install`로 설치 (macOS bottle 미지원)
 brew "kubectl"
-brew "krunkit"
+brew "colima"
 
 # ── Apps ──
 cask "ghostty"
-cask "podman-desktop"
 cask "google-chrome"
 cask "slack"
 cask "notion"

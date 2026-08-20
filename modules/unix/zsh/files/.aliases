@@ -8,8 +8,9 @@ export VISUAL="nvim"
 # Claude Code
 alias claude="claude --dangerously-skip-permissions"
 
-# Container
-alias docker="podman"
+# Container (Colima + containerd)
+alias docker="nerdctl"                                                    # nerdctl은 docker CLI와 문법 호환
+alias docker-start="colima start --runtime containerd && colima nerdctl install"
 
 # tmux
 alias tm="tmux"
