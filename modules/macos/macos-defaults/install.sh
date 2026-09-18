@@ -348,14 +348,6 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "
 "
 
 ###############################################################################
-# Scroll Reverser
-###############################################################################
-
-defaults write com.pilotmoon.scroll-reverser ReverseTrackpad -bool false
-defaults write com.pilotmoon.scroll-reverser ReverseTablet -bool false
-defaults write com.pilotmoon.scroll-reverser SUEnableAutomaticChecks -bool true
-
-###############################################################################
 # Kill affected applications
 ###############################################################################
 
